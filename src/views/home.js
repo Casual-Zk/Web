@@ -8,17 +8,32 @@ import './home.css'
 import { useState } from 'react';
 import { ethers } from "ethers";
 
+function test1(){
+  console.log("test1");
+}
+
 const Home = (props) => {
 
   // Initialize the menu array
-  const menu = {
+  const [menu, setMenu] = useState({
     Main: true,
-    Mint: false,
-    Profile: false
-  }
+    Profile: false,
+    Mint: false
+  });
 
-  // Close all menus
-  //Object.keys(menu).forEach(key => { menu[key] = false; })
+  function menuButton(target) {
+    
+    // Create a new copy of the menu object and update its values
+    const newMenu = { ...menu };
+    Object.keys(newMenu).forEach(key => { newMenu[key] = false; })
+
+    if (target == "Main") newMenu.Main = true;
+    if (target == "Profile") newMenu.Profile = true;
+    if (target == "Mint") newMenu.Mint = true;
+
+    // Update the menu state with the new copy
+    setMenu(newMenu);
+  }
 
   const [walletAddress, setWalletAddress] = useState("");
 
@@ -59,11 +74,12 @@ const Home = (props) => {
     - Change Title: Character NFT template
 
     Use:
-    { menu.Main ? (
-      <section>
-        
+    {menu.Main && (
+      <section className="home-home-page">    
       </section>
-    ) : ( <section></section> )} 
+    )}
+
+    button functions: onClick={requestAccount} /// onClick={() => menuButton(2)}
 
 
   */
@@ -96,6 +112,7 @@ const Home = (props) => {
             className="home-nav"
           >
             <button
+              onClick={() => menuButton("Main")}
               id="homePageButton"
               className="home-button button-clean button"
             >
@@ -108,6 +125,7 @@ const Home = (props) => {
               Game
             </button>
             <button
+              onClick={() => menuButton("Mint")}
               id="mintPageButton"
               className="home-button2 button-clean button"
             >
@@ -124,12 +142,18 @@ const Home = (props) => {
         <div data-thq="thq-navbar-btn-group" className="home-btn-group">
           <div className="home-socials">
             <button className="social button">
-              <img
-                alt="image"
-                src="/playground_assets/twitter.svg"
-                id="twitterButton"
-                className="home-image01"
-              />
+              <a
+                href="https://twitter.com/bora_ozenbirkan"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <img
+                  alt="image"
+                  src="/playground_assets/twitter.svg"
+                  id="twitterButton"
+                  className="home-image01"
+                />
+              </a>
             </button>
             <button className="social button">
               <img
@@ -140,7 +164,7 @@ const Home = (props) => {
               />
             </button>
           </div>
-          <button id="loginButton" className="button">
+          <button onClick={() => menuButton("Profile")} id="loginButton" className="button">
             Login
           </button>
         </div>
@@ -195,8 +219,9 @@ const Home = (props) => {
           </div>
         </div>
       </header>
-      <section className="home-home-page">
-        <div className="home-login1 button">
+      { menu.Main && (
+        <section className="home-home-page">
+        <div className="home-login1">
           <h2 className="home-header">Login with Google</h2>
           <img
             src="/playground_assets/google_logo-200h.png"
@@ -214,722 +239,47 @@ const Home = (props) => {
         <div className="home-buttons">
           <button className="button">View on Opensea</button>
         </div>
-      </section>
-      <section className="home-login2">
-        <div className="home-heading01">
-          <h1 className="home-header02">
-            <span className="home-text05">Profile Page</span>
-            <br></br>
-          </h1>
-          <p className="home-caption01">
-            A character custom collection is joining the NFT space on Opensea.
-          </p>
-        </div>
-        <div className="home-buttons1">
-          <button className="button">View on Opensea</button>
-          <button className="home-learn button-clean button">Learn more</button>
-        </div>
-      </section>
-      <section className="home-profile">
-        <div className="home-heading02">
-          <h1 className="home-header03">Mint Page</h1>
-          <p className="home-caption02">
-            A character custom collection is joining the NFT space on Opensea.
-          </p>
-        </div>
-        <div className="home-buttons2">
-          <button className="button">View on Opensea</button>
-          <button className="home-learn1 button-clean button">
-            Learn more
-          </button>
-        </div>
-      </section>
-      <section className="home-description">
-        <img
-          alt="image"
-          src="/playground_assets/hero-divider-1500w.png"
-          className="home-divider-image"
-        />
-        <div className="home-container6">
-          <div className="home-description01">
-            <div className="home-content">
-              <p className="home-paragraph">
-                We are a team of digital aute irure dolor in reprehenderit in
-                voluptate velit esse cillum dolore eu fugiat.
-              </p>
-              <p className="home-paragraph1">
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa
-                qui officia deserunt mollit anim id est laborum. Nemo enim ipsam
-                voluptatem quia voluptas sit aspernatur aut odit aut fugit.
-              </p>
-            </div>
-            <div className="home-links">
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="button-link button"
-              >
-                <span>Follow us on Twitter</span>
-                <img
-                  alt="image"
-                  src="/playground_assets/arrow.svg"
-                  className="home-arrow"
-                />
-              </a>
-              <a
-                href="https://discord.com"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="home-link01 button-link button"
-              >
-                <span>Join us on Discord</span>
-                <img
-                  alt="image"
-                  src="/playground_assets/arrow.svg"
-                  className="home-arrow1"
-                />
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="home-cards">
-        <div className="home-row">
-          <div className="home-card">
-            <div className="home-avatar">
-              <img
-                alt="image"
-                src="/playground_assets/avatar.svg"
-                className="home-avatar1"
-              />
-            </div>
-            <div className="home-main">
-              <div className="home-content01">
-                <h2 className="home-header04">10,000+ unique characters</h2>
-                <p className="home-description02">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliquat
-                  enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi
-                </p>
-              </div>
-              <button className="home-learn2 button">
-                <span className="home-text09">Learn more</span>
-                <img
-                  alt="image"
-                  src="/playground_assets/arrow.svg"
-                  className="home-image04"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="home-card01">
-          <div className="home-avatar2">
-            <img
-              alt="image"
-              src="/playground_assets/light-avatar.svg"
-              className="home-avatar3"
-            />
-          </div>
-          <div className="home-row1">
-            <div className="home-main1">
-              <div className="home-content02">
-                <h2 className="home-header05">
-                  Create yourself for the metaverse
-                </h2>
-                <p className="home-description03">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliquat
-                  enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi
-                </p>
-              </div>
-              <button className="home-learn3 button">
-                <span className="home-text10">Learn more</span>
-                <img
-                  alt="image"
-                  src="/playground_assets/arrow-2.svg"
-                  className="home-image05"
-                />
-              </button>
-            </div>
-            <img
-              alt="image"
-              src="/playground_assets/group%202262.svg"
-              className="home-image06"
-            />
-          </div>
-        </div>
-      </section>
-      <section className="home-collection">
-        <div className="home-content03">
-          <span className="home-caption03">collection</span>
-          <div className="home-heading03">
-            <h2 className="home-header06">All time best collections</h2>
-            <p className="home-header07">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore.
+        </section>
+      )}  
+
+      { menu.Profile && (
+        <section className="home-profile">
+          <div className="home-heading01">
+            <h1 className="home-header02">Profile Page</h1>
+            <p className="home-caption01">
+              A character custom collection is joining the NFT space on Opensea.
             </p>
           </div>
-        </div>
-        <div className="home-main2">
-          <div className="home-card02">
-            <div className="home-image07">
-              <img
-                alt="image"
-                src="/playground_assets/character-1.svg"
-                className="home-image08"
-              />
-            </div>
-            <div className="home-content04">
-              <span className="home-caption04">Character #1</span>
-              <h3 className="home-title">0.05 ETH</h3>
-            </div>
+          <div className="home-buttons1">
+            <button className="button">View on Opensea</button>
+            <button className="home-learn button-clean button">Learn more</button>
           </div>
-          <div className="home-card03">
-            <div className="home-image09">
-              <img
-                alt="image"
-                src="/playground_assets/character-2.svg"
-                className="home-image10"
-              />
-            </div>
-            <div className="home-content05">
-              <span className="home-caption05">Character #2</span>
-              <h3 className="home-title1">0.05 ETH</h3>
-            </div>
+        </section>
+      )}  
+      
+      { menu.Mint && (
+        <section className="home-mint">
+          <div className="home-heading02">
+            <h1 className="home-header03">Mint Page</h1>
+            <p className="home-caption02">
+              A character custom collection is joining the NFT space on Opensea.
+            </p>
           </div>
-          <div className="home-card04">
-            <div className="home-image11">
-              <img
-                alt="image"
-                src="/playground_assets/character-3.svg"
-                className="home-image12"
-              />
-            </div>
-            <div className="home-content06">
-              <span className="home-caption06">Character #3</span>
-              <h3 className="home-title2">0.05 ETH</h3>
-            </div>
-          </div>
-          <div className="home-card05">
-            <div className="home-image13">
-              <img
-                alt="image"
-                src="/playground_assets/character-4.svg"
-                className="home-image14"
-              />
-            </div>
-            <div className="home-content07">
-              <span className="home-caption07">
-                <span>Character #4</span>
-                <br></br>
-              </span>
-              <h3 className="home-title3">0.05 ETH</h3>
-            </div>
-          </div>
-          <div className="home-card06">
-            <div className="home-image15">
-              <img
-                alt="image"
-                src="/playground_assets/character-5.svg"
-                className="home-image16"
-              />
-            </div>
-            <div className="home-content08">
-              <span className="home-caption08">Character #5</span>
-              <h3 className="home-title4">0.05 ETH</h3>
-            </div>
-          </div>
-          <div className="home-card07">
-            <div className="home-image17">
-              <img
-                alt="image"
-                src="/playground_assets/character-6.svg"
-                className="home-image18"
-              />
-            </div>
-            <div className="home-content09">
-              <span className="home-caption09">Character #6</span>
-              <h3 className="home-title5">0.05 ETH</h3>
-            </div>
-          </div>
-          <div className="home-card08">
-            <div className="home-image19">
-              <img
-                alt="image"
-                src="/playground_assets/character-7.svg"
-                className="home-image20"
-              />
-            </div>
-            <div className="home-content10">
-              <span className="home-caption10">Character #7</span>
-              <h3 className="home-title6">0.05 ETH</h3>
-            </div>
-          </div>
-          <div className="home-card09">
-            <div className="home-image21">
-              <img
-                alt="image"
-                src="/playground_assets/character-8.svg"
-                className="home-image22"
-              />
-            </div>
-            <div className="home-content11">
-              <span className="home-caption11">Character #8</span>
-              <h3 className="home-title7">0.05 ETH</h3>
-            </div>
-          </div>
-        </div>
-        <button className="home-view4 button-link button">View all</button>
-      </section>
-      <section className="home-project">
-        <div className="home-understand">
-          <div className="home-content12">
-            <span className="home-caption12">Project</span>
-            <div className="home-heading04">
-              <h2 className="home-header08">Understand the project</h2>
-              <p className="home-header09">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
-              </p>
-            </div>
-            <button className="home-view5 button-link button">
-              <span>Learn More</span>
-              <img
-                alt="image"
-                src="/playground_assets/arrow.svg"
-                className="home-image23"
-              />
+          <div className="home-buttons2">
+            <button className="button">View on Opensea</button>
+            <button className="home-learn1 button-clean button">
+              Learn more
             </button>
           </div>
-          <img
-            alt="image"
-            src="/playground_assets/group%202415.svg"
-            className="home-image24"
-          />
-        </div>
-        <div className="home-mining">
-          <img
-            alt="image"
-            src="/playground_assets/group%202422.svg"
-            className="home-image25"
-          />
-          <div className="home-content13">
-            <span className="home-caption13">Project</span>
-            <div className="home-heading05">
-              <h2 className="home-header10">How the minting works</h2>
-              <p className="home-header11">
-                <span>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat.
-                </span>
-                <br></br>
-                <br></br>
-                <span>
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse
-                  cillum dolore eu fugiat nulla pariatur.
-                </span>
-                <br></br>
-              </p>
-            </div>
-            <button className="home-view6 button-link button">
-              <span>Learn More</span>
-              <img
-                alt="image"
-                src="/playground_assets/arrow.svg"
-                className="home-image26"
-              />
-            </button>
-          </div>
-        </div>
-      </section>
-      <section className="home-roadmap">
-        <div className="home-heading06">
-          <h2 className="home-header12">Roadmap</h2>
-          <p className="home-header13">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore
-          </p>
-        </div>
-        <div className="home-list">
-          <div className="home-step">
-            <span className="home-caption14">01</span>
-            <div className="home-heading07">
-              <h2 className="home-header14">Project Launch</h2>
-              <p className="home-header15">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
-              </p>
-            </div>
-            <button className="home-button5 button">View on Opensea</button>
-          </div>
-          <div className="home-step1">
-            <span className="home-caption15">02</span>
-            <div className="home-heading08">
-              <h2 className="home-header16">Metadata and Character</h2>
-              <p className="home-header17">
-                <span>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: ' ',
-                    }}
-                  />
-                </span>
-                <br></br>
-                <br></br>
-                <span>
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat.
-                </span>
-                <br></br>
-              </p>
-            </div>
-          </div>
-          <div className="home-step2">
-            <span className="home-caption16">03</span>
-            <div className="home-heading09">
-              <h2 className="home-header18">Get Physical</h2>
-              <p className="home-header19">
-                <span>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: ' ',
-                    }}
-                  />
-                </span>
-                <br></br>
-                <br></br>
-                <span>
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat.
-                </span>
-                <br></br>
-              </p>
-            </div>
-          </div>
-          <div className="home-step3">
-            <span className="home-caption17">04</span>
-            <div className="home-heading10">
-              <h2 className="home-header20">Private club community</h2>
-              <p className="home-header21">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: ' ',
-                  }}
-                />
-              </p>
-              <div className="home-benefits">
-                <div className="home-item">
-                  <img
-                    alt="image"
-                    src="/playground_assets/people.svg"
-                    className="home-image27"
-                  />
-                  <p className="home-header22">Consectetur adipiscing elit</p>
-                </div>
-                <div className="home-item1">
-                  <img
-                    alt="image"
-                    src="/playground_assets/paper.svg"
-                    className="home-image28"
-                  />
-                  <p className="home-header23">Consectetur adipiscing elit</p>
-                </div>
-                <div className="home-item2">
-                  <img
-                    alt="image"
-                    src="/playground_assets/checklist.svg"
-                    className="home-image29"
-                  />
-                  <p className="home-header24">Consectetur adipiscing elit</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="home-join-us">
-        <div className="home-content14">
-          <div className="home-main3">
-            <div className="home-heading11">
-              <h2 className="home-header25">Create your character now</h2>
-              <p className="home-caption18">
-                A character custom collection is joining the NFT space on
-                Opensea.
-              </p>
-            </div>
-            <button className="home-view7 button">View on Opensea</button>
-          </div>
-          <img
-            alt="image"
-            src="/playground_assets/group%202273.svg"
-            className="home-image30"
-          />
-        </div>
-      </section>
-      <section className="home-faq">
-        <h2 className="home-header26">We have all the answers</h2>
-        <div className="home-accordion">
-          <div
-            data-role="accordion-container"
-            className="home-element accordion"
-          >
-            <div className="home-content15">
-              <span className="home-header27">
-                Lorem ipsum dolor sit ametetur elit?
-              </span>
-              <span
-                data-role="accordion-content"
-                className="home-description04"
-              >
-                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-                quae ab illo inventore veritatis et quasi architecto beatae
-                vitae dicta sunt explicabo.
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: ' ',
-                  }}
-                />
-              </span>
-            </div>
-            <div className="home-icon-container">
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-closed"
-                className="home-icon10"
-              >
-                <path d="M213.333 554.667h256v256c0 23.552 19.115 42.667 42.667 42.667s42.667-19.115 42.667-42.667v-256h256c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-256v-256c0-23.552-19.115-42.667-42.667-42.667s-42.667 19.115-42.667 42.667v256h-256c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-open"
-                className="home-icon12"
-              >
-                <path d="M213.333 554.667h597.333c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-597.333c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-            </div>
-          </div>
-          <div
-            data-role="accordion-container"
-            className="home-element1 accordion"
-          >
-            <div className="home-content16">
-              <span className="home-header28">
-                Excepteur sint occaecat cupidatat non sunt in culpa qui officia
-                deserunt mollit anim id est laborum?
-              </span>
-              <span
-                data-role="accordion-content"
-                className="home-description05"
-              >
-                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-                quae ab illo inventore veritatis et quasi architecto beatae
-                vitae dicta sunt explicabo.
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: ' ',
-                  }}
-                />
-              </span>
-            </div>
-            <div className="home-icon-container1">
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-closed"
-                className="home-icon14"
-              >
-                <path d="M213.333 554.667h256v256c0 23.552 19.115 42.667 42.667 42.667s42.667-19.115 42.667-42.667v-256h256c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-256v-256c0-23.552-19.115-42.667-42.667-42.667s-42.667 19.115-42.667 42.667v256h-256c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-open"
-                className="home-icon16"
-              >
-                <path d="M213.333 554.667h597.333c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-597.333c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-            </div>
-          </div>
-          <div
-            data-role="accordion-container"
-            className="home-element2 accordion"
-          >
-            <div className="home-content17">
-              <span className="home-header29">
-                Tempor incididunt ut labore et dolore magna aliquat enim ad
-                minim?
-              </span>
-              <span
-                data-role="accordion-content"
-                className="home-description06"
-              >
-                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-                quae ab illo inventore veritatis et quasi architecto beatae
-                vitae dicta sunt explicabo.
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: ' ',
-                  }}
-                />
-              </span>
-            </div>
-            <div className="home-icon-container2">
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-closed"
-                className="home-icon18"
-              >
-                <path d="M213.333 554.667h256v256c0 23.552 19.115 42.667 42.667 42.667s42.667-19.115 42.667-42.667v-256h256c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-256v-256c0-23.552-19.115-42.667-42.667-42.667s-42.667 19.115-42.667 42.667v256h-256c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-open"
-                className="home-icon20"
-              >
-                <path d="M213.333 554.667h597.333c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-597.333c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-            </div>
-          </div>
-          <div
-            data-role="accordion-container"
-            className="home-element3 accordion"
-          >
-            <div className="home-content18">
-              <span className="home-header30">
-                Lorem ipsum dolor sit ametetur elit?
-              </span>
-              <span
-                data-role="accordion-content"
-                className="home-description07"
-              >
-                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-                quae ab illo inventore veritatis et quasi architecto beatae
-                vitae dicta sunt explicabo.
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: ' ',
-                  }}
-                />
-              </span>
-            </div>
-            <div className="home-icon-container3">
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-closed"
-                className="home-icon22"
-              >
-                <path d="M213.333 554.667h256v256c0 23.552 19.115 42.667 42.667 42.667s42.667-19.115 42.667-42.667v-256h256c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-256v-256c0-23.552-19.115-42.667-42.667-42.667s-42.667 19.115-42.667 42.667v256h-256c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-open"
-                className="home-icon24"
-              >
-                <path d="M213.333 554.667h597.333c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-597.333c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-            </div>
-          </div>
-          <div
-            data-role="accordion-container"
-            className="home-element4 accordion"
-          >
-            <div className="home-content19">
-              <span className="home-header31">
-                Incididunt ut labore et dolore?
-              </span>
-              <span
-                data-role="accordion-content"
-                className="home-description08"
-              >
-                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-                quae ab illo inventore veritatis et quasi architecto beatae
-                vitae dicta sunt explicabo.
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: ' ',
-                  }}
-                />
-              </span>
-            </div>
-            <div className="home-icon-container4">
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-closed"
-                className="home-icon26"
-              >
-                <path d="M213.333 554.667h256v256c0 23.552 19.115 42.667 42.667 42.667s42.667-19.115 42.667-42.667v-256h256c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-256v-256c0-23.552-19.115-42.667-42.667-42.667s-42.667 19.115-42.667 42.667v256h-256c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-              <svg
-                viewBox="0 0 1024 1024"
-                data-role="accordion-icon-open"
-                className="home-icon28"
-              >
-                <path d="M213.333 554.667h597.333c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-597.333c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="home-get-yours">
-        <div className="home-row2">
-          <div className="home-column">
-            <div className="home-card10">
-              <img
-                alt="image"
-                src="/playground_assets/character-9.svg"
-                className="home-image31"
-              />
-            </div>
-          </div>
-          <div className="home-column1">
-            <div className="home-card11">
-              <img
-                alt="image"
-                src="/playground_assets/character-10.svg"
-                className="home-image32"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="home-column2">
-          <div className="home-card12">
-            <div className="home-content20">
-              <h2 className="home-header32">Get yours now</h2>
-              <p className="home-description09">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliquat enim
-                ad minim veniam.
-              </p>
-            </div>
-            <button className="home-button6 button">View on Opensea</button>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}  
+         
       <footer className="home-footer">
         <div className="home-main4">
           <div className="home-branding">
             <div className="home-heading12">
               <h2 className="home-logo2">
-                <span className="home-text30">Zk Chickens</span>
+                <span className="home-text28">Zk Chickens</span>
                 <br></br>
               </h2>
               <p className="home-caption19">
@@ -968,16 +318,16 @@ const Home = (props) => {
             <div className="home-list1">
               <h3 className="home-heading13">Site</h3>
               <div className="home-items">
-                <button className="home-link02 button-clean button">
+                <button className="home-link03 button-clean button">
                   About
                 </button>
-                <button className="home-link03 button-clean button">
+                <button className="home-link04 button-clean button">
                   Collection
                 </button>
-                <button className="home-link04 button-clean button">
+                <button className="home-link05 button-clean button">
                   Roadmap
                 </button>
-                <button className="home-link05 button-clean button">
+                <button className="home-link06 button-clean button">
                   Features
                 </button>
               </div>
@@ -985,19 +335,19 @@ const Home = (props) => {
             <div className="home-list2">
               <h3 className="home-heading14">Company</h3>
               <div className="home-items1">
-                <button className="home-link06 button-clean button">
+                <button className="home-link07 button-clean button">
                   Team
                 </button>
-                <button className="home-link07 button-clean button">
+                <button className="home-link08 button-clean button">
                   Press
                 </button>
-                <button className="home-link08 button-clean button">
+                <button className="home-link09 button-clean button">
                   Terms
                 </button>
-                <button className="home-link09 button-clean button">
+                <button className="home-link10 button-clean button">
                   Limitations
                 </button>
-                <button className="home-link10 button-clean button">
+                <button className="home-link11 button-clean button">
                   Licenses
                 </button>
               </div>
