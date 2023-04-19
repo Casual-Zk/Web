@@ -1,16 +1,39 @@
 import React from 'react'
-
 import DangerousHTML from 'dangerous-html/react'
 import { Helmet } from 'react-helmet'
-
 import './home.css'
-
+// My libraries
 import { useState } from 'react';
 import { ethers } from "ethers";
+// Firebase
+import { initializeApp } from 'firebase/app';
+import { getAnalytics } from "firebase/analytics";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
-function test1(){
-  console.log("test1");
-}
+// Initilize the firebase
+const firebaseApp = initializeApp({
+  apiKey: "AIzaSyAsTA4RpqGrYq4aeIQVC2ktkgV2aYjiA9Q",
+  authDomain: "zk-chickens.firebaseapp.com",
+  projectId: "zk-chickens",
+  storageBucket: "zk-chickens.appspot.com",
+  messagingSenderId: "502041118196",
+  appId: "1:502041118196:web:068f3313df703175bca5a1",
+  measurementId: "G-2JYDETGV2W"
+});
+// Initilize the services
+const analytics = getAnalytics(firebaseApp);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+
+// Detect auth state
+onAuthStateChanged(auth, user => {
+  if (user) {
+    console.log("logged in!");
+  } else {
+    console.log("No user!");
+  }
+});
 
 const Home = (props) => {
 
