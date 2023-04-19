@@ -8,8 +8,9 @@ import { ethers } from "ethers";
 // Firebase
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { func } from 'prop-types';
 
 // Initilize the firebase
 const firebaseApp = initializeApp({
@@ -25,26 +26,61 @@ const firebaseApp = initializeApp({
 const analytics = getAnalytics(firebaseApp);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+const provider = new GoogleAuthProvider();
 
-// Detect auth state
-onAuthStateChanged(auth, user => {
-  if (user) {
-    console.log("logged in!");
-  } else {
-    console.log("No user!");
-  }
-});
+
 
 const Home = (props) => {
 
-  // Initialize the menu array
+  // Initialize the menu state
   const [menu, setMenu] = useState({
     Main: true,
     Profile: false,
     Mint: false
   });
 
-  function menuButton(target) {
+  // Variables
+  const [walletAddress, setWalletAddress] = useState("");
+  const [userName, setUsername] = useState("");
+  const [userlogin, setUserLogin] = useState(Boolean);
+
+
+  // Google Login
+  function GoogleLogin(){
+    signInWithPopup(auth, provider).then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      // IdP data available using getAdditionalUserInfo(result)
+      // ...
+    }).catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      console.log("ERROR: " + error.code);
+  
+      const errorMessage = error.message;
+      console.log("ERROR: " + error.message);
+  
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+    });
+  }
+
+  // Logout
+  function Logout(){
+    signOut(auth).then(() => {
+      console.log("Logged out!")
+    }).catch((error) => {
+      console.log("ERROR: " + error.message);
+    });
+  }
+
+  // Menu navigation
+  function MenuButton(target) {
     
     // Create a new copy of the menu object and update its values
     const newMenu = { ...menu };
@@ -58,10 +94,21 @@ const Home = (props) => {
     setMenu(newMenu);
   }
 
-  const [walletAddress, setWalletAddress] = useState("");
+  // Detect auth state
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      console.log("logged in!");
+      setUsername(user.displayName);
+      setUserLogin(true);
+    } else {
+      console.log("No user!");
+      setUsername("");
+      setUserLogin(false);
+    }
+  });  
 
   // Requests access to the user's META MASK WALLET
-  async function requestAccount() {
+  async function RequestAccount() {
     console.log('Requesting account...');
 
     // ❌ Check if Meta Mask Extension exists 
@@ -70,7 +117,7 @@ const Home = (props) => {
 
       try {
         const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
+          method: "eth_RequestAccounts",
         });
         setWalletAddress(accounts[0]);
       } catch (error) {
@@ -83,9 +130,9 @@ const Home = (props) => {
   }
 
   // Create a provider to interact with a smart contract
-  async function connectWallet() {
+  async function ConnectWallet() {
     if(typeof window.ethereum !== 'undefined') {
-      await requestAccount();
+      await RequestAccount();
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
     }
@@ -102,7 +149,7 @@ const Home = (props) => {
       </section>
     )}
 
-    button functions: onClick={requestAccount} /// onClick={() => menuButton(2)}
+    button functions: onClick={RequestAccount} /// onClick={() => MenuButton(2)}
 
 
   */
@@ -135,7 +182,7 @@ const Home = (props) => {
             className="home-nav"
           >
             <button
-              onClick={() => menuButton("Main")}
+              onClick={() => MenuButton("Main")}
               id="homePageButton"
               className="home-button button-clean button"
             >
@@ -148,13 +195,14 @@ const Home = (props) => {
               Game
             </button>
             <button
-              onClick={() => menuButton("Mint")}
+              onClick={() => MenuButton("Mint")}
               id="mintPageButton"
               className="home-button2 button-clean button"
             >
               Mint Items
             </button>
             <button
+              onClick={() => {userlogin && Logout()}}
               id="whitepaperButton"
               className="home-button3 button-clean button"
             >
@@ -187,8 +235,11 @@ const Home = (props) => {
               />
             </button>
           </div>
-          <button onClick={() => menuButton("Profile")} id="loginButton" className="button">
-            Login
+          <button 
+          onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }} 
+          id="loginButton" 
+          className="button">
+            {userlogin ? (userName) : ("Login")}
           </button>
         </div>
         <div data-thq="thq-burger-menu" className="home-burger-menu">
@@ -244,15 +295,6 @@ const Home = (props) => {
       </header>
       { menu.Main && (
         <section className="home-home-page">
-        <div className="home-login1">
-          <h2 className="home-header">Login with Google</h2>
-          <img
-            src="/playground_assets/google_logo-200h.png"
-            alt="image"
-            id="googleLoginButton"
-            className="home-image03"
-          />
-        </div>
         <div className="home-heading">
           <h1 className="home-header01">Home Page</h1>
           <p className="home-caption">
