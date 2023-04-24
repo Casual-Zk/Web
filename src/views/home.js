@@ -9,8 +9,9 @@ import { ethers } from "ethers";
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import { func } from 'prop-types';
+import { async } from 'q';
 
 // Initilize the firebase
 const firebaseApp = initializeApp({
@@ -575,6 +576,7 @@ const Home = (props) => {
   const [walletAddress, setWalletAddress] = useState("");
   const [userName, setUsername] = useState("");
   const [userlogin, setUserLogin] = useState(Boolean);
+  const [mintResult, setMintResult] = useState("");
 
   // Google Login
   function GoogleLogin(){
@@ -674,7 +676,21 @@ const Home = (props) => {
   }
 
   async function LinkWallet() {
-    /*        Calling functions
+    // Writes wallet address to the DB
+    const authUser = auth.currentUser;
+    console.log("Linking the wallet address");
+    console.log("Display name: " + authUser.displayName);
+    console.log("User ID: " + authUser.uid);
+    console.log("Wallet Address: " + user.walletAddress);
+
+    await setDoc(doc(db, "users/", authUser.uid), {
+      walletAddress: user.walletAddress
+    }, {mergeFields: ["walletAddress"] });
+  }
+
+  async function MintItem(itemID, amount) {
+    console.log("Minting item. ID: " + itemID + "   Amount: " + amount);
+
     // Connect to the provider
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -687,10 +703,8 @@ const Home = (props) => {
   
     // Send the transaction
     const account = user.walletAddress;
-    const id = 1;
-    const amount = 3;
     const data = "0x00";
-    const transaction = await contract.mint(account, id, amount, data);
+    const transaction = await contract.mint(account, itemID, amount, data);
 
     // Wait for the transaction to be mined
     const receipt = await transaction.wait();
@@ -698,25 +712,71 @@ const Home = (props) => {
     // Check the status of the transaction
     if (receipt.status === 1) {
       console.log("Transaction successful!");
+      setMintResult("Minted! ID: " + itemID + " - Amount: " + amount);
     } else {
       console.log("Transaction failed!");
     }
-    */
-    /*
-    // Writes wallet address to the DB
-    const authUser = auth.currentUser;
-    console.log("Linking the wallet address");
-    console.log("Display name: " + authUser.displayName);
-    console.log("User ID: " + authUser.uid);
-    console.log("Wallet Address: " + user.walletAddress);
-
-    await setDoc(doc(db, "users/", authUser.uid), {
-      walletAddress: user.walletAddress
-    }, {mergeFields: ["walletAddress"] });
-    */
   }
 
+  async function ConsumeItem(itemID, amount) {
+    // First, check if the address has enough balance to burn
+    console.log("Consuming item. ID: " + itemID + "   Amount: " + amount);
 
+    // Connect to the provider
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+  
+    // Get the signer
+    const signer = provider.getSigner();
+  
+    // Create the contract instance
+    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+  
+    // Send the transaction
+    const account = user.walletAddress;
+    const data = "0x00";
+    const transaction = await contract.burn(account, itemID, amount, data);
+
+    // Wait for the transaction to be mined
+    const receipt = await transaction.wait();
+
+    // Check the status of the transaction
+    if (receipt.status === 1) {
+      console.log("Transaction successful!");
+      setMintResult("Consumed! ID: " + itemID + " - Amount: " + amount);
+      ItemConsumed(itemID, amount);
+    } else {
+      console.log("Transaction failed!");
+    }
+  }
+
+  async function ItemConsumed(itemID, amount) {
+    console.log("Writing consumed item to the db. ID: " + itemID + " - Amount: " + amount);
+    const authUser = auth.currentUser;
+    const docSnap = await getDoc(doc(db, "users/", authUser.uid));
+
+    if (itemID == 1) {
+      // Check how many bullets the user has
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        console.log("Document data:", data);
+
+        // Check ammo_9mm data field exist?
+        // if it exist, get the number from that field and add it to the local amount
+        if (data.hasOwnProperty('ammo_9mm')) {
+          const existingAmmo = data.ammo_9mm;
+          amount += existingAmmo;
+        }
+      } else {
+        // docSnap.data() will be undefined in this case
+        console.log("No such document!");
+      }      
+
+      await setDoc(doc(db, "users/", authUser.uid), {
+        ammo_9mm: amount
+      }, {mergeFields: ["ammo_9mm"] });
+    }
+  }
 
   /*    NOTES
 
@@ -908,11 +968,15 @@ const Home = (props) => {
           <div className="home-heading02">
             <h1 className="home-header03">Mint Page</h1>
             <p className="home-caption02">
-              A character custom collection is joining the NFT space on Opensea.
+              {mintResult}
             </p>
           </div>
           <div className="home-buttons2">
-            <button className="button">View on Opensea</button>
+            <button 
+              onClick={() => {user.walletAddress != "" && MintItem(1, 5)}} 
+              className="button"
+            >Mint Item</button>
+
             <button className="home-learn1 button-clean button">
               Learn more
             </button>
