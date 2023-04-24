@@ -674,48 +674,35 @@ const Home = (props) => {
   }
 
   async function LinkWallet() {
-    //        Calling functions
-    try {
-      // Connect to the provider
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-    
-      // Get the signer
-      const signer = provider.getSigner();
-    
-      // Create the contract instance
-      const contract = new ethers.Contract(contractAddress, contractAbi, signer);
-    
-      // Send the transaction
-      const account = user.walletAddress;
-      const id = 1;
-      const amount = 3;
-      const data = "0x00";
-      const transaction = await contract.mint(account, id, amount, data);
+    /*        Calling functions
+    // Connect to the provider
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+  
+    // Get the signer
+    const signer = provider.getSigner();
+  
+    // Create the contract instance
+    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+  
+    // Send the transaction
+    const account = user.walletAddress;
+    const id = 1;
+    const amount = 3;
+    const data = "0x00";
+    const transaction = await contract.mint(account, id, amount, data);
 
-      // Wait for the transaction to be mined
-      await transaction.wait();
+    // Wait for the transaction to be mined
+    const receipt = await transaction.wait();
 
-      // Retrieve the return value from the transaction receipt
-      const events = await contract.queryFilter(contract.filters.mint(account, id, amount, data), transaction.hash);
-      const returnValue = "";//events[0].args[2];
-
-      console.log("Return value: " + returnValue);
-      console.log("Transaction sent!");
-    } catch (error) {
-       console.error(error);
-    }
-
-      /*
-      const returnValue = await contract.mint(account, id, amount, data).call();
-      console.log("Return value: " + returnValue);
-    
-      console.log("Transaction sent!");
-    } catch (error) {
-      console.error(error);
+    // Check the status of the transaction
+    if (receipt.status === 1) {
+      console.log("Transaction successful!");
+    } else {
+      console.log("Transaction failed!");
     }
     */
-/*
+    /*
     // Writes wallet address to the DB
     const authUser = auth.currentUser;
     console.log("Linking the wallet address");
