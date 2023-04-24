@@ -735,7 +735,7 @@ const Home = (props) => {
     // Send the transaction
     const account = user.walletAddress;
     const data = "0x00";
-    const transaction = await contract.burn(account, itemID, amount, data);
+    const transaction = await contract.burn(account, itemID, amount);
 
     // Wait for the transaction to be mined
     const receipt = await transaction.wait();
