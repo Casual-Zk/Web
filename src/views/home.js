@@ -558,6 +558,23 @@ const Home = (props) => {
       "type": "function"
     }
   ]; // the ABI of the smart contract 
+  const desiredChainId = '0x118'; // Era Test: 118, Era Main: 144
+  /*
+    *  TESTNET
+    *  Name: zkSync Era Testnet
+    *  RPC: https://testnet.era.zksync.dev
+    *  ID: 280
+    *  Currency ETH
+    *  Explorer: https://goerli.explorer.zksync.io/
+    *  
+    *  MAINNET
+    *  Name: zkSync Era Mainnet
+    *  RPC: https://mainnet.era.zksync.io
+    *  ID: 324
+    *  Currency ETH
+    *  Explorer: https://explorer.zksync.io/  
+    *  
+  */
 
   // Initialize userOjbect
   const [user, setUser] = useState({
@@ -645,7 +662,7 @@ const Home = (props) => {
   async function RequestAccount() {
     console.log('Requesting account...');
 
-    // ❌ Check if Meta Mask Extension exists 
+    // Check if Meta Mask Extension exists 
     if(window.ethereum) {
       console.log('detected');
 
@@ -656,7 +673,31 @@ const Home = (props) => {
         setWalletAddress(accounts[0]);
         user.walletAddress = accounts[0];
         setUser(user);
+        
+        // Get the current chain ID
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
 
+        // If the user is not on the desired network, prompt them to switch
+        if (chainId !== desiredChainId) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: desiredChainId,
+                chainName: "zkSync Era Testnet",
+                nativeCurrency: {
+                  name: "Ether",
+                  symbol: "ETH",
+                  decimals: 18
+                },
+                rpcUrls: ["https://testnet.era.zksync.dev"],
+                blockExplorerUrls: ['https://goerli.explorer.zksync.io/']
+              }],
+            });
+          } catch (error) {
+            console.error(error);
+          }
+        }
       } catch (error) {
         console.log('Error connecting...');
       }
