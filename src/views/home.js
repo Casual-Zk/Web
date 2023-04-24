@@ -9,7 +9,7 @@ import { ethers } from "ethers";
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { func } from 'prop-types';
 
 // Initilize the firebase
@@ -32,6 +32,12 @@ const provider = new GoogleAuthProvider();
 
 const Home = (props) => {
 
+  // Initialize userOjbect
+  const [user, setUser] = useState({
+    walletAddress : "",
+    displayName : ""
+  });
+
   // Initialize the menu state
   const [menu, setMenu] = useState({
     Main: true,
@@ -44,7 +50,6 @@ const Home = (props) => {
   const [userName, setUsername] = useState("");
   const [userlogin, setUserLogin] = useState(Boolean);
 
-
   // Google Login
   function GoogleLogin(){
     signInWithPopup(auth, provider).then((result) => {
@@ -54,7 +59,9 @@ const Home = (props) => {
       // The signed-in user info.
       const user = result.user;
       // IdP data available using getAdditionalUserInfo(result)
-      // ...
+      const newUser = { ...user };
+      newUser.displayName = user.displayName;
+      setUser(newUser);
     }).catch((error) => {
       // Handle Errors here.
       const errorCode = error.code;
@@ -117,9 +124,14 @@ const Home = (props) => {
 
       try {
         const accounts = await window.ethereum.request({
-          method: "eth_RequestAccounts",
+          method: "eth_requestAccounts",
         });
         setWalletAddress(accounts[0]);
+
+        const newUser = { ...user };
+        newUser.walletAddress = accounts[0];
+        setUser(newUser);
+
       } catch (error) {
         console.log('Error connecting...');
       }
@@ -134,8 +146,20 @@ const Home = (props) => {
     if(typeof window.ethereum !== 'undefined') {
       await RequestAccount();
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const mmProvider = new ethers.providers.Web3Provider(window.ethereum);
     }
+  }
+
+  async function LinkWallet() {
+    const authUser = auth.currentUser;
+    console.log("Linking the wallet address");
+    console.log("Display name: " + authUser.displayName);
+    console.log("User ID: " + authUser.uid);
+    console.log("Wallet Address: " + user.walletAddress);
+
+    await setDoc(doc(db, "users/", authUser.uid), {
+      walletAddress: user.walletAddress
+    }, {mergeFields: ["walletAddress"]  });
   }
 
   /*    NOTES
@@ -189,24 +213,25 @@ const Home = (props) => {
               Home
             </button>
             <button
+              onClick={() => {walletAddress === "" ? (ConnectWallet()) : (LinkWallet())}}
               id="gamePageButton"
               className="home-button1 button-clean button"
             >
-              Game
+              {walletAddress === "" ? ("Connect Wallet") : (walletAddress)}
             </button>
             <button
               onClick={() => MenuButton("Mint")}
               id="mintPageButton"
               className="home-button2 button-clean button"
             >
-              Mint Items
+              Mint Page
             </button>
             <button
               onClick={() => {userlogin && Logout()}}
               id="whitepaperButton"
               className="home-button3 button-clean button"
             >
-              Whitepaper
+              Exit
             </button>
           </nav>
         </div>
