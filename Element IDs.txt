@@ -1,0 +1,108 @@
+
+homePageButton
+profilePageButton
+mintPageButton
+whitepaperButton
+
+downloadButton
+
+# Profile Page
+  profilePhoto
+  profileUsernameText
+  profileAddressText
+  profileTokenBalanceText
+
+  profileCurrentWeekText
+  profileMyEggsText
+  profileTotalEggsText
+
+  inventoryButton
+  lotteryButton
+
+  ## Lottery Panel
+    lotteryWeekInput
+    weekRightNavButton
+    weekLeftNavButton
+
+    ### Info side
+      lotteryMyEggsText
+      lotteryTotalEggsText
+      lotteryResultText
+      claimRewardButton
+    ###
+
+    ### Top 10
+      top10_0_address
+      top10_1_address
+      top10_2_address
+      top10_3_address
+      top10_4_address
+      top10_5_address
+      top10_6_address
+      top10_7_address
+      top10_8_address
+      top10_9_address
+
+      top10_0_eggs
+      top10_1_eggs
+      top10_2_eggs
+      top10_3_eggs
+      top10_4_eggs
+      top10_5_eggs
+      top10_6_eggs
+      top10_7_eggs
+      top10_8_eggs
+      top10_9_eggs
+    ###
+  ##
+
+  ## Inventory Panel
+    invWalletKnifeText
+    invWalletGlockText
+    invWalletShotgunText
+    invWalletM4Text
+    invWalletAWPText
+    invWalletGaugeText
+    invWallet9mmText
+    invWallet556mmText
+    invWallet762mmText
+
+    invGameGaugeText
+    invGame9mmText
+    invGame556mmText
+    invGame762mmText
+
+    invGaugeInput
+    inv9mmInput
+    inv556mmInput
+    inv762mmInput
+
+    invGaugeConsumeButton
+    inv9mmConsumeButton
+    inv556mmConsumeButton
+    inv762mmConsumeButton
+  ##
+#
+
+# Mint Page
+  mintKnifeAmountInput
+  mintGlockAmountInput
+  mintShotgunAmountInput
+  mintM4AmountInput
+  mintAWPAmountInput
+  mintGaugeAmountInput
+  mint9mmAmountInput
+  mint556mmAmountInput
+  mint762mmAmountInput
+
+  mintKnifeButton
+  mintGlockButton
+  mintShotgunButton
+  mintM4Button
+  mintAWPButton
+  mintGaugeButton
+  mint9mmButton
+  mint556mmButton
+  mint762mmButton
+#
+
