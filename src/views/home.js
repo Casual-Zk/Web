@@ -11,7 +11,7 @@ import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
-import { func } from 'prop-types';
+import { func, number } from 'prop-types';
 import { async } from 'q';
 
 // Initilize the firebase
@@ -588,12 +588,19 @@ const Home = (props) => {
     Profile: false,
     Mint: false
   });
+  
+  // Profile menu
+  const [profileMenu, setProfileMenu] = useState({
+    Inventory: true,
+    Lottery: false
+  });
 
   // Variables
   const [walletAddress, setWalletAddress] = useState("");
   const [userName, setUsername] = useState("");
   const [userlogin, setUserLogin] = useState(Boolean);
   const [mintResult, setMintResult] = useState("");
+  var [weekNum, setWeekNum] = useState(Number);
 
   // Google Login
   function GoogleLogin(){
@@ -628,11 +635,12 @@ const Home = (props) => {
     }).catch((error) => {
       console.log("ERROR: " + error.message);
     });
+
+    MenuButton("Main");
   }
 
   // Menu navigation
-  function MenuButton(target) {
-    
+  function MenuButton(target) {    
     // Create a new copy of the menu object and update its values
     const newMenu = { ...menu };
     Object.keys(newMenu).forEach(key => { newMenu[key] = false; })
@@ -643,6 +651,19 @@ const Home = (props) => {
 
     // Update the menu state with the new copy
     setMenu(newMenu);
+  }
+
+  // Profile
+  function ProfileMenuButton(target) {    
+    // Create a new copy of the menu object and update its values
+    const newMenu = { ...profileMenu };
+    Object.keys(newMenu).forEach(key => { newMenu[key] = false; })
+
+    if (target == "Inventory") newMenu.Inventory = true;
+    if (target == "Lottery") newMenu.Lottery = true;
+
+    // Update the menu state with the new copy
+    setProfileMenu(newMenu);
   }
 
   // Detect auth state
@@ -819,6 +840,25 @@ const Home = (props) => {
     }
   }
 
+  async function ClaimRewardButton() {
+    console.log("Claiming Reward");
+  }
+
+  function weekCounterChange(up) {
+    if (up){
+      weekNum = weekNum + 1;
+      setWeekNum(weekNum);
+    }
+    else if (weekNum > 1) {
+      weekNum = weekNum - 1;
+      setWeekNum(weekNum);
+    }
+  }
+
+  function testConsume(itemID, amount){
+    console.log("Test Consume ID: " + itemID + " - Amount: " + amount);
+  }
+
   /*    NOTES
     Use:
     {menu.Main && (
@@ -828,7 +868,28 @@ const Home = (props) => {
 
     button functions: onClick={RequestAccount} /// onClick={() => MenuButton(2)}
 
+    Add mint&consume button functions:
+      onClick={() => testConsume(3, document.getElementById("invGaugeInput").value)}
+    /
 
+    TO-DO:
+
+    - Add menu.Main .... stuff to display pages
+    - Add onClick={() => MenuButton("Main")} to nav buttons
+    - Replace login text: {userlogin ? (userName) : ("Login")}
+    - Add onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }}  to login button props.
+    - Do the same for burger menu login as well
+    - onClick={() => Logout()} to logout button
+    - {userlogin && ( --> to Profile button in nav bar (for burger as well), display if logged in.
+    - <a href="https://www.bitcoin.com"> IMAGE </a> to download image, for narrow menu as well !!
+    - profileMenu.Inventory ... to profile menus
+    - Add onClick={() => ProfileMenuButton("Inventory")} to profile menu button divs
+    - Change prof menu btn div class name: className= {profileMenu.Inventory ? ("home-active-profile-button") : ("home-passive-profile-button")}
+    - Change it's text's class name: className= {profileMenu.Inventory ? ("home-active-profile-text") : ("home-passive-profile-text")}
+    - onClick={() => ClaimRewardButton()} to claim rew btn
+    - onClick={() => weekCounterChange(false)} to week count btn
+    - value = {weekNum} to lottery week input
+    - Add mint & consume button functions like above
   */
 
   
@@ -863,18 +924,23 @@ const Home = (props) => {
               className="home-nav"
             >
               <button
+                onClick={() => MenuButton("Main")}
                 id="homePageButton"
                 className="home-button button-clean button"
               >
                 Home
               </button>
+              {userlogin && (
+                <button
+                  onClick={() => MenuButton("Profile")}
+                  id="profilePageButton"
+                  className="home-button1 button-clean button"
+                >
+                  Profile
+                </button>
+              )}
               <button
-                id="profilePageButton"
-                className="home-button1 button-clean button"
-              >
-                Profile
-              </button>
-              <button
+                onClick={() => MenuButton("Mint")}
                 id="mintPageButton"
                 className="home-button2 button-clean button"
               >
@@ -919,8 +985,10 @@ const Home = (props) => {
                 </a>
               </button>
             </div>
-            <button id="loginButton" className="home-view button">
-              <span>Login</span>
+            <button
+              onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }}  
+              id="loginButton" className="home-view button">
+              <span>{userlogin ? (userName) : ("Login")}</span>
               <img
                 alt="image"
                 src="/playground_assets/google_logo-200h.png"
@@ -958,21 +1026,26 @@ const Home = (props) => {
                 className="home-nav2"
               >
                 <button
+                  onClick={() => MenuButton("Main")}
                   id="burgerHomePageButton"
                   className="home-button5 button-clean button"
                 >
                   Home
                 </button>
+                {userlogin && (
+                  <button
+                    onClick={() => MenuButton("Profile")}
+                    id="burgerProfileButton"
+                    className="home-button6 button-clean button"
+                  >
+                    <span className="home-text001">
+                      <span>Profile</span>
+                      <br></br>
+                    </span>
+                  </button>
+                )}
                 <button
-                  id="burgerProfileButton"
-                  className="home-button6 button-clean button"
-                >
-                  <span className="home-text001">
-                    <span>Profile</span>
-                    <br></br>
-                  </span>
-                </button>
-                <button
+                  onClick={() => MenuButton("Mint")}
                   id="burgerMintPageButton"
                   className="home-button7 button-clean button"
                 >
@@ -986,9 +1059,11 @@ const Home = (props) => {
                 </button>
               </nav>
               <div className="home-container02">
-                <button id="burgerLoginButton" className="home-login button">
+                <button 
+                  onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }} 
+                  id="burgerLoginButton" className="home-login button">
                   <span>
-                    <span>Login</span>
+                    <span>{userlogin ? (userName) : ("Login")}</span>
                     <br></br>
                   </span>
                 </button>
@@ -1021,12 +1096,14 @@ const Home = (props) => {
                   </span>
                   <br></br>
                 </span>
-                <img
-                  id="downloadButton"
-                  alt="image"
-                  src="/playground_assets/download%20button-300h.png"
-                  className="home-download-button"
-                />
+                <a href="https://www.bitcoin.com">
+                  <img
+                    id="downloadButton"
+                    alt="image"
+                    src="/playground_assets/download%20button-300h.png"
+                    className="home-download-button"
+                  />
+                </a>
               </div>
               <img
                 alt="image"
@@ -1177,13 +1254,15 @@ const Home = (props) => {
                     />
                   </span>
                   <br></br>
-                </span>
-                <img
-                  id="downloadButton"
-                  alt="image"
-                  src="/playground_assets/download%20button-300h.png"
-                  className="home-download-button1"
-                />
+                </span>                
+                <a href="https://www.bitcoin.com">
+                  <img
+                    id="downloadButton"
+                    alt="image"
+                    src="/playground_assets/download%20button-300h.png"
+                    className="home-download-button1"
+                  />
+                </a>
               </div>
               <img
                 alt="image"
@@ -1330,14 +1409,7 @@ const Home = (props) => {
       {menu.Profile && (
         <div className="home-profile-page">
           <div className="home-profile-info-container">
-            <div className="home-pp-container">
-              <img
-                id="profilePhoto"
-                alt="image"
-                src="/playground_assets/profile_photo-200h.png"
-                className="home-profile-photo"
-              />
-            </div>
+            
             <div className="home-info-container">
               <div className="home-info-space-1">
                 <div className="home-text-space">
@@ -1409,456 +1481,478 @@ const Home = (props) => {
                   </span>
                 </div>
               </div>
+              <img
+                src="/playground_assets/logoutbutton.png"
+                alt="image"
+                id="logoutButton"
+                onClick={() => Logout()}
+                className='logout-button'
+              />
             </div>
           </div>
           <div className="home-profile-button-container">
-            <div className="home-active-profile-button">
-              <span id="inventoryButton" className="home-active-profile-text">
-                Inventory
-              </span>
+            <div 
+              className= {profileMenu.Inventory ? ("home-active-profile-button") : ("home-passive-profile-button")}
+              onClick={() => ProfileMenuButton("Inventory")}>
+                <span id="inventoryButton" 
+                className= {profileMenu.Inventory ? ("home-active-profile-text") : ("home-passive-profile-text")}>
+                  Inventory
+                </span>
             </div>
-            <div className="home-passive-profile-button">
-              <span id="lotteryButton" className="home-passive-profile-text">
-                <span>Lottery</span>
-                <br></br>
-              </span>
+            <div 
+              className= {profileMenu.Lottery ? ("home-active-profile-button") : ("home-passive-profile-button")}
+              onClick={() => ProfileMenuButton("Lottery")}>
+                <span id="lotteryButton" 
+                className= {profileMenu.Lottery ? ("home-active-profile-text") : ("home-passive-profile-text")}>
+                  <span>Lottery</span>
+                  <br></br>
+                </span>
             </div>
           </div>
-          <div className="home-lottery-panel">
-            <div className="home-week-counter">
-              <span className="home-text098">
-                <span>Week</span>
-                <br></br>
-              </span>
-              <div className="home-container17">
+          {profileMenu.Lottery && (
+            <div className="home-lottery-panel">
+              <div className="home-week-counter">
+                <span className="home-text098">
+                  <span>Week</span>
+                  <br></br>
+                </span>
+                <div className="home-container17">
+                  <img
+                    onClick={() => weekCounterChange(false)}
+                    id="weekLeftNavButton"
+                    alt="image"
+                    src="/playground_assets/left_button-200w.png"
+                    className="home-image15"
+                  />
+                  <input
+                    type="number"
+                    id="lotteryWeekInput"
+                    value = {weekNum}
+                    min="0"
+                    className="home-textinput input"
+                  />
+                  <img
+                    onClick={() => weekCounterChange(true)}
+                    id="weekRightNavButton"
+                    alt="image"
+                    src="/playground_assets/right_button-200w.png"
+                    className="home-image16"
+                  />
+                </div>
+              </div>
+              <div className="home-week-info">
+                <div className="home-text-space6">
+                  <span className="home-text101 top10-text">My Eggs:</span>
+                  <span id="lotteryMyEggsText" className="home-text102 top10-text">
+                    0
+                  </span>
+                </div>
+                <div className="home-text-space7">
+                  <span className="home-text103 top10-text">Total Eggs:</span>
+                  <span
+                    id="lotteryTotalEggsText"
+                    className="home-text104 top10-text"
+                  >
+                    0
+                  </span>
+                </div>
+                <div className="home-text-space8">
+                  <span className="home-text105 top10-text">Result:</span>
+                  <span id="lotteryResultText" className="home-text106 top10-text">
+                    No luck for this week...
+                  </span>
+                </div>
                 <img
-                  id="weekLeftNavButton"
+                  onClick={() => ClaimRewardButton()} 
+                  id="claimRewardButton"
                   alt="image"
-                  src="/playground_assets/left_button-200w.png"
-                  className="home-image15"
+                  src="/playground_assets/claimrewardbutton-200h.png"
+                  className="home-image17"
                 />
+              </div>
+              <div className="home-top10">
+                <span className="home-text107 top10-text">
+                  <span>Top 10</span>
+                  <br></br>
+                </span>
+                <div className="home-list-container">
+                  <div className="home-title">
+                    <span className="home-text110 top10-text">
+                      <span>Address</span>
+                      <br></br>
+                    </span>
+                    <span className="home-text113 top10-text">
+                      <span>Eggs</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record">
+                    <span id="top10_0_address" className="home-text116 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span className="home-text117 top10-text">
+                      <span>10</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record01">
+                    <span id="top10_1_address" className="home-text120 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span id="top10_1_eggs" className="home-text121 top10-text">
+                      <span>9</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record02">
+                    <span id="top10_2_address" className="home-text124 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span id="top10_2_eggs" className="home-text125 top10-text">
+                      <span>8</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record03">
+                    <span id="top10_3_address" className="home-text128 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span id="top10_3_eggs" className="home-text129 top10-text">
+                      <span>7</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record04">
+                    <span id="top10_4_address" className="home-text132 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span id="top10_4_eggs" className="home-text133 top10-text">
+                      <span>6</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record05">
+                    <span id="top10_5_address" className="home-text136 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span id="top10_5_eggs" className="home-text137 top10-text">
+                      <span>5</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record06">
+                    <span id="top10_6_address" className="home-text140 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span id="top10_6_eggs" className="home-text141 top10-text">
+                      <span>4</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record07">
+                    <span id="top10_7_address" className="home-text144 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span id="top10_7_eggs" className="home-text145 top10-text">
+                      <span>3</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record08">
+                    <span id="top10_8_address" className="home-text148 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span id="top10_8_eggs" className="home-text149 top10-text">
+                      <span>2</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-record09">
+                    <span id="top10_9_address" className="home-text152 top10-text">
+                      0x85be25d0Ef53959dB27D42df1f7da57549154D5f
+                    </span>
+                    <span id="top10_9_eggs" className="home-text153 top10-text">
+                      <span>1</span>
+                      <br></br>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {profileMenu.Inventory && (
+            <div className="home-inventory-panel">
+              <div className="item-container-small">
+                <h1 className="home-item-name top10-text">Knife</h1>
+                <img
+                  alt="image"
+                  src="/playground_assets/knife_inv-200h.png"
+                  className="item-image"
+                />
+                <div className="home-container18">
+                  <span className="home-text156 top10-text">
+                    <span>In Wallet:</span>
+                    <br></br>
+                  </span>
+                  <span id="invKnifeText" className="home-text159 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+              </div>
+              <div className="home-glock item-container-small">
+                <h1 className="home-item-name01 top10-text">
+                  <span>Glock</span>
+                  <br></br>
+                </h1>
+                <img
+                  alt="image"
+                  src="/playground_assets/glock_inv-200h.png"
+                  className="home-item-image01 item-image"
+                />
+                <div className="home-container19">
+                  <span className="home-text164 top10-text">
+                    <span>In Wallet:</span>
+                    <br></br>
+                  </span>
+                  <span id="invWalletGlockText" className="home-text167 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+              </div>
+              <div className="home-shotgun item-container-small">
+                <h1 className="home-item-name02 top10-text">Shotgun</h1>
+                <img
+                  alt="image"
+                  src="/playground_assets/shoutgun_inv-200h.png"
+                  className="home-item-image02 item-image"
+                />
+                <div className="home-container20">
+                  <span className="home-text170 top10-text">
+                    <span>In Wallet:</span>
+                    <br></br>
+                  </span>
+                  <span
+                    id="invWalletShotgunText"
+                    className="home-text173 top10-text"
+                  >
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+              </div>
+              <div className="home-m4 item-container-small">
+                <h1 className="home-item-name03 top10-text">M4</h1>
+                <img
+                  alt="image"
+                  src="/playground_assets/m4_inv-200h.png"
+                  className="home-item-image03 item-image"
+                />
+                <div className="home-container21">
+                  <span className="home-text176 top10-text">
+                    <span>In Wallet:</span>
+                    <br></br>
+                  </span>
+                  <span id="invWalletM4Text" className="home-text179 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+              </div>
+              <div className="home-awp item-container-small">
+                <h1 className="home-item-name04 top10-text">AWP</h1>
+                <img
+                  alt="image"
+                  src="/playground_assets/awp_inv-200h.png"
+                  className="home-item-image04 item-image"
+                />
+                <div className="home-container22">
+                  <span className="home-text182 top10-text">
+                    <span>In Wallet:</span>
+                    <br></br>
+                  </span>
+                  <span id="invWalletAWPText" className="home-text185 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+              </div>
+              <div className="item-container-big home-ammo-12-gauge">
+                <h1 className="home-item-name05 top10-text">12-Gauge</h1>
+                <img
+                  alt="image"
+                  src="/playground_assets/12gauge_inv-200h.png"
+                  className="home-item-image05 item-image"
+                />
+                <div className="home-container23">
+                  <span className="home-text188 top10-text">
+                    <span>In Wallet:</span>
+                    <br></br>
+                  </span>
+                  <span id="invWalletGaugeText" className="home-text191 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+                <div className="home-container24">
+                  <span className="home-text194 top10-text">
+                    <span>In Game:</span>
+                    <br></br>
+                  </span>
+                  <span id="invGameGaugeText" className="home-text197 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
                 <input
                   type="number"
-                  id="lotteryWeekInput"
-                  min="0"
-                  className="home-textinput input"
+                  id="invGaugeInput"
+                  max="9999"
+                  min="1"
+                  step="1"
+                  placeholder="Enter Amount"
+                  className="input inv-consume-input"
                 />
                 <img
-                  id="weekRightNavButton"
+                  onClick={() => testConsume(3, document.getElementById("invGaugeInput").value)}
+                  id="invGaugeConsumeButton"
                   alt="image"
-                  src="/playground_assets/right_button-200w.png"
-                  className="home-image16"
+                  src="/playground_assets/consume%20button-500h.png"
+                  className="inv-consume-button"
+                />
+              </div>
+              <div className="home-ammo-9-mm item-container-big">
+                <h1 className="home-item-name06 top10-text">9 mm</h1>
+                <img
+                  alt="image"
+                  src="/playground_assets/9mm_inv-200h.png"
+                  className="home-item-image06 item-image"
+                />
+                <div className="home-container25">
+                  <span className="home-text200 top10-text">
+                    <span>In Wallet:</span>
+                    <br></br>
+                  </span>
+                  <span id="invWallet9mmText" className="home-text203 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+                <div className="home-container26">
+                  <span className="home-text206 top10-text">
+                    <span>In Game:</span>
+                    <br></br>
+                  </span>
+                  <span id="invGame9mmText" className="home-text209 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+                <input
+                  type="number"
+                  id="inv9mmInput"
+                  max="9999"
+                  min="1"
+                  step="1"
+                  placeholder="Enter Amount"
+                  className="home-textinput02 input inv-consume-input"
+                />
+                <img
+                  id="inv9mmConsumeButton"
+                  alt="image"
+                  src="/playground_assets/consume%20button-500h.png"
+                  className="home-image19 inv-consume-button"
+                />
+              </div>
+              <div className="home-ammo-556-mm item-container-big">
+                <h1 className="home-item-name07 top10-text">5.56 mm</h1>
+                <img
+                  alt="image"
+                  src="/playground_assets/5_56_inv-200h.png"
+                  className="home-item-image07 item-image"
+                />
+                <div className="home-container27">
+                  <span className="home-text212 top10-text">
+                    <span>In Wallet:</span>
+                    <br></br>
+                  </span>
+                  <span id="invWallet556mmText" className="home-text215 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+                <div className="home-container28">
+                  <span className="home-text218 top10-text">
+                    <span>In Game:</span>
+                    <br></br>
+                  </span>
+                  <span id="invGame556mmText" className="home-text221 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+                <input
+                  type="number"
+                  id="inv556mmInput"
+                  max="9999"
+                  min="1"
+                  step="1"
+                  placeholder="Enter Amount"
+                  className="home-textinput03 input inv-consume-input"
+                />
+                <img
+                  id="inv556mmConsumeButton"
+                  alt="image"
+                  src="/playground_assets/consume%20button-500h.png"
+                  className="home-image20 inv-consume-button"
+                />
+              </div>
+              <div className="home-ammo-762-mm item-container-big">
+                <h1 className="home-item-name08 top10-text">7.62 mm</h1>
+                <img
+                  alt="image"
+                  src="/playground_assets/7_62_inv-200h.png"
+                  className="home-item-image08 item-image"
+                />
+                <div className="home-container29">
+                  <span className="home-text224 top10-text">
+                    <span>In Wallet:</span>
+                    <br></br>
+                  </span>
+                  <span id="invWallet762mmText" className="home-text227 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+                <div className="home-container30">
+                  <span className="home-text230 top10-text">
+                    <span>In Game:</span>
+                    <br></br>
+                  </span>
+                  <span id="invGame762mmText" className="home-text233 top10-text">
+                    <span>0</span>
+                    <br></br>
+                  </span>
+                </div>
+                <input
+                  type="number"
+                  id="inv762mmInput"
+                  max="9999"
+                  min="1"
+                  step="1"
+                  placeholder="Enter Amount"
+                  className="home-textinput04 input inv-consume-input"
+                />
+                <img
+                  id="inv762mmConsumeButton"
+                  alt="image"
+                  src="/playground_assets/consume%20button-500h.png"
+                  className="home-image21 inv-consume-button"
                 />
               </div>
             </div>
-            <div className="home-week-info">
-              <div className="home-text-space6">
-                <span className="home-text101 top10-text">My Eggs:</span>
-                <span id="lotteryMyEggsText" className="home-text102 top10-text">
-                  0
-                </span>
-              </div>
-              <div className="home-text-space7">
-                <span className="home-text103 top10-text">Total Eggs:</span>
-                <span
-                  id="lotteryTotalEggsText"
-                  className="home-text104 top10-text"
-                >
-                  0
-                </span>
-              </div>
-              <div className="home-text-space8">
-                <span className="home-text105 top10-text">Result:</span>
-                <span id="lotteryResultText" className="home-text106 top10-text">
-                  No luck for this week...
-                </span>
-              </div>
-              <img
-                id="claimRewardButton"
-                alt="image"
-                src="/playground_assets/claimrewardbutton-200h.png"
-                className="home-image17"
-              />
-            </div>
-            <div className="home-top10">
-              <span className="home-text107 top10-text">
-                <span>Top 10</span>
-                <br></br>
-              </span>
-              <div className="home-list-container">
-                <div className="home-title">
-                  <span className="home-text110 top10-text">
-                    <span>Address</span>
-                    <br></br>
-                  </span>
-                  <span className="home-text113 top10-text">
-                    <span>Eggs</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record">
-                  <span id="top10_0_address" className="home-text116 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span className="home-text117 top10-text">
-                    <span>10</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record01">
-                  <span id="top10_1_address" className="home-text120 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span id="top10_1_eggs" className="home-text121 top10-text">
-                    <span>9</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record02">
-                  <span id="top10_2_address" className="home-text124 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span id="top10_2_eggs" className="home-text125 top10-text">
-                    <span>8</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record03">
-                  <span id="top10_3_address" className="home-text128 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span id="top10_3_eggs" className="home-text129 top10-text">
-                    <span>7</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record04">
-                  <span id="top10_4_address" className="home-text132 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span id="top10_4_eggs" className="home-text133 top10-text">
-                    <span>6</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record05">
-                  <span id="top10_5_address" className="home-text136 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span id="top10_5_eggs" className="home-text137 top10-text">
-                    <span>5</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record06">
-                  <span id="top10_6_address" className="home-text140 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span id="top10_6_eggs" className="home-text141 top10-text">
-                    <span>4</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record07">
-                  <span id="top10_7_address" className="home-text144 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span id="top10_7_eggs" className="home-text145 top10-text">
-                    <span>3</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record08">
-                  <span id="top10_8_address" className="home-text148 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span id="top10_8_eggs" className="home-text149 top10-text">
-                    <span>2</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-record09">
-                  <span id="top10_9_address" className="home-text152 top10-text">
-                    0x85be25d0Ef53959dB27D42df1f7da57549154D5f
-                  </span>
-                  <span id="top10_9_eggs" className="home-text153 top10-text">
-                    <span>1</span>
-                    <br></br>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="home-inventory-panel">
-            <div className="item-container-small">
-              <h1 className="home-item-name top10-text">Knife</h1>
-              <img
-                alt="image"
-                src="/playground_assets/knife_inv-200h.png"
-                className="item-image"
-              />
-              <div className="home-container18">
-                <span className="home-text156 top10-text">
-                  <span>In Wallet:</span>
-                  <br></br>
-                </span>
-                <span id="invKnifeText" className="home-text159 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-            </div>
-            <div className="home-glock item-container-small">
-              <h1 className="home-item-name01 top10-text">
-                <span>Glock</span>
-                <br></br>
-              </h1>
-              <img
-                alt="image"
-                src="/playground_assets/glock_inv-200h.png"
-                className="home-item-image01 item-image"
-              />
-              <div className="home-container19">
-                <span className="home-text164 top10-text">
-                  <span>In Wallet:</span>
-                  <br></br>
-                </span>
-                <span id="invWalletGlockText" className="home-text167 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-            </div>
-            <div className="home-shotgun item-container-small">
-              <h1 className="home-item-name02 top10-text">Shotgun</h1>
-              <img
-                alt="image"
-                src="/playground_assets/shoutgun_inv-200h.png"
-                className="home-item-image02 item-image"
-              />
-              <div className="home-container20">
-                <span className="home-text170 top10-text">
-                  <span>In Wallet:</span>
-                  <br></br>
-                </span>
-                <span
-                  id="invWalletShotgunText"
-                  className="home-text173 top10-text"
-                >
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-            </div>
-            <div className="home-m4 item-container-small">
-              <h1 className="home-item-name03 top10-text">M4</h1>
-              <img
-                alt="image"
-                src="/playground_assets/m4_inv-200h.png"
-                className="home-item-image03 item-image"
-              />
-              <div className="home-container21">
-                <span className="home-text176 top10-text">
-                  <span>In Wallet:</span>
-                  <br></br>
-                </span>
-                <span id="invWalletM4Text" className="home-text179 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-            </div>
-            <div className="home-awp item-container-small">
-              <h1 className="home-item-name04 top10-text">AWP</h1>
-              <img
-                alt="image"
-                src="/playground_assets/awp_inv-200h.png"
-                className="home-item-image04 item-image"
-              />
-              <div className="home-container22">
-                <span className="home-text182 top10-text">
-                  <span>In Wallet:</span>
-                  <br></br>
-                </span>
-                <span id="invWalletAWPText" className="home-text185 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-            </div>
-            <div className="item-container-big home-ammo-12-gauge">
-              <h1 className="home-item-name05 top10-text">12-Gauge</h1>
-              <img
-                alt="image"
-                src="/playground_assets/12gauge_inv-200h.png"
-                className="home-item-image05 item-image"
-              />
-              <div className="home-container23">
-                <span className="home-text188 top10-text">
-                  <span>In Wallet:</span>
-                  <br></br>
-                </span>
-                <span id="invWalletGaugeText" className="home-text191 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-              <div className="home-container24">
-                <span className="home-text194 top10-text">
-                  <span>In Game:</span>
-                  <br></br>
-                </span>
-                <span id="invGameGaugeText" className="home-text197 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-              <input
-                type="number"
-                id="invGaugeInput"
-                max="9999"
-                min="1"
-                step="1"
-                placeholder="Enter Amount"
-                className="input inv-consume-input"
-              />
-              <img
-                id="invGaugeConsumeButton"
-                alt="image"
-                src="/playground_assets/consume%20button-500h.png"
-                className="inv-consume-button"
-              />
-            </div>
-            <div className="home-ammo-9-mm item-container-big">
-              <h1 className="home-item-name06 top10-text">9 mm</h1>
-              <img
-                alt="image"
-                src="/playground_assets/9mm_inv-200h.png"
-                className="home-item-image06 item-image"
-              />
-              <div className="home-container25">
-                <span className="home-text200 top10-text">
-                  <span>In Wallet:</span>
-                  <br></br>
-                </span>
-                <span id="invWallet9mmText" className="home-text203 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-              <div className="home-container26">
-                <span className="home-text206 top10-text">
-                  <span>In Game:</span>
-                  <br></br>
-                </span>
-                <span id="invGame9mmText" className="home-text209 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-              <input
-                type="number"
-                id="inv9mmInput"
-                max="9999"
-                min="1"
-                step="1"
-                placeholder="Enter Amount"
-                className="home-textinput02 input inv-consume-input"
-              />
-              <img
-                id="inv9mmConsumeButton"
-                alt="image"
-                src="/playground_assets/consume%20button-500h.png"
-                className="home-image19 inv-consume-button"
-              />
-            </div>
-            <div className="home-ammo-556-mm item-container-big">
-              <h1 className="home-item-name07 top10-text">5.56 mm</h1>
-              <img
-                alt="image"
-                src="/playground_assets/5_56_inv-200h.png"
-                className="home-item-image07 item-image"
-              />
-              <div className="home-container27">
-                <span className="home-text212 top10-text">
-                  <span>In Wallet:</span>
-                  <br></br>
-                </span>
-                <span id="invWallet556mmText" className="home-text215 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-              <div className="home-container28">
-                <span className="home-text218 top10-text">
-                  <span>In Game:</span>
-                  <br></br>
-                </span>
-                <span id="invGame556mmText" className="home-text221 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-              <input
-                type="number"
-                id="inv556mmInput"
-                max="9999"
-                min="1"
-                step="1"
-                placeholder="Enter Amount"
-                className="home-textinput03 input inv-consume-input"
-              />
-              <img
-                id="inv556mmConsumeButton"
-                alt="image"
-                src="/playground_assets/consume%20button-500h.png"
-                className="home-image20 inv-consume-button"
-              />
-            </div>
-            <div className="home-ammo-762-mm item-container-big">
-              <h1 className="home-item-name08 top10-text">7.62 mm</h1>
-              <img
-                alt="image"
-                src="/playground_assets/7_62_inv-200h.png"
-                className="home-item-image08 item-image"
-              />
-              <div className="home-container29">
-                <span className="home-text224 top10-text">
-                  <span>In Wallet:</span>
-                  <br></br>
-                </span>
-                <span id="invWallet762mmText" className="home-text227 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-              <div className="home-container30">
-                <span className="home-text230 top10-text">
-                  <span>In Game:</span>
-                  <br></br>
-                </span>
-                <span id="invGame762mmText" className="home-text233 top10-text">
-                  <span>0</span>
-                  <br></br>
-                </span>
-              </div>
-              <input
-                type="number"
-                id="inv762mmInput"
-                max="9999"
-                min="1"
-                step="1"
-                placeholder="Enter Amount"
-                className="home-textinput04 input inv-consume-input"
-              />
-              <img
-                id="inv762mmConsumeButton"
-                alt="image"
-                src="/playground_assets/consume%20button-500h.png"
-                className="home-image21 inv-consume-button"
-              />
-            </div>
-          </div>
+          )}
         </div>
       )}
       {menu.Mint && (
