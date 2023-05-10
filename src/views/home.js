@@ -956,34 +956,30 @@ const Home = (props) => {
           </div>
           <div data-thq="thq-navbar-btn-group" className="home-btn-group">
             <div className="home-socials">
-              <button className="social button">
-                <a
-                  href="https://twitter.com/bora_ozenbirkan"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <img
-                    id="twitterButton"
-                    alt="image"
-                    src="/playground_assets/twitter.svg"
-                    className="home-image"
-                  />
-                </a>
-              </button>
-              <button className="social button">
-                <a
-                  href="https://discord.com/"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <img
-                    id="discordButton"
-                    alt="image"
-                    src="/playground_assets/discord.svg"
-                    className="home-image01"
-                  />
-                </a>
-              </button>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="home-twitter1 social button"
+              >
+                <img
+                  alt="image"
+                  src="/playground_assets/twitter.svg"
+                  className="home-image31"
+                />
+              </a>
+              <a
+                href="https://discord.com"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="home-discord1 social button"
+              >
+                <img
+                  alt="image"
+                  src="/playground_assets/discord.svg"
+                  className="home-image32"
+                />
+              </a>
             </div>
             <button
               onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }}  
