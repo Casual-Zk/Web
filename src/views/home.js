@@ -578,8 +578,21 @@ const Home = (props) => {
 
   // Initialize userOjbect
   const [user, setUser] = useState({
+    nickname: "",
+    userID : "",
     walletAddress : "",
-    displayName : ""
+    eggs : {},  // week Number => egg number
+  
+    knifeAmount : 0,
+    glockAmount : 0,
+    shotgunAmount : 0,
+    m4Amount : 0,
+    awpAmount : 0,
+  
+    ammo_5_65mm : 0,
+    ammo_7_62mm : 0,
+    ammo_9mm : 0,
+    ammo_12_gauge : 0
   });
 
   // Initialize the menu state
@@ -611,8 +624,6 @@ const Home = (props) => {
       // The signed-in user info.
       const userLogin = result.user;
       // IdP data available using getAdditionalUserInfo(result)
-      user.displayName = userLogin.displayName;
-      setUser(user);
     }).catch((error) => {
       // Handle Errors here.
       const errorCode = error.code;
@@ -637,6 +648,37 @@ const Home = (props) => {
     });
 
     MenuButton("Main");
+  }
+
+  async function LoginProccess() {
+    // Get user data from DB
+    console.log("login proccess starts");
+    const _user = auth.currentUser;
+    const docSnap = await getDoc(doc(db, "users/", _user.uid));
+
+    // If there is no such data, then create an empty user with this ID in DB
+    if (!docSnap.exists()){      
+      console.log("docSnap doesn't exists! Adding new user: displayName: "+_user.displayName+", ID: "+_user.uid);
+      await setDoc(doc(db, "users/", _user.uid), {
+        nickname: _user.displayName,
+        userID: _user.uid
+      }, {mergeFields: ["nickname", "userID"] });
+
+      console.log("Adding the info to local!");
+
+      user.nickname = _user.displayName;
+      user.userID = _user.uid;
+    }
+    // if exists then get the data
+    else {
+      const data = docSnap.data();
+      user.nickname = data.nickname;
+      user.userID = _user.uid;      
+    }        
+
+    setUserLogin(true);
+    console.log("Finishing the proccess!");
+    console.log(user.nickname);
   }
 
   // Menu navigation
@@ -667,14 +709,14 @@ const Home = (props) => {
   }
 
   // Detect auth state
-  onAuthStateChanged(auth, user => {
-    if (user) {
+  onAuthStateChanged(auth, _user => {
+    if (_user && !userlogin) {
       console.log("logged in!");
-      setUsername(user.displayName);
-      setUserLogin(true);
-    } else {
+      LoginProccess();
+      //user.nickname = _user.displayName;
+      //setUserLogin(true);
+    } else if (!_user) {
       console.log("No user!");
-      setUsername("");
       setUserLogin(false);
     }
   });  
@@ -890,6 +932,7 @@ const Home = (props) => {
     - onClick={() => weekCounterChange(false)} to week count btn
     - value = {weekNum} to lottery week input
     - Add mint & consume button functions like above
+    - Add {user.walletAddress === "" ? ("Wallet is not linked!") : (user.walletAddress)} to wallet address space
   */
 
   
@@ -984,7 +1027,7 @@ const Home = (props) => {
             <button
               onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }}  
               id="loginButton" className="home-view button">
-              <span>{userlogin ? (userName) : ("Login")}</span>
+              <span>{userlogin ? (user.nickname) : ("Login")}</span>
               <img
                 alt="image"
                 src="/playground_assets/google_logo-200h.png"
@@ -1059,7 +1102,7 @@ const Home = (props) => {
                   onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }} 
                   id="burgerLoginButton" className="home-login button">
                   <span>
-                    <span>{userlogin ? (userName) : ("Login")}</span>
+                    <span>{userlogin ? (user.nickname) : ("Login")}</span>
                     <br></br>
                   </span>
                 </button>
@@ -1416,7 +1459,7 @@ const Home = (props) => {
                     id="profileUsernameText"
                     className="home-text085 profile-basic-text"
                   >
-                    Bozen
+                    {user.nickname}
                   </span>
                 </div>
                 <div className="home-text-space1">
@@ -1427,7 +1470,7 @@ const Home = (props) => {
                     id="profileAddressText"
                     className="home-text087 profile-basic-text"
                   >
-                    0x0000....0000
+                    {user.walletAddress === "" ? ("Wallet is not linked!") : (user.walletAddress)}
                   </span>
                 </div>
                 <div className="home-text-space2">
