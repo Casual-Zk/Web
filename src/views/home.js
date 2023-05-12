@@ -4,13 +4,13 @@ import DangerousHTML from 'dangerous-html/react'
 import { Helmet } from 'react-helmet'
 import './home.css'
 // My libraries
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ethers } from "ethers";
 // Firebase
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, deleteUser} from 'firebase/auth';
+import { getFirestore, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { func, number } from 'prop-types';
 import { async } from 'q';
 
@@ -603,14 +603,19 @@ const Home = (props) => {
   });
   
   // Profile menu
-  const [profileMenu, setProfileMenu] = useState({
+  const [profilePanel, setProfilePanel] = useState({
     Inventory: true,
     Lottery: false
   });
+  const [profileInfo, setProfileInfo] = useState({
+    NormalProfile: true,
+    SetUsername: false,
+    DeleteUser: false,
+  });
 
   // Variables
-  const [walletAddress, setWalletAddress] = useState("");
-  const [userName, setUsername] = useState("");
+  const [connectedWallet, setConnectedWallet] = useState("");
+  const [shortWallet, setShortWallet] = useState("");
   const [userlogin, setUserLogin] = useState(Boolean);
   const [mintResult, setMintResult] = useState("");
   var [weekNum, setWeekNum] = useState(Number);
@@ -630,18 +635,31 @@ const Home = (props) => {
   }
 
   // Profile
-  function ProfileMenuButton(target) {    
+  function ProfileMenuPanelButton(target) {    
     // Create a new copy of the menu object and update its values
-    const newMenu = { ...profileMenu };
+    const newMenu = { ...profilePanel };
     Object.keys(newMenu).forEach(key => { newMenu[key] = false; })
 
     if (target == "Inventory") newMenu.Inventory = true;
     if (target == "Lottery") newMenu.Lottery = true;
 
     // Update the menu state with the new copy
-    setProfileMenu(newMenu);
+    setProfilePanel(newMenu);
   }
-  
+
+  function ProfileMenuInfoButton(target) {    
+    // Create a new copy of the menu object and update its values
+    const newInfo = { ...profileInfo };
+    Object.keys(newInfo).forEach(key => { newInfo[key] = false; })
+
+    if (target == "NormalProfile") newInfo.NormalProfile = true;
+    if (target == "SetUsername") newInfo.SetUsername = true;
+    if (target == "DeleteUser") newInfo.DeleteUser = true;
+
+    // Update the menu state with the new copy
+    setProfileInfo(newInfo);
+  }
+
   // Google Login
   function GoogleLogin(){
     signInWithPopup(auth, provider).then((result) => {
@@ -699,8 +717,11 @@ const Home = (props) => {
     // if exists then get the data
     else {
       const data = docSnap.data();
-      user.nickname = data.nickname;
-      user.userID = _user.uid;      
+      user.userID = _user.uid;
+      user.nickname = data.nickname;  
+      if (data.hasOwnProperty('walletAddress')){
+        user.walletAddress = data.walletAddress;
+      }      
     }        
 
     setUserLogin(true);
@@ -733,9 +754,11 @@ const Home = (props) => {
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
-        setWalletAddress(accounts[0]);
-        user.walletAddress = accounts[0];
-        setUser(user);
+        setConnectedWallet(accounts[0]);
+        var short = accounts[0].slice(0, 6) + "...." + accounts[0].slice(38);
+        setShortWallet(short);
+        MenuButton("Profile");
+        console.log("connected: " + connectedWallet + " -- Short: " + shortWallet);
         
         // Get the current chain ID
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
@@ -768,6 +791,8 @@ const Home = (props) => {
     } else {
       alert('Meta Mask not detected');
     }
+    
+    console.log("connected: " + connectedWallet + " -- Short: " + shortWallet);
   }
 
   // Create a provider to interact with a smart contract
@@ -779,17 +804,99 @@ const Home = (props) => {
     }
   }
 
+  // On wallet change
+  useEffect(() => {
+    // Detect changes in MetaMask wallet address
+    const handleWalletAddressChange = () => {
+      if (window.ethereum && window.ethereum.selectedAddress) {
+        var newAddress = window.ethereum.selectedAddress;
+        setConnectedWallet(newAddress);
+        var short = newAddress.slice(0, 6) + "...." + newAddress.slice(38);
+        setShortWallet(short);
+        if(userlogin) {MenuButton("Profile");}
+      }
+    };
+    handleWalletAddressChange(); // initial check
+    window.ethereum.on('accountsChanged', handleWalletAddressChange);
+    return () => {
+      window.ethereum.off('accountsChanged', handleWalletAddressChange);
+    };
+  }, []);
+
   async function LinkWallet() {
     // Writes wallet address to the DB
     const authUser = auth.currentUser;
     console.log("Linking the wallet address");
     console.log("Display name: " + authUser.displayName);
     console.log("User ID: " + authUser.uid);
-    console.log("Wallet Address: " + user.walletAddress);
+    console.log("Wallet Address to Link: " + connectedWallet);
 
     await setDoc(doc(db, "users/", authUser.uid), {
-      walletAddress: user.walletAddress
+      walletAddress: connectedWallet
     }, {mergeFields: ["walletAddress"] });
+
+    user.walletAddress = connectedWallet;
+    setUser(user);
+    MenuButton("Profile");
+  }
+
+  async function DeleteUser() {
+    // Writes wallet address to the DB
+    const authUser = auth.currentUser;
+
+    // Prompt user to re-authenticate with their Google credentials
+    const provider = new GoogleAuthProvider();
+    await authUser.reauthenticateWithPopup(provider);
+
+    console.log("DELETING CURRENT USER !!!");
+    console.log("Display name: " + authUser.displayName);
+    console.log("User ID: " + authUser.uid);
+    console.log("Nickname: " + user.nickname);
+
+    await deleteDoc(doc(db, "users/", authUser.uid));
+    console.log("Deleted from DB. Now deleting auth info");
+
+    // Delete the user account
+    authUser
+      .delete()
+      .then(() => {
+        console.log("Successfully deleted user");
+        //Logout();
+      })
+      .catch((error) => {
+        console.log("Error deleting user:", error);
+      });
+
+    //MenuButton("Main");
+    /*
+    deleteUser(authUser)
+    .then(() => {
+      console.log('Successfully deleted user');
+      Logout();
+    })
+    .catch((error) => {
+      console.log('Error deleting user:', error);
+    });
+    */
+
+    MenuButton("Main");
+  }
+
+  async function SetUsername(newNickname) {
+    // Writes new username to the DB
+    const authUser = auth.currentUser;
+    console.log("Linking the wallet address");
+    console.log("Display name: " + authUser.displayName);
+    console.log("User ID: " + authUser.uid);
+    console.log("New Username: " + newNickname);
+
+    await setDoc(doc(db, "users/", authUser.uid), {
+      nickname: newNickname
+    }, {mergeFields: ["nickname"] });
+
+    user.nickname = newNickname;
+    setUser(user);
+    MenuButton("Profile");
   }
 
   async function MintItem(itemID, amount) {
@@ -806,7 +913,7 @@ const Home = (props) => {
     const contract = new ethers.Contract(contractAddress, contractAbi, signer);
   
     // Send the transaction
-    const account = user.walletAddress;
+    const account = connectedWallet;
     const data = "0x00";
     const transaction = await contract.mint(account, itemID, amount, data);
 
@@ -837,7 +944,7 @@ const Home = (props) => {
     const contract = new ethers.Contract(contractAddress, contractAbi, signer);
   
     // Send the transaction
-    const account = user.walletAddress;
+    const account = connectedWallet;
     const data = "0x00";
     const transaction = await contract.burn(account, itemID, amount);
 
@@ -918,21 +1025,28 @@ const Home = (props) => {
 
     - Add menu.Main .... stuff to display pages
     - Add onClick={() => MenuButton("Main")} to nav buttons
-    - Replace login text: {userlogin ? (userName) : ("Login")}
+    - Replace login text: {userlogin ? (user.nickname) : ("Login")}
     - Add onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }}  to login button props.
     - Do the same for burger menu login as well
     - onClick={() => Logout()} to logout button
     - {userlogin && ( --> to Profile button in nav bar (for burger as well), display if logged in.
     - <a href="https://www.bitcoin.com"> IMAGE </a> to download image, for narrow menu as well !!
-    - profileMenu.Inventory ... to profile menus
-    - Add onClick={() => ProfileMenuButton("Inventory")} to profile menu button divs
-    - Change prof menu btn div class name: className= {profileMenu.Inventory ? ("home-active-profile-button") : ("home-passive-profile-button")}
-    - Change it's text's class name: className= {profileMenu.Inventory ? ("home-active-profile-text") : ("home-passive-profile-text")}
+    - profilePanel.Inventory ... to profile menus
+    - Add onClick={() => ProfileMenuPanelButton("Inventory")} to profile menu button divs
+    - Change prof menu btn div class name: className= {profilePanel.Inventory ? ("home-active-profile-button") : ("home-passive-profile-button")}
+    - Change it's text's class name: className= {profilePanel.Inventory ? ("home-active-profile-text") : ("home-passive-profile-text")}
     - onClick={() => ClaimRewardButton()} to claim rew btn
     - onClick={() => weekCounterChange(false)} to week count btn
     - value = {weekNum} to lottery week input
     - Add mint & consume button functions like above
     - Add {user.walletAddress === "" ? ("Wallet is not linked!") : (user.walletAddress)} to wallet address space
+    - {user.walletAddress != connectedWallet && --> to link wallet button and function
+    - {connectedWallet === "" && --> to connect wallet button and function
+    - Add function to profile buttons onClick={() => ConnectWallet()}
+    - onClick={() => ProfileMenuInfoButton("SetUsername")} --> set username and delete buttons on profile
+    - Back buttons again for set username and delete
+    - onClick={() => SetUsername(document.getElementById("newUsernameInput").value)} --> to set username button
+    - Add delete user button as well
   */
 
   
@@ -1447,108 +1561,197 @@ const Home = (props) => {
       )}
       {menu.Profile && (
         <div className="home-profile-page">
-          <div className="home-profile-info-container">
-            
+          <div className="home-profile-info-container">            
             <div className="home-info-container">
-              <div className="home-info-space-1">
-                <div className="home-text-space">
-                  <span className="profile-basic-text home-text084">
-                    Username:
+              {profileInfo.DeleteUser &&
+                <div className="home-delete-account-container">
+                  <span className="home-text084 profile-basic-text">
+                    <span>WARNING!</span>
+                    <br></br>
                   </span>
-                  <span
-                    id="profileUsernameText"
-                    className="home-text085 profile-basic-text"
-                  >
-                    {user.nickname}
+                  <span className="home-text087 profile-basic-text">
+                    <span>
+                      By deleting you account, all your account information will be
+                      deleted! All your in-game assets will be deleted! This CANNOT
+                      be undone! Are you sure you want to delete your account?
+                    </span>
+                    <br></br>
                   </span>
+                  <div className="home-container17">
+                    <button className="button home-button09" onClick={() => ProfileMenuInfoButton("NormalProfile")}>
+                      <span>
+                        <span>Nope, go back!</span>
+                        <br></br>
+                      </span>
+                    </button>
+                    <button className="home-button10 button" onClick={()=> DeleteUser()}>
+                      Yes, DELETE my account!
+                    </button>
+                  </div>
                 </div>
-                <div className="home-text-space1">
-                  <span className="home-text086 profile-basic-text">
-                    Wallet Address:
+              }
+              {profileInfo.SetUsername &&
+                <div className="home-new-username-container">
+                  <span className="home-text093 profile-basic-text">
+                    <span>Set a new username</span>
+                    <br></br>
                   </span>
-                  <span
-                    id="profileAddressText"
-                    className="home-text087 profile-basic-text"
-                  >
-                    {user.walletAddress === "" ? ("Wallet is not linked!") : (user.walletAddress)}
-                  </span>
+                  <input
+                    type="text"
+                    id="newUsernameInput"
+                    placeholder="Enter username..."
+                    className="home-new-username-input input"
+                  />
+                  <div className="home-container18">
+                    <button className="button home-button11" onClick={() => ProfileMenuInfoButton("NormalProfile")}>
+                      Go back to profile
+                    </button>
+                    <button className="home-button12 button"
+                      onClick={() => SetUsername(document.getElementById("newUsernameInput").value)}>
+                      Update username
+                    </button>
+                  </div>
                 </div>
-                <div className="home-text-space2">
-                  <span className="home-text088 profile-basic-text">
-                    Token Balance:
-                  </span>
-                  <span
-                    id="profileTokenBalanceText"
-                    className="home-text089 profile-basic-text"
-                  >
-                    0
-                  </span>
+              }
+              {profileInfo.NormalProfile &&
+                <div className="home-info-space-1">
+                  <div className="home-text-space">
+                    <span className="profile-basic-text home-text096">
+                      Username:
+                    </span>
+                    <span
+                      id="profileUsernameText"
+                      className="home-text097 profile-basic-text"
+                    >
+                      {user.nickname}
+                    </span>
+                  </div>
+                  <div className="home-text-space1">
+                    <span className="home-text098 profile-basic-text">
+                      Wallet Address:
+                    </span>
+                    <span
+                      id="profileAddressText"
+                      className="home-text099 profile-basic-text"
+                    >
+                      {shortWallet}
+                    </span>
+                  </div>
+                  <div className="home-text-space2">
+                    <span className="home-text100 profile-basic-text">
+                      Token Balance:
+                    </span>
+                    <span
+                      id="profileTokenBalanceText"
+                      className="home-text101 profile-basic-text"
+                    >
+                      0
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="home-info-space-2">
-                <div className="home-text-space3">
-                  <span className="home-text090 profile-basic-text">
-                    Current Week:
-                  </span>
-                  <span
-                    id="profileCurrentWeekText"
-                    className="home-text091 profile-basic-text"
-                  >
-                    0
-                  </span>
+              }
+              {profileInfo.NormalProfile &&
+                <div className="home-info-space-2">
+                  <div className="home-text-space3">
+                    <span className="home-text102 profile-basic-text">
+                      Current Week:
+                    </span>
+                    <span
+                      id="profileCurrentWeekText"
+                      className="home-text103 profile-basic-text"
+                    >
+                      0
+                    </span>
+                  </div>
+                  <div className="home-text-space4">
+                    <span className="home-text104 profile-basic-text">
+                      My Eggs:
+                    </span>
+                    <span
+                      id="profileMyEggsText"
+                      className="home-text105 profile-basic-text"
+                    >
+                      0
+                    </span>
+                  </div>
+                  <div className="home-text-space5">
+                    <span className="home-text106 profile-basic-text">
+                      Total Eggs:
+                    </span>
+                    <span
+                      id="profileTotalEggsText"
+                      className="home-text107 profile-basic-text"
+                    >
+                      0
+                    </span>
+                  </div>
                 </div>
-                <div className="home-text-space4">
-                  <span className="home-text092 profile-basic-text">
-                    My Eggs:
-                  </span>
-                  <span
-                    id="profileMyEggsText"
-                    className="home-text093 profile-basic-text"
-                  >
-                    0
-                  </span>
+              }
+              {profileInfo.NormalProfile &&
+                <div className="home-button-container">
+                  <img
+                    onClick={() => ProfileMenuInfoButton("SetUsername")}  
+                    id="setUsernameButton"
+                    alt="image"
+                    src="/playground_assets/set%20username%20button.png"
+                    className="home-set-username--utton"
+                  />
+                  {connectedWallet === "" && 
+                  <img
+                    onClick={() => ConnectWallet()}                  
+                    id="profileConnectButton"
+                    alt="image"
+                    src="/playground_assets/connect%20button.png"
+                    className="home-connect-button"
+                  />             
+                  }
+                  {user.walletAddress != connectedWallet &&
+                  <img
+                    onClick={() => LinkWallet()} 
+                    id="linkButton"
+                    alt="image"
+                    src="/playground_assets/linkbutton.png"
+                    className="home-link-button"
+                  />
+                  }
+                  <img
+                    onClick={() => Logout()} 
+                    id="logoutButton"
+                    alt="image"
+                    src="/playground_assets/logoutbutton.png"
+                    className="home-logout-button"
+                  />
+                  <img
+                    onClick={() => ProfileMenuInfoButton("DeleteUser")} 
+                    id="deleteAccountButton"
+                    alt="image"
+                    src="/playground_assets/delete%20account%20button.png"
+                    className="home-delete-button"
+                  />
                 </div>
-                <div className="home-text-space5">
-                  <span className="home-text094 profile-basic-text">
-                    Total Eggs:
-                  </span>
-                  <span
-                    id="profileTotalEggsText"
-                    className="home-text095 profile-basic-text"
-                  >
-                    0
-                  </span>
-                </div>
-              </div>
-              <img
-                src="/playground_assets/logoutbutton.png"
-                alt="image"
-                id="logoutButton"
-                onClick={() => Logout()}
-                className='logout-button'
-              />
+              }
             </div>
           </div>
           <div className="home-profile-button-container">
             <div 
-              className= {profileMenu.Inventory ? ("home-active-profile-button") : ("home-passive-profile-button")}
-              onClick={() => ProfileMenuButton("Inventory")}>
+              className= {profilePanel.Inventory ? ("home-active-profile-button") : ("home-passive-profile-button")}
+              onClick={() => ProfileMenuPanelButton("Inventory")}>
                 <span id="inventoryButton" 
-                className= {profileMenu.Inventory ? ("home-active-profile-text") : ("home-passive-profile-text")}>
+                className= {profilePanel.Inventory ? ("home-active-profile-text") : ("home-passive-profile-text")}>
                   Inventory
                 </span>
             </div>
             <div 
-              className= {profileMenu.Lottery ? ("home-active-profile-button") : ("home-passive-profile-button")}
-              onClick={() => ProfileMenuButton("Lottery")}>
+              className= {profilePanel.Lottery ? ("home-active-profile-button") : ("home-passive-profile-button")}
+              onClick={() => ProfileMenuPanelButton("Lottery")}>
                 <span id="lotteryButton" 
-                className= {profileMenu.Lottery ? ("home-active-profile-text") : ("home-passive-profile-text")}>
+                className= {profilePanel.Lottery ? ("home-active-profile-text") : ("home-passive-profile-text")}>
                   <span>Lottery</span>
                   <br></br>
                 </span>
             </div>
           </div>
-          {profileMenu.Lottery && (
+          {profilePanel.Lottery && (
             <div className="home-lottery-panel">
               <div className="home-week-counter">
                 <span className="home-text098">
@@ -1719,7 +1922,7 @@ const Home = (props) => {
               </div>
             </div>
           )}
-          {profileMenu.Inventory && (
+          {profilePanel.Inventory && (
             <div className="home-inventory-panel">
               <div className="item-container-small">
                 <h1 className="home-item-name top10-text">Knife</h1>
