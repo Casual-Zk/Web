@@ -615,6 +615,33 @@ const Home = (props) => {
   const [mintResult, setMintResult] = useState("");
   var [weekNum, setWeekNum] = useState(Number);
 
+  // Menu navigation
+  function MenuButton(target) {    
+    // Create a new copy of the menu object and update its values
+    const newMenu = { ...menu };
+    Object.keys(newMenu).forEach(key => { newMenu[key] = false; })
+
+    if (target == "Main") newMenu.Main = true;
+    if (target == "Profile") newMenu.Profile = true;
+    if (target == "Mint") newMenu.Mint = true;
+
+    // Update the menu state with the new copy
+    setMenu(newMenu);
+  }
+
+  // Profile
+  function ProfileMenuButton(target) {    
+    // Create a new copy of the menu object and update its values
+    const newMenu = { ...profileMenu };
+    Object.keys(newMenu).forEach(key => { newMenu[key] = false; })
+
+    if (target == "Inventory") newMenu.Inventory = true;
+    if (target == "Lottery") newMenu.Lottery = true;
+
+    // Update the menu state with the new copy
+    setProfileMenu(newMenu);
+  }
+  
   // Google Login
   function GoogleLogin(){
     signInWithPopup(auth, provider).then((result) => {
@@ -679,33 +706,6 @@ const Home = (props) => {
     setUserLogin(true);
     console.log("Finishing the proccess!");
     console.log(user.nickname);
-  }
-
-  // Menu navigation
-  function MenuButton(target) {    
-    // Create a new copy of the menu object and update its values
-    const newMenu = { ...menu };
-    Object.keys(newMenu).forEach(key => { newMenu[key] = false; })
-
-    if (target == "Main") newMenu.Main = true;
-    if (target == "Profile") newMenu.Profile = true;
-    if (target == "Mint") newMenu.Mint = true;
-
-    // Update the menu state with the new copy
-    setMenu(newMenu);
-  }
-
-  // Profile
-  function ProfileMenuButton(target) {    
-    // Create a new copy of the menu object and update its values
-    const newMenu = { ...profileMenu };
-    Object.keys(newMenu).forEach(key => { newMenu[key] = false; })
-
-    if (target == "Inventory") newMenu.Inventory = true;
-    if (target == "Lottery") newMenu.Lottery = true;
-
-    // Update the menu state with the new copy
-    setProfileMenu(newMenu);
   }
 
   // Detect auth state
