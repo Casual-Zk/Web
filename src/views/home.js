@@ -1038,7 +1038,8 @@ const Home = (props) => {
     /
 
     TO-DO:
-
+    - Add favicon to public folder
+    
     - Add menu.Main .... stuff to display pages
     - Add onClick={() => MenuButton("Main")} to nav buttons
     - Replace login text: {userlogin ? (user.nickname) : ("Login")}
