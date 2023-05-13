@@ -806,21 +806,23 @@ const Home = (props) => {
 
   // On wallet change
   useEffect(() => {
-    // Detect changes in MetaMask wallet address
-    const handleWalletAddressChange = () => {
-      if (window.ethereum && window.ethereum.selectedAddress) {
-        var newAddress = window.ethereum.selectedAddress;
-        setConnectedWallet(newAddress);
-        var short = newAddress.slice(0, 6) + "...." + newAddress.slice(38);
-        setShortWallet(short);
-        if(userlogin) {MenuButton("Profile");}
-      }
-    };
-    handleWalletAddressChange(); // initial check
-    window.ethereum.on('accountsChanged', handleWalletAddressChange);
-    return () => {
-      window.ethereum.off('accountsChanged', handleWalletAddressChange);
-    };
+    if(typeof window.ethereum !== 'undefined') {
+      // Detect changes in MetaMask wallet address
+      const handleWalletAddressChange = () => {
+        if (window.ethereum && window.ethereum.selectedAddress) {
+          var newAddress = window.ethereum.selectedAddress;
+          setConnectedWallet(newAddress);
+          var short = newAddress.slice(0, 6) + "...." + newAddress.slice(38);
+          setShortWallet(short);
+          if(userlogin) {MenuButton("Profile");}
+        }
+      };
+      handleWalletAddressChange(); // initial check
+      window.ethereum.on('accountsChanged', handleWalletAddressChange);
+      return () => {
+        window.ethereum.off('accountsChanged', handleWalletAddressChange);
+      };
+    }
   }, []);
 
   async function LinkWallet() {
@@ -856,9 +858,10 @@ const Home = (props) => {
     deleteUser(authUser).then(() => {
       console.log("Successfully deleted user");
       MenuButton("Main");
-      
+
     }).catch((error) => {
       console.log("Error deleting user:", error);
+      console.log("Requiring new login to try again!");
       // Make user re-login before deleting
       signInWithPopup(auth, provider).then((result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
