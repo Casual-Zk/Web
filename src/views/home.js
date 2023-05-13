@@ -33,6 +33,10 @@ const provider = new GoogleAuthProvider();
 
 const Home = (props) => {
 
+  ////////////////////////////////////////////////////
+  /////////           Variables             //////////
+  ////////////////////////////////////////////////////
+
   const contractAddress = '0x67F6cd2e7B1840a51A98E38cE58D2f4537a45060'; // item Contract
   const contractAbi = [
     {
@@ -579,8 +583,8 @@ const Home = (props) => {
   // Initialize userOjbect
   const [user, setUser] = useState({
     nickname: "",
-    userID : "",
     walletAddress : "",
+    tokenBalance: 0,
     eggs : {},  // week Number => egg number
   
     knifeAmount : 0,
@@ -589,10 +593,15 @@ const Home = (props) => {
     m4Amount : 0,
     awpAmount : 0,
   
-    ammo_5_65mm : 0,
-    ammo_7_62mm : 0,
-    ammo_9mm : 0,
-    ammo_12_gauge : 0
+    game_5_65mm : 0,
+    game_7_62mm : 0,
+    game_9mm : 0,
+    game_12_gauge : 0,
+
+    wallet_5_65mm : 0,
+    wallet_7_62mm : 0,
+    wallet_9mm : 0,
+    wallet_12_gauge : 0
   });
 
   // Initialize the menu state
@@ -601,6 +610,12 @@ const Home = (props) => {
     Profile: false,
     Mint: false
   });
+
+  const cMenu = {
+    Main: true,
+    Profile: false,
+    Mint: false
+  }
   
   // Profile menu
   const [profilePanel, setProfilePanel] = useState({
@@ -620,15 +635,29 @@ const Home = (props) => {
   const [mintResult, setMintResult] = useState("");
   var [weekNum, setWeekNum] = useState(Number);
 
+  // Just for render, useless vars
+  const [cccount, setCount] = useState(0);
+  const [cccBool, RenderNow] = useState(Boolean);
+  function uselessCode() {
+    setCount(cccount + 1); // update state
+    RenderNow(false);
+  }
+
+
+  ////////////////////////////////////////////////////
+  /////////              UI                 //////////
+  ////////////////////////////////////////////////////
+
   // Menu navigation
   function MenuButton(target) {    
     // Create a new copy of the menu object and update its values
     const newMenu = { ...menu };
     Object.keys(newMenu).forEach(key => { newMenu[key] = false; })
+    Object.keys(cMenu).forEach(key => { cMenu[key] = false; })
 
-    if (target == "Main") newMenu.Main = true;
-    if (target == "Profile") newMenu.Profile = true;
-    if (target == "Mint") newMenu.Mint = true;
+    if (target == "Main") {newMenu.Main = true; cMenu.Main = true; }
+    if (target == "Profile") {newMenu.Profile = true; cMenu.Profile = true; }
+    if (target == "Mint") {newMenu.Mint = true; cMenu.Mint = true; }
 
     // Update the menu state with the new copy
     setMenu(newMenu);
@@ -660,6 +689,11 @@ const Home = (props) => {
     setProfileInfo(newInfo);
   }
 
+
+  ////////////////////////////////////////////////////
+  /////////            Database             //////////
+  ////////////////////////////////////////////////////
+
   // Google Login
   function GoogleLogin(){
     signInWithPopup(auth, provider).then((result) => {
@@ -684,16 +718,16 @@ const Home = (props) => {
     });
   }
 
-  // Logout
-  function Logout(){
-    signOut(auth).then(() => {
-      console.log("Logged out!")
-    }).catch((error) => {
-      console.log("ERROR: " + error.message);
-    });
-
-    MenuButton("Main");
-  }
+  // Detect auth state
+  onAuthStateChanged(auth, _user => {
+    if (_user && !userlogin) {
+      console.log("logged in!");
+      LoginProccess();
+    } else if (!_user) {
+      console.log("No user!");
+      setUserLogin(false);
+    }
+  });   
 
   async function LoginProccess() {
     // Get user data from DB
@@ -712,35 +746,86 @@ const Home = (props) => {
       console.log("Adding the info to local!");
 
       user.nickname = _user.displayName;
-      user.userID = _user.uid;
     }
     // if exists then get the data
     else {
       const data = docSnap.data();
-      user.userID = _user.uid;
       user.nickname = data.nickname;  
-      if (data.hasOwnProperty('walletAddress')){
+      if (data.hasOwnProperty('walletAddress')) {
         user.walletAddress = data.walletAddress;
-      }      
+      }
+      if (data.hasOwnProperty('eggs')) {
+        user.eggs = data.eggs;
+      }  
+      if (data.hasOwnProperty('ammo_5_65mm')) {
+        user.game_5_65mm = data.ammo_5_65mm;
+      }     
+      if (data.hasOwnProperty('ammo_7_62mm')) {
+        user.game_7_62mm = data.ammo_7_62mm;
+      }     
+      if (data.hasOwnProperty('ammo_9mm')) {
+        user.game_9mm = data.ammo_9mm;
+      }     
+      if (data.hasOwnProperty('ammo_12_gauge')) {
+        user.game_12_gauge = data.ammo_12_gauge;
+      }    
     }        
 
     setUserLogin(true);
     console.log("Finishing the proccess!");
     console.log(user.nickname);
+  } 
+
+  // Logout
+  function Logout(){
+    signOut(auth).then(() => {
+      console.log("Logged out!")
+    }).catch((error) => {
+      console.log("ERROR: " + error.message);
+    });
+
+    MenuButton("Main");
+  } 
+
+  async function SetUsername(newNickname) {
+    // Writes new username to the DB
+    const authUser = auth.currentUser;
+    console.log("Linking the wallet address");
+    console.log("Display name: " + authUser.displayName);
+    console.log("User ID: " + authUser.uid);
+    console.log("New Username: " + newNickname);
+
+    await setDoc(doc(db, "users/", authUser.uid), {
+      nickname: newNickname
+    }, {mergeFields: ["nickname"] });
+
+    user.nickname = newNickname;
+    setUser(user);
+    MenuButton("Profile");
   }
 
-  // Detect auth state
-  onAuthStateChanged(auth, _user => {
-    if (_user && !userlogin) {
-      console.log("logged in!");
-      LoginProccess();
-      //user.nickname = _user.displayName;
-      //setUserLogin(true);
-    } else if (!_user) {
-      console.log("No user!");
-      setUserLogin(false);
-    }
-  });  
+  async function LinkWallet() {
+    // Writes wallet address to the DB
+    const authUser = auth.currentUser;
+    console.log("Linking the wallet address");
+    console.log("Display name: " + authUser.displayName);
+    console.log("User ID: " + authUser.uid);
+    console.log("Wallet Address to Link: " + connectedWallet);
+
+    await setDoc(doc(db, "users/", authUser.uid), {
+      walletAddress: connectedWallet
+    }, {mergeFields: ["walletAddress"] });
+
+    user.walletAddress = connectedWallet;
+    setUser(user);
+    MenuButton("Profile");
+  }
+
+
+  ////////////////////////////////////////////////////
+  /////////             WEB 3               //////////
+  ////////////////////////////////////////////////////
+
 
   // Requests access to the user's META MASK WALLET
   async function RequestAccount() {
@@ -753,13 +838,7 @@ const Home = (props) => {
       try {
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
-        });
-        setConnectedWallet(accounts[0]);
-        var short = accounts[0].slice(0, 6) + "...." + accounts[0].slice(38);
-        setShortWallet(short);
-        MenuButton("Profile");
-        console.log("connected: " + connectedWallet + " -- Short: " + shortWallet);
-        
+        });        
         // Get the current chain ID
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
 
@@ -811,10 +890,11 @@ const Home = (props) => {
       const handleWalletAddressChange = () => {
         if (window.ethereum && window.ethereum.selectedAddress) {
           var newAddress = window.ethereum.selectedAddress;
+
           setConnectedWallet(newAddress);
           var short = newAddress.slice(0, 6) + "...." + newAddress.slice(38);
           setShortWallet(short);
-          if(userlogin) {MenuButton("Profile");}
+          GetBalances();
         }
       };
       handleWalletAddressChange(); // initial check
@@ -825,22 +905,27 @@ const Home = (props) => {
     }
   }, []);
 
-  async function LinkWallet() {
-    // Writes wallet address to the DB
-    const authUser = auth.currentUser;
-    console.log("Linking the wallet address");
-    console.log("Display name: " + authUser.displayName);
-    console.log("User ID: " + authUser.uid);
-    console.log("Wallet Address to Link: " + connectedWallet);
+  // Get item and token balances
+  async function GetBalances() {
+    // Get token balance
 
-    await setDoc(doc(db, "users/", authUser.uid), {
-      walletAddress: connectedWallet
-    }, {mergeFields: ["walletAddress"] });
 
-    user.walletAddress = connectedWallet;
+    // Get item balances
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const contract = new ethers.Contract(contractAddress, contractAbi, provider);
+
+    const adr = window.ethereum.selectedAddress;
+    const tokenIds = [0, 1, 2];
+    const addresses = [adr, adr, adr];
+    
+    const batchBalances = await contract.balanceOfBatch(addresses, tokenIds);
+    user.knifeAmount = batchBalances[0];
+    user.glockAmount = batchBalances[1];
+    user.shotgunAmount = batchBalances[2];
     setUser(user);
-    MenuButton("Profile");
+    RenderNow(true);
   }
+  
 
   async function DeleteUser() {
     // Writes wallet address to the DB
@@ -896,23 +981,6 @@ const Home = (props) => {
     
 
     
-  }
-
-  async function SetUsername(newNickname) {
-    // Writes new username to the DB
-    const authUser = auth.currentUser;
-    console.log("Linking the wallet address");
-    console.log("Display name: " + authUser.displayName);
-    console.log("User ID: " + authUser.uid);
-    console.log("New Username: " + newNickname);
-
-    await setDoc(doc(db, "users/", authUser.uid), {
-      nickname: newNickname
-    }, {mergeFields: ["nickname"] });
-
-    user.nickname = newNickname;
-    setUser(user);
-    MenuButton("Profile");
   }
 
   async function MintItem(itemID, amount) {
@@ -1009,6 +1077,10 @@ const Home = (props) => {
     console.log("Claiming Reward");
   }
 
+  ////////////////////////////////////////////////////
+  /////////             Other               //////////
+  ////////////////////////////////////////////////////
+
   function weekCounterChange(up) {
     if (up){
       weekNum = weekNum + 1;
@@ -1025,6 +1097,8 @@ const Home = (props) => {
   }
 
   /*    NOTES
+    Use interface abi for approve/mint/burn functions, shor abi.
+
     Use:
     {menu.Main && (
       <section className="home-home-page">    
@@ -1039,7 +1113,12 @@ const Home = (props) => {
 
     TO-DO:
     - Add favicon to public folder
-    
+
+    - Add this line of code somewhere below between Main and Proife divs, on the main stage! This forces to re-render to update values on the screen. Use it: RenderNow(true);
+    {cccBool && (
+      <div onClick={uselessCode()}><p>Count: {cccount}</p></div>
+    )}
+
     - Add menu.Main .... stuff to display pages
     - Add onClick={() => MenuButton("Main")} to nav buttons
     - Replace login text: {userlogin ? (user.nickname) : ("Login")}
@@ -1064,6 +1143,8 @@ const Home = (props) => {
     - Back buttons again for set username and delete
     - onClick={() => SetUsername(document.getElementById("newUsernameInput").value)} --> to set username button
     - Add delete user button as well
+
+    - Add {user.knifeAmount.toString()} and other inventor info to the places
   */
 
   
@@ -1576,7 +1657,10 @@ const Home = (props) => {
           </div>
         </div>
       )}
-      {menu.Profile && (
+      {cccBool && (
+        <div onClick={uselessCode()}><p>Count: {cccount}</p></div>
+      )}
+      {menu.Profile && (        
         <div className="home-profile-page">
           <div className="home-profile-info-container">            
             <div className="home-info-container">
@@ -1954,7 +2038,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invKnifeText" className="home-text159 top10-text">
-                    <span>0</span>
+                    <span>{user.knifeAmount.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -1975,7 +2059,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invWalletGlockText" className="home-text167 top10-text">
-                    <span>0</span>
+                    <span>{user.glockAmount.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -1996,7 +2080,7 @@ const Home = (props) => {
                     id="invWalletShotgunText"
                     className="home-text173 top10-text"
                   >
-                    <span>0</span>
+                    <span>{user.shotgunAmount.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2014,7 +2098,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invWalletM4Text" className="home-text179 top10-text">
-                    <span>0</span>
+                    <span>{user.m4Amount.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2032,7 +2116,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invWalletAWPText" className="home-text185 top10-text">
-                    <span>0</span>
+                    <span>{user.awpAmount.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2050,7 +2134,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invWalletGaugeText" className="home-text191 top10-text">
-                    <span>0</span>
+                    <span>{user.wallet_12_gauge.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2060,7 +2144,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invGameGaugeText" className="home-text197 top10-text">
-                    <span>0</span>
+                    <span>{user.game_12_gauge.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2094,7 +2178,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invWallet9mmText" className="home-text203 top10-text">
-                    <span>0</span>
+                    <span>{user.wallet_9mm.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2104,7 +2188,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invGame9mmText" className="home-text209 top10-text">
-                    <span>0</span>
+                    <span>{user.game_9mm.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2137,7 +2221,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invWallet556mmText" className="home-text215 top10-text">
-                    <span>0</span>
+                    <span>{user.wallet_5_65mm.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2147,7 +2231,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invGame556mmText" className="home-text221 top10-text">
-                    <span>0</span>
+                    <span>{user.game_5_65mm.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2180,7 +2264,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invWallet762mmText" className="home-text227 top10-text">
-                    <span>0</span>
+                    <span>{user.wallet_7_62mm.toString()}</span>
                     <br></br>
                   </span>
                 </div>
@@ -2190,7 +2274,7 @@ const Home = (props) => {
                     <br></br>
                   </span>
                   <span id="invGame762mmText" className="home-text233 top10-text">
-                    <span>0</span>
+                    <span>{user.game_7_62mm.toString()}</span>
                     <br></br>
                   </span>
                 </div>
