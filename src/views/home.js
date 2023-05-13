@@ -844,10 +844,6 @@ const Home = (props) => {
     // Writes wallet address to the DB
     const authUser = auth.currentUser;
 
-    // Prompt user to re-authenticate with their Google credentials
-    const provider = new GoogleAuthProvider();
-    await authUser.reauthenticateWithPopup(provider);
-
     console.log("DELETING CURRENT USER !!!");
     console.log("Display name: " + authUser.displayName);
     console.log("User ID: " + authUser.uid);
@@ -857,29 +853,46 @@ const Home = (props) => {
     console.log("Deleted from DB. Now deleting auth info");
 
     // Delete the user account
-    authUser
-      .delete()
-      .then(() => {
-        console.log("Successfully deleted user");
-        //Logout();
-      })
-      .catch((error) => {
-        console.log("Error deleting user:", error);
+    deleteUser(authUser).then(() => {
+      console.log("Successfully deleted user");
+      MenuButton("Main");
+      
+    }).catch((error) => {
+      console.log("Error deleting user:", error);
+      // Make user re-login before deleting
+      signInWithPopup(auth, provider).then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const userLogin = result.user;        
+        
+        // Try to delete the user account again
+        deleteUser(userLogin).then(() => {
+          console.log("Successfully deleted user");
+          MenuButton("Main");
+        }).catch((error) => {        
+          console.log("Error deleting user:", error);
+        });
+        
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        console.log("ERROR: " + error.code);
+    
+        const errorMessage = error.message;
+        console.log("ERROR: " + error.message);
+    
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
       });
-
-    //MenuButton("Main");
-    /*
-    deleteUser(authUser)
-    .then(() => {
-      console.log('Successfully deleted user');
-      Logout();
-    })
-    .catch((error) => {
-      console.log('Error deleting user:', error);
     });
-    */
 
-    MenuButton("Main");
+    
+
+    
   }
 
   async function SetUsername(newNickname) {
@@ -1617,7 +1630,7 @@ const Home = (props) => {
                 <div className="home-info-space-1">
                   <div className="home-text-space">
                     <span className="profile-basic-text home-text096">
-                      Username:
+                      Nickname:
                     </span>
                     <span
                       id="profileUsernameText"
