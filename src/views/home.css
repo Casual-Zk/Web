@@ -1949,6 +1949,39 @@
   justify-content: space-between;
   background-color: rgba(0, 0, 0, 0.2);
 }
+.home-connect-button-container {
+  gap: var(--dl-space-space-unit);
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  margin-top: var(--dl-space-space-unit);
+  align-items: center;
+  margin-bottom: var(--dl-space-space-twounits);
+  flex-direction: row;
+}
+.home-text250 {
+  flex: 0 0 auto;
+  width: auto;
+  display: flex;
+  align-items: center;
+  margin-left: var(--dl-space-space-unit);
+}
+.home-text251 {
+  color: rgb(250, 250, 250);
+  font-size: autopx;
+  font-style: normal;
+  font-weight: 700;
+  margin-left: var(--dl-space-space-halfunit);
+}
+.home-text252 {
+  color: rgb(250, 250, 250);
+  font-size: autopx;
+  margin-left: var(--dl-space-space-halfunit);
+}
+.home-image24 {
+  width: 150px;
+  object-fit: cover;
+}
 .home-item {
   flex: 0 0 auto;
   display: flex;
@@ -3331,6 +3364,9 @@
   }
   .home-items {
     justify-content: flex-start;
+  }  
+  .home-image24 {
+    width: 100px;
   }
   .home-footer {
     padding-top: var(--dl-space-space-twounits);
@@ -3646,6 +3682,9 @@
     width: 20px;
   }
   .home-image19 {
+    width: 80px;
+  }  
+  .home-image24 {
     width: 80px;
   }
   .home-new-username-input {

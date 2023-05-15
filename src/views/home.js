@@ -632,6 +632,8 @@ const Home = (props) => {
   const [connectedWallet, setConnectedWallet] = useState("");
   const [shortWallet, setShortWallet] = useState("");
   const [userlogin, setUserLogin] = useState(Boolean);
+  const [mintApproved, setMintApprove] = useState(Boolean);
+  const [consumeApproved, setConsumeApprove] = useState(Boolean);
   const [mintResult, setMintResult] = useState("");
   var [weekNum, setWeekNum] = useState(Number);
 
@@ -1176,9 +1178,17 @@ const Home = (props) => {
     - onClick={() => SetUsername(document.getElementById("newUsernameInput").value)} --> to set username button
     - Add delete user button as well
 
+    // Mint Page
+    - {connectedWallet === "" && <div> } to connect wallet IMAGE, shortWallet to text
+    - onClick={()=> ConnectWallet()} to connect wallet image
+    - {!mintApproved && connectedWallet != "" &&  <div> } to mint info container
+    - {mintApproved && to all mint button images!
+
+    // Inevntory
     - Add {user.knifeAmount.toString()} and other inventor info to the places
     - Add {(user.awpAmount > 0) && <div>} to inventory containers
     - Add {((user.wallet_9mm > 0) || (user.game_9mm > 0)) && to the inventory ammo containers
+    - {!consumeApproved && connectedWallet != "" && to info container
   */
 
   
@@ -2059,26 +2069,28 @@ const Home = (props) => {
           )}
           {profilePanel.Inventory && (
             <div className="home-inventory-panel">
-              <div className="home-mint-info-container">
-                <div className="home-text168">
+              {!consumeApproved && connectedWallet != "" && 
+                <div className="home-mint-info-container">
+                  <div className="home-text168">
+                    <img
+                      src="/playground_assets/info_64x64-200h.png"
+                      alt="image"
+                      className="home-image18"
+                    />
+                    <span className="home-price-text top10-text">
+                      You need to give allowance to Trasury contract in order to
+                      consume items and use in the game. By consuming the items, items
+                      will be sent to the Treasury contract and you will obtain the
+                      same item in the game. Please approve allowance to proceed.
+                    </span>
+                  </div>
                   <img
-                    src="/playground_assets/info_64x64-200h.png"
+                    src="/playground_assets/approve%20button-200h.png"
                     alt="image"
-                    className="home-image18"
+                    className="home-image19"
                   />
-                  <span className="home-price-text top10-text">
-                    You need to give allowance to Trasury contract in order to
-                    consume items and use in the game. By consuming the items, items
-                    will be sent to the Treasury contract and you will obtain the
-                    same item in the game. Please approve allowance to proceed.
-                  </span>
                 </div>
-                <img
-                  src="/playground_assets/approve%20button-200h.png"
-                  alt="image"
-                  className="home-image19"
-                />
-              </div>
+              }
               {(user.knifeAmount > 0) &&
                 <div className="item-container-small">
                   <h1 className="home-item-name top10-text">Knife</h1>
@@ -2373,26 +2385,42 @@ const Home = (props) => {
       {menu.Mint && (
         <div className="home-mint-page">
           <div className="home-items">
-            <div className="home-mint-info-container">
-              <div className="home-text168">
-                <img
-                  src="/playground_assets/info_64x64-200h.png"
-                  alt="image"
-                  className="home-image18"
-                />
-                <span className="home-price-text top10-text">
-                  You need to give allowance to Trasury contract in order to
-                  consume items and use in the game. By consuming the items, items
-                  will be sent to the Treasury contract and you will obtain the
-                  same item in the game. Please approve allowance to proceed.
-                </span>
+            <div className="home-connect-button-container">
+              <div className="home-text250">
+                <span className="home-text251 top10-text">Connected Wallet:</span>
+                <span className="home-text252 top10-text">{shortWallet}</span>
               </div>
-              <img
-                src="/playground_assets/approve%20button-200h.png"
-                alt="image"
-                className="home-image19"
-              />
+              {connectedWallet === "" && 
+                <img
+                  onClick={()=> ConnectWallet()}
+                  src="/playground_assets/connect%20button.png"
+                  alt="image"
+                  className="home-image24"
+                />  
+              }
             </div>
+            {!mintApproved && connectedWallet != "" && 
+              <div className="home-mint-info-container">
+                <div className="home-text168">
+                  <img
+                    src="/playground_assets/info_64x64-200h.png"
+                    alt="image"
+                    className="home-image18"
+                  />
+                  <span className="home-price-text top10-text">
+                    You need to give allowance to Trasury contract in order to
+                    consume items and use in the game. By consuming the items, items
+                    will be sent to the Treasury contract and you will obtain the
+                    same item in the game. Please approve allowance to proceed.
+                  </span>
+                </div>
+                <img
+                  src="/playground_assets/approve%20button-200h.png"
+                  alt="image"
+                  className="home-image19"
+                />
+              </div>
+            }
             <div className="home-item item-container-big">
               <h1 className="home-item-name09 top10-text">Knife</h1>
               <img
@@ -2413,12 +2441,14 @@ const Home = (props) => {
                   className="input mint-amount-input"
                 />
               </div>
-              <img
-                id="mintKnifeButton"
-                alt="image"
-                src="/playground_assets/mint_button-500h.png"
-                className="mint-button"
-              />
+              {mintApproved && 
+                <img
+                  id="mintKnifeButton"
+                  alt="image"
+                  src="/playground_assets/mint_button-500h.png"
+                  className="mint-button"
+                />
+              }
             </div>
             <div className="home-item1 item-container-big">
               <h1 className="home-item-name10 top10-text">Glock</h1>
@@ -2440,12 +2470,14 @@ const Home = (props) => {
                   className="home-textinput06 input mint-amount-input"
                 />
               </div>
-              <img
-                id="mintGlockButton"
-                alt="image"
-                src="/playground_assets/mint_button-500h.png"
-                className="home-image23 mint-button"
-              />
+              {mintApproved && 
+                <img
+                  id="mintGlockButton"
+                  alt="image"
+                  src="/playground_assets/mint_button-500h.png"
+                  className="home-image23 mint-button"
+                />
+              }
             </div>
             <div className="home-item2 item-container-big">
               <h1 className="home-item-name11 top10-text">Shotgun</h1>
@@ -2467,12 +2499,14 @@ const Home = (props) => {
                   className="home-textinput07 input mint-amount-input"
                 />
               </div>
-              <img
-                id="mintShotgunButton"
-                alt="image"
-                src="/playground_assets/mint_button-500h.png"
-                className="home-image24 mint-button"
-              />
+              {mintApproved && 
+                <img
+                  id="mintShotgunButton"
+                  alt="image"
+                  src="/playground_assets/mint_button-500h.png"
+                  className="home-image24 mint-button"
+                />
+              }
             </div>
             <div className="home-item3 item-container-big">
               <h1 className="home-item-name12 top10-text">M4</h1>
@@ -2494,12 +2528,14 @@ const Home = (props) => {
                   className="home-textinput08 input mint-amount-input"
                 />
               </div>
-              <img
-                id="mintM4Button"
-                alt="image"
-                src="/playground_assets/mint_button-500h.png"
-                className="home-image25 mint-button"
-              />
+              {mintApproved && 
+                <img
+                  id="mintM4Button"
+                  alt="image"
+                  src="/playground_assets/mint_button-500h.png"
+                  className="home-image25 mint-button"
+                />
+              }
             </div>
             <div className="home-item4 item-container-big">
               <h1 className="home-item-name13 top10-text">
@@ -2524,12 +2560,14 @@ const Home = (props) => {
                   className="home-textinput09 input mint-amount-input"
                 />
               </div>
+              {mintApproved && 
               <img
-                id="mintAWPButton"
-                alt="image"
-                src="/playground_assets/mint_button-500h.png"
-                className="home-image26 mint-button"
-              />
+                  id="mintAWPButton"
+                  alt="image"
+                  src="/playground_assets/mint_button-500h.png"
+                  className="home-image26 mint-button"
+                />
+              }
             </div>
             <div className="home-item5 item-container-big">
               <h1 className="home-item-name14 top10-text">
@@ -2556,12 +2594,14 @@ const Home = (props) => {
                   className="home-textinput10 input mint-amount-input"
                 />
               </div>
-              <img
-                id="mintGaugeButton"
-                alt="image"
-                src="/playground_assets/mint_button-500h.png"
-                className="home-image27 mint-button"
-              />
+              {mintApproved && 
+                <img
+                  id="mintGaugeButton"
+                  alt="image"
+                  src="/playground_assets/mint_button-500h.png"
+                  className="home-image27 mint-button"
+                />
+              }
             </div>
             <div className="home-item6 item-container-big">
               <h1 className="home-item-name15 top10-text">
@@ -2588,12 +2628,14 @@ const Home = (props) => {
                   className="home-textinput11 input mint-amount-input"
                 />
               </div>
-              <img
-                id="mint9mmButton"
-                alt="image"
-                src="/playground_assets/mint_button-500h.png"
-                className="home-image28 mint-button"
-              />
+              {mintApproved && 
+                <img
+                  id="mint9mmButton"
+                  alt="image"
+                  src="/playground_assets/mint_button-500h.png"
+                  className="home-image28 mint-button"
+                />
+              }
             </div>
             <div className="home-item7 item-container-big">
               <h1 className="home-item-name16 top10-text">
@@ -2620,12 +2662,14 @@ const Home = (props) => {
                   className="home-textinput12 input mint-amount-input"
                 />
               </div>
-              <img
-                id="mint556mmButton"
-                alt="image"
-                src="/playground_assets/mint_button-500h.png"
-                className="home-image29 mint-button"
-              />
+              {mintApproved && 
+                <img
+                  id="mint556mmButton"
+                  alt="image"
+                  src="/playground_assets/mint_button-500h.png"
+                  className="home-image29 mint-button"
+                />
+              }
             </div>
             <div className="home-item8 item-container-big">
               <h1 className="home-item-name17 top10-text">
@@ -2652,12 +2696,14 @@ const Home = (props) => {
                   className="home-textinput13 input mint-amount-input"
                 />
               </div>
-              <img
-                id="mint762mmButton"
-                alt="image"
-                src="/playground_assets/mint_button-500h.png"
-                className="home-image30 mint-button"
-              />
+              {mintApproved && 
+                <img
+                  id="mint762mmButton"
+                  alt="image"
+                  src="/playground_assets/mint_button-500h.png"
+                  className="home-image30 mint-button"
+                />
+              }
             </div>
           </div>
         </div>
