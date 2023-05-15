@@ -1189,6 +1189,7 @@ const Home = (props) => {
     - Add {(user.awpAmount > 0) && <div>} to inventory containers
     - Add {((user.wallet_9mm > 0) || (user.game_9mm > 0)) && to the inventory ammo containers
     - {!consumeApproved && connectedWallet != "" && to info container
+    - {consumeApproved && to item containers' consume buttons
   */
 
   
@@ -2234,13 +2235,15 @@ const Home = (props) => {
                     placeholder="Enter Amount"
                     className="input inv-consume-input"
                   />
-                  <img
-                    onClick={() => testConsume(3, document.getElementById("invGaugeInput").value)}
-                    id="invGaugeConsumeButton"
-                    alt="image"
-                    src="/playground_assets/consume%20button-500h.png"
-                    className="inv-consume-button"
-                  />
+                  {consumeApproved &&
+                    <img
+                      onClick={() => testConsume(3, document.getElementById("invGaugeInput").value)}
+                      id="invGaugeConsumeButton"
+                      alt="image"
+                      src="/playground_assets/consume%20button-500h.png"
+                      className="inv-consume-button"
+                    />
+                  }
                 </div>
               }
               {((user.wallet_9mm > 0) || (user.game_9mm > 0)) &&
@@ -2280,12 +2283,14 @@ const Home = (props) => {
                     placeholder="Enter Amount"
                     className="home-textinput02 input inv-consume-input"
                   />
-                  <img
-                    id="inv9mmConsumeButton"
-                    alt="image"
-                    src="/playground_assets/consume%20button-500h.png"
-                    className="home-image19 inv-consume-button"
-                  />
+                  {consumeApproved &&
+                    <img
+                      id="inv9mmConsumeButton"
+                      alt="image"
+                      src="/playground_assets/consume%20button-500h.png"
+                      className="home-image19 inv-consume-button"
+                    />
+                  }
                 </div>
               }
               {((user.wallet_5_65mm > 0) || (user.game_5_65mm > 0)) &&
@@ -2325,12 +2330,14 @@ const Home = (props) => {
                     placeholder="Enter Amount"
                     className="home-textinput03 input inv-consume-input"
                   />
-                  <img
-                    id="inv556mmConsumeButton"
-                    alt="image"
-                    src="/playground_assets/consume%20button-500h.png"
-                    className="home-image20 inv-consume-button"
-                  />
+                  {consumeApproved &&
+                    <img
+                      id="inv556mmConsumeButton"
+                      alt="image"
+                      src="/playground_assets/consume%20button-500h.png"
+                      className="home-image20 inv-consume-button"
+                    />
+                  }
                 </div>
               }
               {((user.wallet_7_62mm > 0) || (user.game_7_62mm > 0)) &&
@@ -2370,12 +2377,14 @@ const Home = (props) => {
                     placeholder="Enter Amount"
                     className="home-textinput04 input inv-consume-input"
                   />
-                  <img
-                    id="inv762mmConsumeButton"
-                    alt="image"
-                    src="/playground_assets/consume%20button-500h.png"
-                    className="home-image21 inv-consume-button"
-                  />
+                  {consumeApproved &&
+                    <img
+                      id="inv762mmConsumeButton"
+                      alt="image"
+                      src="/playground_assets/consume%20button-500h.png"
+                      className="home-image21 inv-consume-button"
+                    />
+                  }
                 </div>
               }
             </div>
