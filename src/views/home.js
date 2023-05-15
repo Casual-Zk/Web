@@ -863,6 +863,13 @@ const Home = (props) => {
             console.error(error);
           }
         }
+
+        var wAddress = window.ethereum.selectedAddress;
+
+        setConnectedWallet(wAddress);
+        var short = wAddress.slice(0, 6) + "...." + wAddress.slice(38);
+        setShortWallet(short);
+        GetBalances();
       } catch (error) {
         console.log('Error connecting...');
       }
@@ -887,8 +894,32 @@ const Home = (props) => {
   useEffect(() => {
     if(typeof window.ethereum !== 'undefined') {
       // Detect changes in MetaMask wallet address
-      const handleWalletAddressChange = () => {
+      const handleWalletAddressChange = async () => {
         if (window.ethereum && window.ethereum.selectedAddress) {
+          // Get the current chain ID
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+
+          // If the user is not on the desired network, prompt them to switch
+          if (chainId !== desiredChainId) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{
+                  chainId: desiredChainId,
+                  chainName: "zkSync Era Testnet",
+                  nativeCurrency: {
+                    name: "Ether",
+                    symbol: "ETH",
+                    decimals: 18
+                  },
+                  rpcUrls: ["https://testnet.era.zksync.dev"],
+                  blockExplorerUrls: ['https://goerli.explorer.zksync.io/']
+                }],
+              });
+            } catch (error) {
+              console.error(error);
+            }
+          }
           var newAddress = window.ethereum.selectedAddress;
 
           setConnectedWallet(newAddress);
@@ -1090,6 +1121,7 @@ const Home = (props) => {
       weekNum = weekNum - 1;
       setWeekNum(weekNum);
     }
+    document.getElementById("lotteryWeekInput").value = weekNum;
   }
 
   function testConsume(itemID, amount){
@@ -1145,6 +1177,8 @@ const Home = (props) => {
     - Add delete user button as well
 
     - Add {user.knifeAmount.toString()} and other inventor info to the places
+    - Add {(user.awpAmount > 0) && <div>} to inventory containers
+    - Add {((user.wallet_9mm > 0) || (user.game_9mm > 0)) && to the inventory ammo containers
   */
 
   
@@ -1870,7 +1904,7 @@ const Home = (props) => {
                   <input
                     type="number"
                     id="lotteryWeekInput"
-                    value = {weekNum}
+                    defaultValue= {weekNum}
                     min="0"
                     className="home-textinput input"
                   />
@@ -2025,24 +2059,47 @@ const Home = (props) => {
           )}
           {profilePanel.Inventory && (
             <div className="home-inventory-panel">
-              <div className="item-container-small">
-                <h1 className="home-item-name top10-text">Knife</h1>
-                <img
-                  alt="image"
-                  src="/playground_assets/knife_inv-200h.png"
-                  className="item-image"
-                />
-                <div className="home-container18">
-                  <span className="home-text156 top10-text">
-                    <span>In Wallet:</span>
-                    <br></br>
-                  </span>
-                  <span id="invKnifeText" className="home-text159 top10-text">
-                    <span>{user.knifeAmount.toString()}</span>
-                    <br></br>
+              <div className="home-mint-info-container">
+                <div className="home-text168">
+                  <img
+                    src="/playground_assets/info_64x64-200h.png"
+                    alt="image"
+                    className="home-image18"
+                  />
+                  <span className="home-price-text top10-text">
+                    You need to give allowance to Trasury contract in order to
+                    consume items and use in the game. By consuming the items, items
+                    will be sent to the Treasury contract and you will obtain the
+                    same item in the game. Please approve allowance to proceed.
                   </span>
                 </div>
+                <img
+                  src="/playground_assets/approve%20button-200h.png"
+                  alt="image"
+                  className="home-image19"
+                />
               </div>
+              {(user.knifeAmount > 0) &&
+                <div className="item-container-small">
+                  <h1 className="home-item-name top10-text">Knife</h1>
+                  <img
+                    alt="image"
+                    src="/playground_assets/knife_inv-200h.png"
+                    className="item-image"
+                  />
+                  <div className="home-container18">
+                    <span className="home-text156 top10-text">
+                      <span>In Wallet:</span>
+                      <br></br>
+                    </span>
+                    <span id="invKnifeText" className="home-text159 top10-text">
+                      <span>{user.knifeAmount.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                </div>
+              }              
+              {(user.glockAmount > 0) &&
               <div className="home-glock item-container-small">
                 <h1 className="home-item-name01 top10-text">
                   <span>Glock</span>
@@ -2063,237 +2120,252 @@ const Home = (props) => {
                     <br></br>
                   </span>
                 </div>
-              </div>
-              <div className="home-shotgun item-container-small">
-                <h1 className="home-item-name02 top10-text">Shotgun</h1>
-                <img
-                  alt="image"
-                  src="/playground_assets/shoutgun_inv-200h.png"
-                  className="home-item-image02 item-image"
-                />
-                <div className="home-container20">
-                  <span className="home-text170 top10-text">
-                    <span>In Wallet:</span>
-                    <br></br>
-                  </span>
-                  <span
-                    id="invWalletShotgunText"
-                    className="home-text173 top10-text"
-                  >
-                    <span>{user.shotgunAmount.toString()}</span>
-                    <br></br>
-                  </span>
+              </div>  
+              }            
+              {(user.shotgunAmount > 0) &&
+                <div className="home-shotgun item-container-small">
+                  <h1 className="home-item-name02 top10-text">Shotgun</h1>
+                  <img
+                    alt="image"
+                    src="/playground_assets/shoutgun_inv-200h.png"
+                    className="home-item-image02 item-image"
+                  />
+                  <div className="home-container20">
+                    <span className="home-text170 top10-text">
+                      <span>In Wallet:</span>
+                      <br></br>
+                    </span>
+                    <span
+                      id="invWalletShotgunText"
+                      className="home-text173 top10-text"
+                    >
+                      <span>{user.shotgunAmount.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                </div>   
+              }           
+              {(user.m4Amount > 0) &&
+                <div className="home-m4 item-container-small">
+                  <h1 className="home-item-name03 top10-text">M4</h1>
+                  <img
+                    alt="image"
+                    src="/playground_assets/m4_inv-200h.png"
+                    className="home-item-image03 item-image"
+                  />
+                  <div className="home-container21">
+                    <span className="home-text176 top10-text">
+                      <span>In Wallet:</span>
+                      <br></br>
+                    </span>
+                    <span id="invWalletM4Text" className="home-text179 top10-text">
+                      <span>{user.m4Amount.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="home-m4 item-container-small">
-                <h1 className="home-item-name03 top10-text">M4</h1>
-                <img
-                  alt="image"
-                  src="/playground_assets/m4_inv-200h.png"
-                  className="home-item-image03 item-image"
-                />
-                <div className="home-container21">
-                  <span className="home-text176 top10-text">
-                    <span>In Wallet:</span>
-                    <br></br>
-                  </span>
-                  <span id="invWalletM4Text" className="home-text179 top10-text">
-                    <span>{user.m4Amount.toString()}</span>
-                    <br></br>
-                  </span>
+              }
+              {(user.awpAmount > 0) &&
+                <div className="home-awp item-container-small">
+                  <h1 className="home-item-name04 top10-text">AWP</h1>
+                  <img
+                    alt="image"
+                    src="/playground_assets/awp_inv-200h.png"
+                    className="home-item-image04 item-image"
+                  />
+                  <div className="home-container22">
+                    <span className="home-text182 top10-text">
+                      <span>In Wallet:</span>
+                      <br></br>
+                    </span>
+                    <span id="invWalletAWPText" className="home-text185 top10-text">
+                      <span>{user.awpAmount.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="home-awp item-container-small">
-                <h1 className="home-item-name04 top10-text">AWP</h1>
-                <img
-                  alt="image"
-                  src="/playground_assets/awp_inv-200h.png"
-                  className="home-item-image04 item-image"
-                />
-                <div className="home-container22">
-                  <span className="home-text182 top10-text">
-                    <span>In Wallet:</span>
-                    <br></br>
-                  </span>
-                  <span id="invWalletAWPText" className="home-text185 top10-text">
-                    <span>{user.awpAmount.toString()}</span>
-                    <br></br>
-                  </span>
+              }
+              {((user.wallet_12_gauge > 0) || (user.game_12_gauge > 0)) &&
+                <div className="item-container-big home-ammo-12-gauge">
+                  <h1 className="home-item-name05 top10-text">12-Gauge</h1>
+                  <img
+                    alt="image"
+                    src="/playground_assets/12gauge_inv-200h.png"
+                    className="home-item-image05 item-image"
+                  />
+                  <div className="home-container23">
+                    <span className="home-text188 top10-text">
+                      <span>In Wallet:</span>
+                      <br></br>
+                    </span>
+                    <span id="invWalletGaugeText" className="home-text191 top10-text">
+                      <span>{user.wallet_12_gauge.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-container24">
+                    <span className="home-text194 top10-text">
+                      <span>In Game:</span>
+                      <br></br>
+                    </span>
+                    <span id="invGameGaugeText" className="home-text197 top10-text">
+                      <span>{user.game_12_gauge.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <input
+                    type="number"
+                    id="invGaugeInput"
+                    max="9999"
+                    min="1"
+                    step="1"
+                    placeholder="Enter Amount"
+                    className="input inv-consume-input"
+                  />
+                  <img
+                    onClick={() => testConsume(3, document.getElementById("invGaugeInput").value)}
+                    id="invGaugeConsumeButton"
+                    alt="image"
+                    src="/playground_assets/consume%20button-500h.png"
+                    className="inv-consume-button"
+                  />
                 </div>
-              </div>
-              <div className="item-container-big home-ammo-12-gauge">
-                <h1 className="home-item-name05 top10-text">12-Gauge</h1>
-                <img
-                  alt="image"
-                  src="/playground_assets/12gauge_inv-200h.png"
-                  className="home-item-image05 item-image"
-                />
-                <div className="home-container23">
-                  <span className="home-text188 top10-text">
-                    <span>In Wallet:</span>
-                    <br></br>
-                  </span>
-                  <span id="invWalletGaugeText" className="home-text191 top10-text">
-                    <span>{user.wallet_12_gauge.toString()}</span>
-                    <br></br>
-                  </span>
+              }
+              {((user.wallet_9mm > 0) || (user.game_9mm > 0)) &&
+                <div className="home-ammo-9-mm item-container-big">
+                  <h1 className="home-item-name06 top10-text">9 mm</h1>
+                  <img
+                    alt="image"
+                    src="/playground_assets/9mm_inv-200h.png"
+                    className="home-item-image06 item-image"
+                  />
+                  <div className="home-container25">
+                    <span className="home-text200 top10-text">
+                      <span>In Wallet:</span>
+                      <br></br>
+                    </span>
+                    <span id="invWallet9mmText" className="home-text203 top10-text">
+                      <span>{user.wallet_9mm.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-container26">
+                    <span className="home-text206 top10-text">
+                      <span>In Game:</span>
+                      <br></br>
+                    </span>
+                    <span id="invGame9mmText" className="home-text209 top10-text">
+                      <span>{user.game_9mm.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <input
+                    type="number"
+                    id="inv9mmInput"
+                    max="9999"
+                    min="1"
+                    step="1"
+                    placeholder="Enter Amount"
+                    className="home-textinput02 input inv-consume-input"
+                  />
+                  <img
+                    id="inv9mmConsumeButton"
+                    alt="image"
+                    src="/playground_assets/consume%20button-500h.png"
+                    className="home-image19 inv-consume-button"
+                  />
                 </div>
-                <div className="home-container24">
-                  <span className="home-text194 top10-text">
-                    <span>In Game:</span>
-                    <br></br>
-                  </span>
-                  <span id="invGameGaugeText" className="home-text197 top10-text">
-                    <span>{user.game_12_gauge.toString()}</span>
-                    <br></br>
-                  </span>
+              }
+              {((user.wallet_5_65mm > 0) || (user.game_5_65mm > 0)) &&
+                <div className="home-ammo-556-mm item-container-big">
+                  <h1 className="home-item-name07 top10-text">5.56 mm</h1>
+                  <img
+                    alt="image"
+                    src="/playground_assets/5_56_inv-200h.png"
+                    className="home-item-image07 item-image"
+                  />
+                  <div className="home-container27">
+                    <span className="home-text212 top10-text">
+                      <span>In Wallet:</span>
+                      <br></br>
+                    </span>
+                    <span id="invWallet556mmText" className="home-text215 top10-text">
+                      <span>{user.wallet_5_65mm.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-container28">
+                    <span className="home-text218 top10-text">
+                      <span>In Game:</span>
+                      <br></br>
+                    </span>
+                    <span id="invGame556mmText" className="home-text221 top10-text">
+                      <span>{user.game_5_65mm.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <input
+                    type="number"
+                    id="inv556mmInput"
+                    max="9999"
+                    min="1"
+                    step="1"
+                    placeholder="Enter Amount"
+                    className="home-textinput03 input inv-consume-input"
+                  />
+                  <img
+                    id="inv556mmConsumeButton"
+                    alt="image"
+                    src="/playground_assets/consume%20button-500h.png"
+                    className="home-image20 inv-consume-button"
+                  />
                 </div>
-                <input
-                  type="number"
-                  id="invGaugeInput"
-                  max="9999"
-                  min="1"
-                  step="1"
-                  placeholder="Enter Amount"
-                  className="input inv-consume-input"
-                />
-                <img
-                  onClick={() => testConsume(3, document.getElementById("invGaugeInput").value)}
-                  id="invGaugeConsumeButton"
-                  alt="image"
-                  src="/playground_assets/consume%20button-500h.png"
-                  className="inv-consume-button"
-                />
-              </div>
-              <div className="home-ammo-9-mm item-container-big">
-                <h1 className="home-item-name06 top10-text">9 mm</h1>
-                <img
-                  alt="image"
-                  src="/playground_assets/9mm_inv-200h.png"
-                  className="home-item-image06 item-image"
-                />
-                <div className="home-container25">
-                  <span className="home-text200 top10-text">
-                    <span>In Wallet:</span>
-                    <br></br>
-                  </span>
-                  <span id="invWallet9mmText" className="home-text203 top10-text">
-                    <span>{user.wallet_9mm.toString()}</span>
-                    <br></br>
-                  </span>
+              }
+              {((user.wallet_7_62mm > 0) || (user.game_7_62mm > 0)) &&
+                <div className="home-ammo-762-mm item-container-big">
+                  <h1 className="home-item-name08 top10-text">7.62 mm</h1>
+                  <img
+                    alt="image"
+                    src="/playground_assets/7_62_inv-200h.png"
+                    className="home-item-image08 item-image"
+                  />
+                  <div className="home-container29">
+                    <span className="home-text224 top10-text">
+                      <span>In Wallet:</span>
+                      <br></br>
+                    </span>
+                    <span id="invWallet762mmText" className="home-text227 top10-text">
+                      <span>{user.wallet_7_62mm.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <div className="home-container30">
+                    <span className="home-text230 top10-text">
+                      <span>In Game:</span>
+                      <br></br>
+                    </span>
+                    <span id="invGame762mmText" className="home-text233 top10-text">
+                      <span>{user.game_7_62mm.toString()}</span>
+                      <br></br>
+                    </span>
+                  </div>
+                  <input
+                    type="number"
+                    id="inv762mmInput"
+                    max="9999"
+                    min="1"
+                    step="1"
+                    placeholder="Enter Amount"
+                    className="home-textinput04 input inv-consume-input"
+                  />
+                  <img
+                    id="inv762mmConsumeButton"
+                    alt="image"
+                    src="/playground_assets/consume%20button-500h.png"
+                    className="home-image21 inv-consume-button"
+                  />
                 </div>
-                <div className="home-container26">
-                  <span className="home-text206 top10-text">
-                    <span>In Game:</span>
-                    <br></br>
-                  </span>
-                  <span id="invGame9mmText" className="home-text209 top10-text">
-                    <span>{user.game_9mm.toString()}</span>
-                    <br></br>
-                  </span>
-                </div>
-                <input
-                  type="number"
-                  id="inv9mmInput"
-                  max="9999"
-                  min="1"
-                  step="1"
-                  placeholder="Enter Amount"
-                  className="home-textinput02 input inv-consume-input"
-                />
-                <img
-                  id="inv9mmConsumeButton"
-                  alt="image"
-                  src="/playground_assets/consume%20button-500h.png"
-                  className="home-image19 inv-consume-button"
-                />
-              </div>
-              <div className="home-ammo-556-mm item-container-big">
-                <h1 className="home-item-name07 top10-text">5.56 mm</h1>
-                <img
-                  alt="image"
-                  src="/playground_assets/5_56_inv-200h.png"
-                  className="home-item-image07 item-image"
-                />
-                <div className="home-container27">
-                  <span className="home-text212 top10-text">
-                    <span>In Wallet:</span>
-                    <br></br>
-                  </span>
-                  <span id="invWallet556mmText" className="home-text215 top10-text">
-                    <span>{user.wallet_5_65mm.toString()}</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-container28">
-                  <span className="home-text218 top10-text">
-                    <span>In Game:</span>
-                    <br></br>
-                  </span>
-                  <span id="invGame556mmText" className="home-text221 top10-text">
-                    <span>{user.game_5_65mm.toString()}</span>
-                    <br></br>
-                  </span>
-                </div>
-                <input
-                  type="number"
-                  id="inv556mmInput"
-                  max="9999"
-                  min="1"
-                  step="1"
-                  placeholder="Enter Amount"
-                  className="home-textinput03 input inv-consume-input"
-                />
-                <img
-                  id="inv556mmConsumeButton"
-                  alt="image"
-                  src="/playground_assets/consume%20button-500h.png"
-                  className="home-image20 inv-consume-button"
-                />
-              </div>
-              <div className="home-ammo-762-mm item-container-big">
-                <h1 className="home-item-name08 top10-text">7.62 mm</h1>
-                <img
-                  alt="image"
-                  src="/playground_assets/7_62_inv-200h.png"
-                  className="home-item-image08 item-image"
-                />
-                <div className="home-container29">
-                  <span className="home-text224 top10-text">
-                    <span>In Wallet:</span>
-                    <br></br>
-                  </span>
-                  <span id="invWallet762mmText" className="home-text227 top10-text">
-                    <span>{user.wallet_7_62mm.toString()}</span>
-                    <br></br>
-                  </span>
-                </div>
-                <div className="home-container30">
-                  <span className="home-text230 top10-text">
-                    <span>In Game:</span>
-                    <br></br>
-                  </span>
-                  <span id="invGame762mmText" className="home-text233 top10-text">
-                    <span>{user.game_7_62mm.toString()}</span>
-                    <br></br>
-                  </span>
-                </div>
-                <input
-                  type="number"
-                  id="inv762mmInput"
-                  max="9999"
-                  min="1"
-                  step="1"
-                  placeholder="Enter Amount"
-                  className="home-textinput04 input inv-consume-input"
-                />
-                <img
-                  id="inv762mmConsumeButton"
-                  alt="image"
-                  src="/playground_assets/consume%20button-500h.png"
-                  className="home-image21 inv-consume-button"
-                />
-              </div>
+              }
             </div>
           )}
         </div>
@@ -2301,6 +2373,26 @@ const Home = (props) => {
       {menu.Mint && (
         <div className="home-mint-page">
           <div className="home-items">
+            <div className="home-mint-info-container">
+              <div className="home-text168">
+                <img
+                  src="/playground_assets/info_64x64-200h.png"
+                  alt="image"
+                  className="home-image18"
+                />
+                <span className="home-price-text top10-text">
+                  You need to give allowance to Trasury contract in order to
+                  consume items and use in the game. By consuming the items, items
+                  will be sent to the Treasury contract and you will obtain the
+                  same item in the game. Please approve allowance to proceed.
+                </span>
+              </div>
+              <img
+                src="/playground_assets/approve%20button-200h.png"
+                alt="image"
+                className="home-image19"
+              />
+            </div>
             <div className="home-item item-container-big">
               <h1 className="home-item-name09 top10-text">Knife</h1>
               <img
