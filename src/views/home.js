@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet'
 import './home.css'
 // My libraries
 import { useState, useEffect } from 'react';
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 // Firebase
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
@@ -37,150 +37,32 @@ const Home = (props) => {
   /////////           Variables             //////////
   ////////////////////////////////////////////////////
 
-  const contractAddress = '0x67F6cd2e7B1840a51A98E38cE58D2f4537a45060'; // item Contract
-  const contractAbi = [
+  const tokenContract = '0x2B0758ee301AF7AA2C5fA9B7060648fbB2D0dDBD';
+  const itemContract = '0xa2B1aD5a0c739A4AbDd9943cF2cA0AE3ad90E67A';
+  const treasuryContract = '0xA10c223751b208BF18dc0CA9e087B0577fE5b6A8';
+
+  const tokenAbi = [
     {
-      "inputs": [],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
           "internalType": "address",
           "name": "account",
           "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "bool",
-          "name": "approved",
-          "type": "bool"
         }
       ],
-      "name": "ApprovalForAll",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
+      "name": "balanceOf",
+      "outputs": [
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "previousOwner",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "newOwner",
-          "type": "address"
-        }
-      ],
-      "name": "OwnershipTransferred",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "from",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256[]",
-          "name": "ids",
-          "type": "uint256[]"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256[]",
-          "name": "values",
-          "type": "uint256[]"
-        }
-      ],
-      "name": "TransferBatch",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "from",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "indexed": false,
           "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
+          "name": "",
           "type": "uint256"
         }
       ],
-      "name": "TransferSingle",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "value",
-          "type": "string"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        }
-      ],
-      "name": "URI",
-      "type": "event"
-    },
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ];
+  const itemAbi = [
     {
       "inputs": [
         {
@@ -243,95 +125,6 @@ const Home = (props) => {
         },
         {
           "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        }
-      ],
-      "name": "burn",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "ids",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "values",
-          "type": "uint256[]"
-        }
-      ],
-      "name": "burnBatch",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        }
-      ],
-      "name": "exists",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        }
-      ],
-      "name": "isApprovedForAll",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
         },
@@ -373,72 +166,11 @@ const Home = (props) => {
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "owner",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "renounceOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
+    }
+  ];
+  const treasuryAbi = [
     {
       "inputs": [
-        {
-          "internalType": "address",
-          "name": "from",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "ids",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "amounts",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        }
-      ],
-      "name": "safeBatchTransferFrom",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "from",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "to",
-          "type": "address"
-        },
         {
           "internalType": "uint256",
           "name": "id",
@@ -448,58 +180,9 @@ const Home = (props) => {
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
         }
       ],
-      "name": "safeTransferFrom",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "internalType": "bool",
-          "name": "approved",
-          "type": "bool"
-        }
-      ],
-      "name": "setApprovalForAll",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "newuri",
-          "type": "string"
-        }
-      ],
-      "name": "setURI",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "interfaceId",
-          "type": "bytes4"
-        }
-      ],
-      "name": "supportsInterface",
+      "name": "consume",
       "outputs": [
         {
           "internalType": "bool",
@@ -507,61 +190,35 @@ const Home = (props) => {
           "type": "bool"
         }
       ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        }
-      ],
-      "name": "totalSupply",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "newOwner",
-          "type": "address"
-        }
-      ],
-      "name": "transferOwnership",
-      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "internalType": "uint256[]",
+          "name": "ids",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "amounts",
+          "type": "uint256[]"
         }
       ],
-      "name": "uri",
+      "name": "consumeBatch",
       "outputs": [
         {
-          "internalType": "string",
+          "internalType": "bool",
           "name": "",
-          "type": "string"
+          "type": "bool"
         }
       ],
-      "stateMutability": "view",
+      "stateMutability": "nonpayable",
       "type": "function"
     }
-  ]; // the ABI of the smart contract 
+  ];
+
   const desiredChainId = '0x118'; // Era Test: 118, Era Main: 144
   /*
     *  TESTNET
@@ -940,18 +597,24 @@ const Home = (props) => {
 
   // Get item and token balances
   async function GetBalances() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    
     // Get token balance
+    const tokenCont = new ethers.Contract(tokenContract, tokenAbi, provider);
 
+    const tBalance = await tokenCont.balanceOf(window.ethereum.selectedAddress);
+    const balanceInEthers = utils.formatUnits(tBalance, 'ether'); // from uint256 to Ether
+    const formattedBalance = parseInt(parseFloat(balanceInEthers)); // View as Ethers, without decimals like 10.2 tokens
+    user.tokenBalance = formattedBalance;
 
     // Get item balances
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(contractAddress, contractAbi, provider);
+    const itemCont = new ethers.Contract(itemContract, itemAbi, provider);
 
     const adr = window.ethereum.selectedAddress;
     const tokenIds = [0, 1, 2];
-    const addresses = [adr, adr, adr];
-    
-    const batchBalances = await contract.balanceOfBatch(addresses, tokenIds);
+    const addresses = [adr, adr, adr];    
+    const batchBalances = await itemCont.balanceOfBatch(addresses, tokenIds);
+
     user.knifeAmount = batchBalances[0];
     user.glockAmount = batchBalances[1];
     user.shotgunAmount = batchBalances[2];
@@ -1027,7 +690,7 @@ const Home = (props) => {
     const signer = provider.getSigner();
   
     // Create the contract instance
-    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+    const contract = new ethers.Contract(itemContract, itemAbi, signer);
   
     // Send the transaction
     const account = connectedWallet;
@@ -1058,7 +721,7 @@ const Home = (props) => {
     const signer = provider.getSigner();
   
     // Create the contract instance
-    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+    const contract = new ethers.Contract(itemContract, itemAbi, signer);
   
     // Send the transaction
     const account = connectedWallet;
@@ -1177,6 +840,9 @@ const Home = (props) => {
     - Back buttons again for set username and delete
     - onClick={() => SetUsername(document.getElementById("newUsernameInput").value)} --> to set username button
     - Add delete user button as well
+
+    // Profile
+    - {user.tokenBalance.toString()} to token balance
 
     // Mint Page
     - {connectedWallet === "" && <div> } to connect wallet IMAGE, shortWallet to text
@@ -1791,7 +1457,7 @@ const Home = (props) => {
                       id="profileTokenBalanceText"
                       className="home-text101 profile-basic-text"
                     >
-                      0
+                      {user.tokenBalance.toString()}
                     </span>
                   </div>
                 </div>
