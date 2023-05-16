@@ -37,11 +37,59 @@ const Home = (props) => {
   /////////           Variables             //////////
   ////////////////////////////////////////////////////
 
-  const tokenContract = '0x2B0758ee301AF7AA2C5fA9B7060648fbB2D0dDBD';
-  const itemContract = '0xa2B1aD5a0c739A4AbDd9943cF2cA0AE3ad90E67A';
-  const treasuryContract = '0xA10c223751b208BF18dc0CA9e087B0577fE5b6A8';
+  const tokenAddress = '0x2B0758ee301AF7AA2C5fA9B7060648fbB2D0dDBD';
+  const itemAddress = '0xa2B1aD5a0c739A4AbDd9943cF2cA0AE3ad90E67A';
+  const treasuryAddress = '0xA10c223751b208BF18dc0CA9e087B0577fE5b6A8';
 
   const tokenAbi = [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        }
+      ],
+      "name": "allowance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
     {
       "inputs": [
         {
@@ -119,6 +167,30 @@ const Home = (props) => {
           "type": "address"
         },
         {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "isApprovedForAll",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
           "internalType": "uint256",
           "name": "id",
           "type": "uint256"
@@ -163,6 +235,24 @@ const Home = (props) => {
         }
       ],
       "name": "mintBatch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "approved",
+          "type": "bool"
+        }
+      ],
+      "name": "setApprovalForAll",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -480,6 +570,57 @@ const Home = (props) => {
     MenuButton("Profile");
   }
 
+  async function DeleteUser() {
+    // Writes wallet address to the DB
+    const authUser = auth.currentUser;
+
+    console.log("DELETING CURRENT USER !!!");
+    console.log("Display name: " + authUser.displayName);
+    console.log("User ID: " + authUser.uid);
+    console.log("Nickname: " + user.nickname);
+
+    await deleteDoc(doc(db, "users/", authUser.uid));
+    console.log("Deleted from DB. Now deleting auth info");
+
+    // Delete the user account
+    deleteUser(authUser).then(() => {
+      console.log("Successfully deleted user");
+      MenuButton("Main");
+
+    }).catch((error) => {
+      console.log("Error deleting user:", error);
+      console.log("Requiring new login to try again!");
+      // Make user re-login before deleting
+      signInWithPopup(auth, provider).then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const userLogin = result.user;        
+        
+        // Try to delete the user account again
+        deleteUser(userLogin).then(() => {
+          console.log("Successfully deleted user");
+          MenuButton("Main");
+        }).catch((error) => {        
+          console.log("Error deleting user:", error);
+        });
+        
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        console.log("ERROR: " + error.code);
+    
+        const errorMessage = error.message;
+        console.log("ERROR: " + error.message);
+    
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+      });
+    }); 
+  }
 
   ////////////////////////////////////////////////////
   /////////             WEB 3               //////////
@@ -529,6 +670,7 @@ const Home = (props) => {
         var short = wAddress.slice(0, 6) + "...." + wAddress.slice(38);
         setShortWallet(short);
         GetBalances();
+        CheckApprovals();
       } catch (error) {
         console.log('Error connecting...');
       }
@@ -585,6 +727,7 @@ const Home = (props) => {
           var short = newAddress.slice(0, 6) + "...." + newAddress.slice(38);
           setShortWallet(short);
           GetBalances();
+          CheckApprovals();
         }
       };
       handleWalletAddressChange(); // initial check
@@ -600,20 +743,20 @@ const Home = (props) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     
     // Get token balance
-    const tokenCont = new ethers.Contract(tokenContract, tokenAbi, provider);
+    const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
 
-    const tBalance = await tokenCont.balanceOf(window.ethereum.selectedAddress);
+    const tBalance = await tokenContract.balanceOf(window.ethereum.selectedAddress);
     const balanceInEthers = utils.formatUnits(tBalance, 'ether'); // from uint256 to Ether
     const formattedBalance = parseInt(parseFloat(balanceInEthers)); // View as Ethers, without decimals like 10.2 tokens
     user.tokenBalance = formattedBalance;
 
     // Get item balances
-    const itemCont = new ethers.Contract(itemContract, itemAbi, provider);
+    const itemContract = new ethers.Contract(itemAddress, itemAbi, provider);
 
     const adr = window.ethereum.selectedAddress;
     const tokenIds = [0, 1, 2];
     const addresses = [adr, adr, adr];    
-    const batchBalances = await itemCont.balanceOfBatch(addresses, tokenIds);
+    const batchBalances = await itemContract.balanceOfBatch(addresses, tokenIds);
 
     user.knifeAmount = batchBalances[0];
     user.glockAmount = batchBalances[1];
@@ -622,62 +765,85 @@ const Home = (props) => {
     RenderNow(true);
   }
   
-
-  async function DeleteUser() {
-    // Writes wallet address to the DB
-    const authUser = auth.currentUser;
-
-    console.log("DELETING CURRENT USER !!!");
-    console.log("Display name: " + authUser.displayName);
-    console.log("User ID: " + authUser.uid);
-    console.log("Nickname: " + user.nickname);
-
-    await deleteDoc(doc(db, "users/", authUser.uid));
-    console.log("Deleted from DB. Now deleting auth info");
-
-    // Delete the user account
-    deleteUser(authUser).then(() => {
-      console.log("Successfully deleted user");
-      MenuButton("Main");
-
-    }).catch((error) => {
-      console.log("Error deleting user:", error);
-      console.log("Requiring new login to try again!");
-      // Make user re-login before deleting
-      signInWithPopup(auth, provider).then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const userLogin = result.user;        
-        
-        // Try to delete the user account again
-        deleteUser(userLogin).then(() => {
-          console.log("Successfully deleted user");
-          MenuButton("Main");
-        }).catch((error) => {        
-          console.log("Error deleting user:", error);
-        });
-        
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        console.log("ERROR: " + error.code);
+  // Check Approvals
+  async function CheckApprovals() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
     
-        const errorMessage = error.message;
-        console.log("ERROR: " + error.message);
-    
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-      });
-    });
+    // Check mint approval
+    const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
 
-    
+    // Get token allowance for item Contract to transfer funds
+    var tokenAllowance = await tokenContract.allowance(window.ethereum.selectedAddress, itemAddress);
+    tokenAllowance = utils.formatUnits(tokenAllowance, 'ether');
+    setMintApprove(tokenAllowance > 10000 ? true : false);
 
-    
+    // Check item approval to consume
+    const itemContract = new ethers.Contract(itemAddress, itemAbi, provider);
+    setConsumeApprove(await itemContract.isApprovedForAll(window.ethereum.selectedAddress, treasuryAddress));
+
+    RenderNow(true);
   }
+
+  async function approveForMint() {
+    console.log("Givin approval of 100k tokens to spend");
+
+    // Connect to the provider
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+  
+    // Get the signer
+    const signer = provider.getSigner();
+  
+    // Create the contract instance
+    const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, signer);
+
+    // Approval amount
+    var amount = ethers.utils.parseUnits("1000000", "ether");
+  
+    // Send the transaction
+    const transaction = await tokenContract.approve(itemAddress, amount);
+
+    // Wait for the transaction to be mined
+    const receipt = await transaction.wait();
+
+    // Check the status of the transaction
+    if (receipt.status === 1) {
+      console.log("Transaction successful!");
+      setMintApprove(true);
+      RenderNow(true);
+    } else {
+      console.log("Transaction failed!");
+    }
+  }  
+
+  async function approveForConsume() {
+    console.log("Givin approval of items to consume");
+
+    // Connect to the provider
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+  
+    // Get the signer
+    const signer = provider.getSigner();
+  
+    // Create the contract instance
+    const itemContract = new ethers.Contract(itemAddress, itemAbi, signer);
+  
+    // Send the transaction
+    const transaction = await itemContract.setApprovalForAll(treasuryAddress, true);
+
+    // Wait for the transaction to be mined
+    const receipt = await transaction.wait();
+
+    // Check the status of the transaction
+    if (receipt.status === 1) {
+      console.log("Transaction successful!");
+      setConsumeApprove(true);
+      RenderNow(true);
+    } else {
+      console.log("Transaction failed!");
+    }
+  }  
 
   async function MintItem(itemID, amount) {
     console.log("Minting item. ID: " + itemID + "   Amount: " + amount);
@@ -690,7 +856,7 @@ const Home = (props) => {
     const signer = provider.getSigner();
   
     // Create the contract instance
-    const contract = new ethers.Contract(itemContract, itemAbi, signer);
+    const contract = new ethers.Contract(itemAddress, itemAbi, signer);
   
     // Send the transaction
     const account = connectedWallet;
@@ -721,7 +887,7 @@ const Home = (props) => {
     const signer = provider.getSigner();
   
     // Create the contract instance
-    const contract = new ethers.Contract(itemContract, itemAbi, signer);
+    const contract = new ethers.Contract(itemAddress, itemAbi, signer);
   
     // Send the transaction
     const account = connectedWallet;
@@ -843,12 +1009,14 @@ const Home = (props) => {
 
     // Profile
     - {user.tokenBalance.toString()} to token balance
+    - onClick={()=> approveForConsume()} to approve button
 
     // Mint Page
     - {connectedWallet === "" && <div> } to connect wallet IMAGE, shortWallet to text
     - onClick={()=> ConnectWallet()} to connect wallet image
     - {!mintApproved && connectedWallet != "" &&  <div> } to mint info container
     - {mintApproved && to all mint button images!
+    - onClick={()=> approveForMint()} to approve button
 
     // Inevntory
     - Add {user.knifeAmount.toString()} and other inventor info to the places
@@ -1752,6 +1920,7 @@ const Home = (props) => {
                     </span>
                   </div>
                   <img
+                    onClick={()=> approveForConsume()}
                     src="/playground_assets/approve%20button-200h.png"
                     alt="image"
                     className="home-image19"
@@ -2090,6 +2259,7 @@ const Home = (props) => {
                   </span>
                 </div>
                 <img
+                  onClick={()=> approveForMint()}
                   src="/playground_assets/approve%20button-200h.png"
                   alt="image"
                   className="home-image19"
