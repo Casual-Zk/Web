@@ -470,17 +470,14 @@ const Home = (props) => {
   // Detect auth state
   onAuthStateChanged(auth, _user => {
     if (_user && !userlogin) {
-      console.log("logged in!");
       LoginProccess();
     } else if (!_user) {
-      console.log("No user!");
       setUserLogin(false);
     }
   });   
 
   async function LoginProccess() {
     // Get user data from DB
-    console.log("login proccess starts");
     const _user = auth.currentUser;
     const docSnap = await getDoc(doc(db, "users/", _user.uid));
 
@@ -489,8 +486,7 @@ const Home = (props) => {
       console.log("docSnap doesn't exists! Adding new user: displayName: "+_user.displayName+", ID: "+_user.uid);
       await setDoc(doc(db, "users/", _user.uid), {
         nickname: _user.displayName,
-        userID: _user.uid
-      }, {mergeFields: ["nickname", "userID"] });
+      }, {mergeFields: ["nickname"] });
 
       console.log("Adding the info to local!");
 
@@ -506,23 +502,21 @@ const Home = (props) => {
       if (data.hasOwnProperty('eggs')) {
         user.eggs = data.eggs;
       }  
-      if (data.hasOwnProperty('ammo_5_65mm')) {
-        user.game_5_65mm = data.ammo_5_65mm;
+      if (data.hasOwnProperty('game_5_65mm')) {
+        user.game_5_65mm = data.game_5_65mm;
       }     
-      if (data.hasOwnProperty('ammo_7_62mm')) {
-        user.game_7_62mm = data.ammo_7_62mm;
+      if (data.hasOwnProperty('game_7_62mm')) {
+        user.game_7_62mm = data.game_7_62mm;
       }     
-      if (data.hasOwnProperty('ammo_9mm')) {
-        user.game_9mm = data.ammo_9mm;
+      if (data.hasOwnProperty('game_9mm')) {
+        user.game_9mm = data.game_9mm;
       }     
-      if (data.hasOwnProperty('ammo_12_gauge')) {
-        user.game_12_gauge = data.ammo_12_gauge;
+      if (data.hasOwnProperty('game_12_gauge')) {
+        user.game_12_gauge = data.game_12_gauge;
       }    
     }        
 
     setUserLogin(true);
-    console.log("Finishing the proccess!");
-    console.log(user.nickname);
   } 
 
   // Logout
@@ -746,21 +740,27 @@ const Home = (props) => {
     const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
 
     const tBalance = await tokenContract.balanceOf(window.ethereum.selectedAddress);
-    const balanceInEthers = utils.formatUnits(tBalance, 'ether'); // from uint256 to Ether
-    const formattedBalance = parseInt(parseFloat(balanceInEthers)); // View as Ethers, without decimals like 10.2 tokens
+    const balanceInEthers = utils.formatUnits(tBalance, 'ether'); // wei to ether
+    const formattedBalance = parseInt(parseFloat(balanceInEthers)); // Remove decimals
     user.tokenBalance = formattedBalance;
 
     // Get item balances
     const itemContract = new ethers.Contract(itemAddress, itemAbi, provider);
 
-    const adr = window.ethereum.selectedAddress;
-    const tokenIds = [0, 1, 2];
-    const addresses = [adr, adr, adr];    
+    const a = window.ethereum.selectedAddress;
+    const tokenIds = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    const addresses =[a, a, a, a, a, a, a, a, a];    
     const batchBalances = await itemContract.balanceOfBatch(addresses, tokenIds);
 
     user.knifeAmount = batchBalances[0];
     user.glockAmount = batchBalances[1];
     user.shotgunAmount = batchBalances[2];
+    user.m4Amount = batchBalances[3];
+    user.awpAmount = batchBalances[4];
+    user.wallet_12_gauge = batchBalances[5];
+    user.wallet_9mm = batchBalances[6];
+    user.wallet_5_65mm = batchBalances[7];
+    user.wallet_7_62mm = batchBalances[8];
     setUser(user);
     RenderNow(true);
   }
@@ -856,12 +856,12 @@ const Home = (props) => {
     const signer = provider.getSigner();
   
     // Create the contract instance
-    const contract = new ethers.Contract(itemAddress, itemAbi, signer);
+    const itemContract = new ethers.Contract(itemAddress, itemAbi, signer);
   
     // Send the transaction
-    const account = connectedWallet;
+    const account = window.ethereum.selectedAddress;
     const data = "0x00";
-    const transaction = await contract.mint(account, itemID, amount, data);
+    const transaction = await itemContract.mint(account, itemID, amount, data);
 
     // Wait for the transaction to be mined
     const receipt = await transaction.wait();
@@ -869,10 +869,54 @@ const Home = (props) => {
     // Check the status of the transaction
     if (receipt.status === 1) {
       console.log("Transaction successful!");
-      setMintResult("Minted! ID: " + itemID + " - Amount: " + amount);
+      MintSuccess(itemID, amount);
+
+      // Update token balance
+      const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
+      const tBalance = await tokenContract.balanceOf(window.ethereum.selectedAddress);
+      const balanceInEthers = utils.formatUnits(tBalance, 'ether'); // wei to ether
+      const formattedBalance = parseInt(parseFloat(balanceInEthers)); // Remove decimals
+      user.tokenBalance = formattedBalance;
+      RenderNow(true);
     } else {
       console.log("Transaction failed!");
     }
+  }
+
+  function MintSuccess(id, amount) {
+    switch(id) {
+      case 0:
+        user.knifeAmount = Number(user.knifeAmount) + Number(amount);
+        break;
+      case 1:
+        user.glockAmount = Number(user.glockAmount) + Number(amount);
+        break;
+      case 2:
+        user.shotgunAmount = Number(user.shotgunAmount) + Number(amount);
+        break;
+      case 3:
+        user.m4Amount = Number(user.m4Amount) + Number(amount);
+        break;
+      case 4:
+        user.awpAmount = Number(user.awpAmount) + Number(amount);
+        break;
+      case 5:
+        user.wallet_12_gauge = Number(user.wallet_12_gauge) + Number(amount);
+        break;
+      case 6:
+        user.wallet_9mm = Number(user.wallet_9mm) + Number(amount);
+        break;
+      case 7:
+        user.wallet_5_65mm = Number(user.wallet_5_65mm) + Number(amount);
+        break;
+      case 8:
+        user.wallet_7_62mm = Number(user.wallet_7_62mm) + Number(amount);
+        break;
+      break;
+    }
+    
+    setUser(user);
+    RenderNow(true);
   }
 
   async function ConsumeItem(itemID, amount) {
@@ -887,12 +931,10 @@ const Home = (props) => {
     const signer = provider.getSigner();
   
     // Create the contract instance
-    const contract = new ethers.Contract(itemAddress, itemAbi, signer);
+    const treasuryContract = new ethers.Contract(treasuryAddress, treasuryAbi, signer);
   
     // Send the transaction
-    const account = connectedWallet;
-    const data = "0x00";
-    const transaction = await contract.burn(account, itemID, amount);
+    const transaction = await treasuryContract.consume(itemID, amount);
 
     // Wait for the transaction to be mined
     const receipt = await transaction.wait();
@@ -907,32 +949,97 @@ const Home = (props) => {
     }
   }
 
+  /**
+   * @param {Number} itemID
+   * @param {Number} amount 
+   */
   async function ItemConsumed(itemID, amount) {
     console.log("Writing consumed item to the db. ID: " + itemID + " - Amount: " + amount);
     const authUser = auth.currentUser;
     const docSnap = await getDoc(doc(db, "users/", authUser.uid));
 
-    if (itemID == 1) {
-      // Check how many bullets the user has
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        console.log("Document data:", data);
+    // Check if user data exist in the first place
+    if (docSnap.exists()) {
+      const data = docSnap.data();
 
-        // Check ammo_9mm data field exist?
-        // if it exist, get the number from that field and add it to the local amount
-        if (data.hasOwnProperty('ammo_9mm')) {
-          const existingAmmo = data.ammo_9mm;
-          amount += existingAmmo;
-        }
-      } else {
-        // docSnap.data() will be undefined in this case
-        console.log("No such document!");
-      }      
+      switch(itemID) {
+        case 5:
+          // Subtract the consumed amount from wallet amount
+          user.wallet_12_gauge -= amount;
 
-      await setDoc(doc(db, "users/", authUser.uid), {
-        ammo_9mm: amount
-      }, {mergeFields: ["ammo_9mm"] });
-    }
+          // Get current number and add to the consumed amount      
+          if (data.hasOwnProperty('game_12_gauge')) {
+            const existingAmmo = data.game_12_gauge;
+            amount = Number(amount) + Number(existingAmmo);
+          }
+
+          // Write updated number to db
+          await setDoc(doc(db, "users/", authUser.uid), {
+            game_12_gauge: amount
+          }, {mergeFields: ["game_12_gauge"] });
+
+          // Update user
+          user.game_12_gauge = amount;
+          break;
+        case 6:
+          // Subtract the consumed amount from wallet amount
+          user.wallet_9mm -= amount;
+
+          // Get current number and add to the consumed amount      
+          if (data.hasOwnProperty('game_9mm')) {
+            const existingAmmo = data.game_9mm;
+            amount = Number(amount) + Number(existingAmmo);
+          }
+
+          // Write updated number to db
+          await setDoc(doc(db, "users/", authUser.uid), {
+            game_9mm: amount
+          }, {mergeFields: ["game_9mm"] });
+
+          // Update user
+          user.game_9mm = amount;
+          break;
+        case 7:
+          user.wallet_5_65mm -= amount;
+    
+          if (data.hasOwnProperty('game_5_65mm')) {
+            const existingAmmo = data.game_5_65mm;
+            amount = Number(amount) + Number(existingAmmo);
+          }
+          await setDoc(doc(db, "users/", authUser.uid), {
+            game_5_65mm: amount
+          }, {mergeFields: ["game_5_65mm"] });
+
+          user.game_5_65mm = amount;
+          break;
+        case 8:
+          user.wallet_7_62mm -= amount;
+    
+          if (data.hasOwnProperty('game_7_62mm')) {
+            const existingAmmo = data.game_7_62mm;
+            amount = Number(amount) + Number(existingAmmo);
+          }
+          await setDoc(doc(db, "users/", authUser.uid), {
+            game_7_62mm: amount
+          }, {mergeFields: ["game_7_62mm"] });
+
+          user.game_7_62mm = amount;
+          break;
+        break;
+      }
+    } else {
+      console.log("docSnap doesn't exists! Adding new user: displayName: "+_user.displayName+", ID: "+_user.uid);
+
+      await setDoc(doc(db, "users/", _user.uid), {
+        nickname: _user.displayName,
+      }, {mergeFields: ["nickname"] });
+
+      console.log("Adding the info to local!");
+      user.nickname = _user.displayName;
+    }   
+    
+    setUser(user);  
+    RenderNow(true);     
   }
 
   async function ClaimRewardButton() {
@@ -1009,7 +1116,6 @@ const Home = (props) => {
 
     // Profile
     - {user.tokenBalance.toString()} to token balance
-    - onClick={()=> approveForConsume()} to approve button
 
     // Mint Page
     - {connectedWallet === "" && <div> } to connect wallet IMAGE, shortWallet to text
@@ -1017,6 +1123,7 @@ const Home = (props) => {
     - {!mintApproved && connectedWallet != "" &&  <div> } to mint info container
     - {mintApproved && to all mint button images!
     - onClick={()=> approveForMint()} to approve button
+    - onClick={()=> MintItem(1, document.getElementById("lotteryWeekInput").value)} to mint item buttons. (id, amount)
 
     // Inevntory
     - Add {user.knifeAmount.toString()} and other inventor info to the places
@@ -1024,6 +1131,8 @@ const Home = (props) => {
     - Add {((user.wallet_9mm > 0) || (user.game_9mm > 0)) && to the inventory ammo containers
     - {!consumeApproved && connectedWallet != "" && to info container
     - {consumeApproved && to item containers' consume buttons
+    - onClick={()=> approveForConsume()} to approve button
+    - onClick={()=> ConsumeItem(1, document.getElementById("lotteryWeekInput").value))} to consume button (id, amount)
   */
 
   
@@ -2072,7 +2181,7 @@ const Home = (props) => {
                   />
                   {consumeApproved &&
                     <img
-                      onClick={() => testConsume(3, document.getElementById("invGaugeInput").value)}
+                      onClick={()=> ConsumeItem(5, document.getElementById("invGaugeInput").value)}
                       id="invGaugeConsumeButton"
                       alt="image"
                       src="/playground_assets/consume%20button-500h.png"
@@ -2120,6 +2229,7 @@ const Home = (props) => {
                   />
                   {consumeApproved &&
                     <img
+                      onClick={()=> ConsumeItem(6, document.getElementById("inv9mmInput").value)}
                       id="inv9mmConsumeButton"
                       alt="image"
                       src="/playground_assets/consume%20button-500h.png"
@@ -2167,6 +2277,7 @@ const Home = (props) => {
                   />
                   {consumeApproved &&
                     <img
+                      onClick={()=> ConsumeItem(7, document.getElementById("inv556mmInput").value)}
                       id="inv556mmConsumeButton"
                       alt="image"
                       src="/playground_assets/consume%20button-500h.png"
@@ -2214,6 +2325,7 @@ const Home = (props) => {
                   />
                   {consumeApproved &&
                     <img
+                      onClick={()=> ConsumeItem(8, document.getElementById("inv762mmInput").value)}
                       id="inv762mmConsumeButton"
                       alt="image"
                       src="/playground_assets/consume%20button-500h.png"
@@ -2288,6 +2400,7 @@ const Home = (props) => {
               </div>
               {mintApproved && 
                 <img
+                  onClick={()=> MintItem(0, document.getElementById("mintKnifeAmountInput").value)}
                   id="mintKnifeButton"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
@@ -2317,6 +2430,7 @@ const Home = (props) => {
               </div>
               {mintApproved && 
                 <img
+                  onClick={()=> MintItem(1, document.getElementById("mintGlockAmountInput").value)}
                   id="mintGlockButton"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
@@ -2346,6 +2460,7 @@ const Home = (props) => {
               </div>
               {mintApproved && 
                 <img
+                  onClick={()=> MintItem(2, document.getElementById("mintShotgunAmountInput").value)}
                   id="mintShotgunButton"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
@@ -2375,6 +2490,7 @@ const Home = (props) => {
               </div>
               {mintApproved && 
                 <img
+                  onClick={()=> MintItem(3, document.getElementById("mintM4AmountInput").value)}
                   id="mintM4Button"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
@@ -2407,6 +2523,7 @@ const Home = (props) => {
               </div>
               {mintApproved && 
               <img
+                  onClick={()=> MintItem(4, document.getElementById("mintAWPAmountInput").value)}
                   id="mintAWPButton"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
@@ -2441,6 +2558,7 @@ const Home = (props) => {
               </div>
               {mintApproved && 
                 <img
+                  onClick={()=> MintItem(5, document.getElementById("mintGaugeAmountInput").value)}
                   id="mintGaugeButton"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
@@ -2475,6 +2593,7 @@ const Home = (props) => {
               </div>
               {mintApproved && 
                 <img
+                  onClick={()=> MintItem(6, document.getElementById("mint9mmAmountInput").value)}
                   id="mint9mmButton"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
@@ -2509,6 +2628,7 @@ const Home = (props) => {
               </div>
               {mintApproved && 
                 <img
+                  onClick={()=> MintItem(7, document.getElementById("mint556mmAmountInput").value)}
                   id="mint556mmButton"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
@@ -2543,6 +2663,7 @@ const Home = (props) => {
               </div>
               {mintApproved && 
                 <img
+                  onClick={()=> MintItem(8, document.getElementById("mint762mmAmountInput").value)}
                   id="mint762mmButton"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
