@@ -9,7 +9,7 @@ import { ethers, utils } from "ethers";
 // Firebase
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, deleteUser} from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword , onAuthStateChanged, signOut, sendEmailVerification, sendPasswordResetEmail, reauthenticateWithCredential, deleteUser} from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { func, number } from 'prop-types';
 import { async } from 'q';
@@ -377,10 +377,15 @@ const Home = (props) => {
   // Variables
   const [connectedWallet, setConnectedWallet] = useState("");
   const [shortWallet, setShortWallet] = useState("");
-  const [userlogin, setUserLogin] = useState(Boolean);
   const [mintApproved, setMintApprove] = useState(Boolean);
   const [consumeApproved, setConsumeApprove] = useState(Boolean);
   const [mintResult, setMintResult] = useState("");
+  
+  const [userlogin, setUserLogin] = useState(Boolean);
+  const [verifyWarning, setVerifyWarning] = useState("");
+  const [registerWarning, setRegisterWarning] = useState("");
+  const [resetWarning, setResetWarning] = useState("");
+
   var [weekNum, setWeekNum] = useState(Number);
 
   // Just for render, useless vars
@@ -442,35 +447,57 @@ const Home = (props) => {
   /////////            Database             //////////
   ////////////////////////////////////////////////////
 
-  // Google Login
-  /*
-  function GoogleLogin(){
-    signInWithPopup(auth, provider).then((result) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
-      // The signed-in user info.
-      const userLogin = result.user;
-      // IdP data available using getAdditionalUserInfo(result)
-    }).catch((error) => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      console.log("ERROR: " + error.code);
-  
-      const errorMessage = error.message;
-      console.log("ERROR: " + error.message);
-  
-      // The email of the user's account used.
-      const email = error.customData.email;
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
-    });
-  }
+  /**
+   *    TO-DO
+   * 
+   *  -> login warning text
+   *  -> Create a set username/walletconnect/Link wallet UI
+   *  -> Email verification UI, warning text as well
+   *  -> Prevent verification and reset email spams
+   *  -> Account deleted container
+   *
   */
 
-  // Login
+  // Register
+  function Register(email, password, password2){
+    // Check if the passwords are the same
+    if (password !== password2) {
+      setRegisterWarning("Passwords are not the same!");
+    }
 
-  
+    //const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in 
+      //user = userCredential.user;
+      // ... No need to use user data, onAuthStateChange uses it already!
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      console.log("Register ERROR code: " + errorCode);
+      const errorMessage = error.message;
+      console.log("Register ERROR message: " + errorMessage);
+      // ..
+    });
+  }
+
+  // Login
+  function Login(email, password){
+    //const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in 
+      //const user = userCredential.user;
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      console.log("Login ERROR code: " + errorCode);
+      const errorMessage = error.message;
+      console.log("Login ERROR message: " + errorMessage);
+    });
+  }
+
   // Detect auth state
   onAuthStateChanged(auth, _user => {
     if (_user && !userlogin) {
@@ -487,37 +514,37 @@ const Home = (props) => {
 
     // If there is no such data, then create an empty user with this ID in DB
     if (!docSnap.exists()){      
-      console.log("docSnap doesn't exists! Adding new user: displayName: "+_user.displayName+", ID: "+_user.uid);
-      await setDoc(doc(db, "users/", _user.uid), {
-        nickname: _user.displayName,
-      }, {mergeFields: ["nickname"] });
+      console.log("docSnap doesn't exists! Adding new user: displayName: ID: " + _user.uid);
 
-      console.log("Adding the info to local!");
-
-      user.nickname = _user.displayName;
-    }
-    // if exists then get the data
+      // Open "Set Username" UI, Nothing else.
+    }    
+    // if exists then get the data and check if wallet is linked?
     else {
       const data = docSnap.data();
       user.nickname = data.nickname;  
-      if (data.hasOwnProperty('walletAddress')) {
-        user.walletAddress = data.walletAddress;
+      if (!data.hasOwnProperty('walletAddress')) {
+        // Open wallet connect & Link UI
       }
-      if (data.hasOwnProperty('eggs')) {
-        user.eggs = data.eggs;
-      }  
-      if (data.hasOwnProperty('game_5_65mm')) {
-        user.game_5_65mm = data.game_5_65mm;
-      }     
-      if (data.hasOwnProperty('game_7_62mm')) {
-        user.game_7_62mm = data.game_7_62mm;
-      }     
-      if (data.hasOwnProperty('game_9mm')) {
-        user.game_9mm = data.game_9mm;
-      }     
-      if (data.hasOwnProperty('game_12_gauge')) {
-        user.game_12_gauge = data.game_12_gauge;
-      }    
+      // else means wallet is linked, then check and get the other data
+      else {
+        user.walletAddress = data.walletAddress;
+
+        if (data.hasOwnProperty('eggs')) {
+          user.eggs = data.eggs;
+        }  
+        if (data.hasOwnProperty('game_5_65mm')) {
+          user.game_5_65mm = data.game_5_65mm;
+        }     
+        if (data.hasOwnProperty('game_7_62mm')) {
+          user.game_7_62mm = data.game_7_62mm;
+        }     
+        if (data.hasOwnProperty('game_9mm')) {
+          user.game_9mm = data.game_9mm;
+        }     
+        if (data.hasOwnProperty('game_12_gauge')) {
+          user.game_12_gauge = data.game_12_gauge;
+        } 
+      }         
     }        
 
     setUserLogin(true);
@@ -533,6 +560,28 @@ const Home = (props) => {
 
     MenuButton("Main");
   } 
+
+  function SendEmailVerification(){
+    sendEmailVerification(auth.currentUser)
+    .then(() => {
+      console.log("Email verification sent!");
+      setVerifyWarning("Email verification sent!");
+    });
+  }
+
+  function SendPasswordReset(){
+    sendPasswordResetEmail(auth, email)
+    .then(() => {
+      console.log("Password Reset email sent!");
+      setResetWarning("Password Reset email sent!");
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      console.log("Login ERROR code: " + errorCode);
+      const errorMessage = error.message;
+      console.log("Login ERROR message: " + errorMessage);
+    });
+  }
 
   async function SetUsername(newNickname) {
     // Writes new username to the DB
@@ -583,41 +632,10 @@ const Home = (props) => {
     // Delete the user account
     deleteUser(authUser).then(() => {
       console.log("Successfully deleted user");
-      MenuButton("Main");
-
+      // Just account deleted text container !!
     }).catch((error) => {
-      console.log("Error deleting user:", error);
-      console.log("Requiring new login to try again!");
-      // Make user re-login before deleting
-      signInWithPopup(auth, provider).then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const userLogin = result.user;        
-        
-        // Try to delete the user account again
-        deleteUser(userLogin).then(() => {
-          console.log("Successfully deleted user");
-          MenuButton("Main");
-        }).catch((error) => {        
-          console.log("Error deleting user:", error);
-        });
-        
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        console.log("ERROR: " + error.code);
-    
-        const errorMessage = error.message;
-        console.log("ERROR: " + error.message);
-    
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-      });
-    }); 
+      // Logout and open login UI with warning text "Login again and try to delete again"
+    });
   }
 
   ////////////////////////////////////////////////////
