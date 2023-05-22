@@ -16,13 +16,12 @@ import { async } from 'q';
 
 // Initilize the firebase
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyAsTA4RpqGrYq4aeIQVC2ktkgV2aYjiA9Q",
-  authDomain: "zk-chickens.firebaseapp.com",
-  projectId: "zk-chickens",
-  storageBucket: "zk-chickens.appspot.com",
-  messagingSenderId: "502041118196",
-  appId: "1:502041118196:web:068f3313df703175bca5a1",
-  measurementId: "G-2JYDETGV2W"
+  apiKey: "AIzaSyDdANG2EbRRBgGxC7XisiBpHUH4v1awocE",
+  authDomain: "zkchickens.firebaseapp.com",
+  projectId: "zkchickens",
+  storageBucket: "zkchickens.appspot.com",
+  messagingSenderId: "622001726277",
+  appId: "1:622001726277:web:034fcb915f3f8ab7a0142c"
 });
 // Initilize the services
 const analytics = getAnalytics(firebaseApp);
@@ -444,6 +443,7 @@ const Home = (props) => {
   ////////////////////////////////////////////////////
 
   // Google Login
+  /*
   function GoogleLogin(){
     signInWithPopup(auth, provider).then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
@@ -466,7 +466,11 @@ const Home = (props) => {
       const credential = GoogleAuthProvider.credentialFromError(error);
     });
   }
+  */
 
+  // Login
+
+  
   // Detect auth state
   onAuthStateChanged(auth, _user => {
     if (_user && !userlogin) {
@@ -1228,11 +1232,6 @@ const Home = (props) => {
               onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }}  
               id="loginButton" className="home-view button">
               <span>{userlogin ? (user.nickname) : ("Login")}</span>
-              <img
-                alt="image"
-                src="/playground_assets/google_logo-200h.png"
-                className="home-image02"
-              />
             </button>
           </div>
           <div data-thq="thq-burger-menu" className="home-burger-menu">
@@ -1311,7 +1310,7 @@ const Home = (props) => {
           </div>
         </header>
       </div>
-      {menu.Main && (
+      {menu.Profile && (
         <div className="home-home-page">
           <img
             alt="image"
@@ -1648,8 +1647,93 @@ const Home = (props) => {
       {cccBool && (
         <div onClick={uselessCode()}><p>Count: {cccount}</p></div>
       )}
-      {menu.Profile && (        
+      {menu.Main && (        
         <div className="home-profile-page">
+          <div className="home-login-container">
+          <span className="home-login-text profile-basic-text">
+            <span>Login</span>
+            <br></br>
+          </span>
+          <input
+            type="email"
+            id="loginEmailInput"
+            placeholder="Enter email address..."
+            autoComplete="email"
+            className="home-login-email-input input"
+          />
+          <input
+            type="password"
+            id="loginPasswordInput"
+            placeholder="Enter password..."
+            autoComplete="current-password"
+            className="home-login-password-input input"
+          />
+          <div className="home-login-button-container">
+            <button className="home-login-button button">Login</button>
+            <button className="button home-register-ui-button">Register</button>
+          </div>
+          <button className="home-reset-ui-button button">
+            Reset Password
+          </button>
+          </div>
+          <div className="home-register-container">
+            <span className="home-register-text profile-basic-text">
+              <span>Register</span>
+              <br></br>
+            </span>
+            <input
+              type="email"
+              id="registerEmailInput"
+              placeholder="Enter email address..."
+              autoComplete="email"
+              className="home-register-email-input input"
+            />
+            <input
+              type="password"
+              id="registerPasswordInput"
+              placeholder="Enter password..."
+              className="home-register-password-input input"
+            />
+            <input
+              type="password"
+              id="registerPasswordRepeatInput"
+              placeholder="Re-enter password..."
+              className="home-register-password-input1 input"
+            />
+            <div className="home-register-button-container">
+              <button className="button home-register-back-button">
+                Back to Login
+              </button>
+              <button className="home-register-button button">Register</button>
+            </div>
+          </div>
+          <div className="home-reset-container">
+            <span className="home-reset-text profile-basic-text">
+              <span>Reset Password</span>
+              <br></br>
+            </span>
+            <input
+              type="email"
+              id="resetEmailInput"
+              placeholder="Enter email address..."
+              autoComplete="email"
+              className="home-register-email-input1 input"
+            />
+            <span className="home-reset-message-text profile-basic-text">
+              <span>
+                An email has been sent to the email address to reset password!
+              </span>
+              <br></br>
+            </span>
+            <div className="home-reset-button-container">
+              <button className="button home-reset-back-button">
+                Back to Login
+              </button>
+              <button className="home-reset-password-button button">
+                Reset Password
+              </button>
+            </div>
+          </div>
           <div className="home-profile-info-container">            
             <div className="home-info-container">
               {profileInfo.DeleteUser &&
