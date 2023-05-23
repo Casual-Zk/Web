@@ -9,7 +9,7 @@ import { ethers, utils } from "ethers";
 // Firebase
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword , onAuthStateChanged, signOut, sendEmailVerification, sendPasswordResetEmail, reauthenticateWithCredential, deleteUser} from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword , onAuthStateChanged, signOut, sendEmailVerification, sendPasswordResetEmail, reauthenticateWithCredential, deleteUser, AuthErrorCodes} from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { func, number } from 'prop-types';
 import { async } from 'q';
@@ -27,8 +27,6 @@ const firebaseApp = initializeApp({
 const analytics = getAnalytics(firebaseApp);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
-const provider = new GoogleAuthProvider();
-
 
 const Home = (props) => {
 
@@ -339,12 +337,12 @@ const Home = (props) => {
     m4Amount : 0,
     awpAmount : 0,
   
-    game_5_65mm : 0,
+    game_5_56mm : 0,
     game_7_62mm : 0,
     game_9mm : 0,
     game_12_gauge : 0,
 
-    wallet_5_65mm : 0,
+    wallet_5_56mm : 0,
     wallet_7_62mm : 0,
     wallet_9mm : 0,
     wallet_12_gauge : 0
@@ -357,6 +355,7 @@ const Home = (props) => {
     Mint: false
   });
 
+  // variable for coding side to check which page in on
   const cMenu = {
     Main: true,
     Profile: false,
@@ -371,7 +370,16 @@ const Home = (props) => {
   const [profileInfo, setProfileInfo] = useState({
     NormalProfile: true,
     SetUsername: false,
-    DeleteUser: false,
+    DeleteUser: false
+  });
+  const [profileEntry, setProfileEntry] = useState({
+    Login: true,
+    Register: false,
+    Reset: false,
+    VerificationPanel: false,
+    NicknamePanel: false,
+    WalletPanel: false,
+    Deleted: false
   });
 
   // Variables
@@ -382,7 +390,10 @@ const Home = (props) => {
   const [mintResult, setMintResult] = useState("");
   
   const [userlogin, setUserLogin] = useState(Boolean);
+  const [hasUserBalance, setHasUserBalance] = useState(Boolean);
+  const [onProfEntry, setOnProfEntry] = useState(true);
   const [verifyWarning, setVerifyWarning] = useState("");
+  const [loginWarning, setLoginWarning] = useState("");
   const [registerWarning, setRegisterWarning] = useState("");
   const [resetWarning, setResetWarning] = useState("");
 
@@ -409,7 +420,15 @@ const Home = (props) => {
     Object.keys(cMenu).forEach(key => { cMenu[key] = false; })
 
     if (target == "Main") {newMenu.Main = true; cMenu.Main = true; }
-    if (target == "Profile") {newMenu.Profile = true; cMenu.Profile = true; }
+    if (target == "Profile") {
+      newMenu.Profile = true; cMenu.Profile = true; 
+
+      // if wallet is set, then close entry panels
+      if (user.walletAddress != "" && userlogin) { 
+        setOnProfEntry(false); 
+        ProfileMenuEntryPanels("None");
+      } 
+    }
     if (target == "Mint") {newMenu.Mint = true; cMenu.Mint = true; }
 
     // Update the menu state with the new copy
@@ -442,27 +461,49 @@ const Home = (props) => {
     setProfileInfo(newInfo);
   }
 
+  function ProfileMenuEntryPanels(target) {    
+    // Create a new copy of the menu object and update its values
+    const newEntry = { ...profileEntry };
+    Object.keys(newEntry).forEach(key => { newEntry[key] = false; })
+
+    if (target == "Login") newEntry.Login = true;
+    if (target == "Register") newEntry.Register = true;
+    if (target == "Reset") newEntry.Reset = true;
+    if (target == "Verification") newEntry.VerificationPanel = true;
+    if (target == "Nickname") newEntry.NicknamePanel = true;
+    if (target == "Wallet") newEntry.WalletPanel = true;
+    if (target == "Deleted") newEntry.Deleted = true;
+
+    // Update the menu state with the new copy
+    setProfileEntry(newEntry);
+  }
+
 
   ////////////////////////////////////////////////////
   /////////            Database             //////////
   ////////////////////////////////////////////////////
 
   /**
-   *    TO-DO
-   * 
-   *  -> login warning text
-   *  -> Create a set username/walletconnect/Link wallet UI
-   *  -> Email verification UI, warning text as well
+   *                    TO-DO 
    *  -> Prevent verification and reset email spams
-   *  -> Account deleted container
+   *  -> Error messages for register and reset
    *
   */
 
   // Register
   function Register(email, password, password2){
-    // Check if the passwords are the same
-    if (password !== password2) {
+    // Check inputs
+    if (email === "") {
+      setRegisterWarning("Missing email!");
+      return;
+    }
+    else if (password === "" || password2 === "") {
+      setRegisterWarning("Missing password!");
+      return;
+    }
+    else if (password !== password2) {
       setRegisterWarning("Passwords are not the same!");
+      return;
     }
 
     //const auth = getAuth();
@@ -473,11 +514,18 @@ const Home = (props) => {
       // ... No need to use user data, onAuthStateChange uses it already!
     })
     .catch((error) => {
-      const errorCode = error.code;
-      console.log("Register ERROR code: " + errorCode);
-      const errorMessage = error.message;
-      console.log("Register ERROR message: " + errorMessage);
-      // ..
+      console.log("Register ERROR code: " + error.code);
+      console.log("Register ERROR message: " + error.message);
+
+      if (error.code == AuthErrorCodes.INVALID_EMAIL) {
+        setRegisterWarning("Invalid email!");
+      }
+      else if (error.code == AuthErrorCodes.WEAK_PASSWORD) {
+        setRegisterWarning("Weak password!");
+      }
+      else {
+        setRegisterWarning("Something unexpected occourred! Error Code: " + error.code);
+      }
     });
   }
 
@@ -491,10 +539,25 @@ const Home = (props) => {
       // ...
     })
     .catch((error) => {
-      const errorCode = error.code;
-      console.log("Login ERROR code: " + errorCode);
-      const errorMessage = error.message;
-      console.log("Login ERROR message: " + errorMessage);
+      console.log("Login ERROR code: " + error.code);
+      console.log("Login ERROR message: " + error.message);
+      
+      if (error.code == AuthErrorCodes.INVALID_EMAIL) {
+        setLoginWarning("Invalid email!");
+      }
+      else if (password === "") {
+        setLoginWarning("Missing password!");
+      }
+      else if (error.code == AuthErrorCodes.INVALID_PASSWORD) {
+        setLoginWarning("Wrong password!");
+      }
+      else if (error.code == AuthErrorCodes.USER_DELETED) {
+        setLoginWarning("User not found! Check your email address!");
+      }
+      else {
+        setLoginWarning("Something unexpected occourred! Error Code: " + error.code);
+      }
+      
     });
   }
 
@@ -508,52 +571,90 @@ const Home = (props) => {
   });   
 
   async function LoginProccess() {
-    // Get user data from DB
+    /**
+     *  Flow
+     *  -> Email verification?
+     *  -> User data exist? : get nickname, connect and link wallet
+     *  -> Wallet linked? : Connect and link wallet
+     *  -> Get all data then open profile UI
+    */
+    
+    console.log("Login Proccess started");
+
+    // Get current user
     const _user = auth.currentUser;
+    setOnProfEntry(true); // Start with entry profile: Verification, nickname, wallet link
+    setUserLogin(true);
+
+    // Check email verification
+    if (!_user.emailVerified) {
+      // Open email verification UI
+      ProfileMenuEntryPanels("Verification");
+      return;
+    }
+
+    // Get all data and open profile UI
+    
+
+    // Get user data from DB
     const docSnap = await getDoc(doc(db, "users/", _user.uid));
 
     // If there is no such data, then create an empty user with this ID in DB
     if (!docSnap.exists()){      
-      console.log("docSnap doesn't exists! Adding new user: displayName: ID: " + _user.uid);
+      console.log("docSnap doesn't exists! Adding new user - ID: " + _user.uid);
 
-      // Open "Set Username" UI, Nothing else.
+      // Open "Set Username" UI
+      ProfileMenuEntryPanels("Nickname");
+      return;
     }    
-    // if exists then get the data and check if wallet is linked?
+    // if exists then get the data and check if wallet linked
     else {
+      console.log("Data exist, checking wallet");
       const data = docSnap.data();
       user.nickname = data.nickname;  
       if (!data.hasOwnProperty('walletAddress')) {
+        console.log("No wallet linked, opening wallet link UI");
         // Open wallet connect & Link UI
+        ProfileMenuEntryPanels("Wallet");
+        return;
       }
       // else means wallet is linked, then check and get the other data
       else {
+        console.log("Wallet linked! Getting other data");
         user.walletAddress = data.walletAddress;
+
+        var userBalanceSum = 0;
 
         if (data.hasOwnProperty('eggs')) {
           user.eggs = data.eggs;
         }  
-        if (data.hasOwnProperty('game_5_65mm')) {
-          user.game_5_65mm = data.game_5_65mm;
+        if (data.hasOwnProperty('game_5_56mm')) {
+          user.game_5_56mm = data.game_5_56mm; userBalanceSum += data.game_5_56mm;
         }     
         if (data.hasOwnProperty('game_7_62mm')) {
-          user.game_7_62mm = data.game_7_62mm;
+          user.game_7_62mm = data.game_7_62mm; userBalanceSum += data.game_7_62mm;
         }     
         if (data.hasOwnProperty('game_9mm')) {
-          user.game_9mm = data.game_9mm;
+          user.game_9mm = data.game_9mm; userBalanceSum += data.game_9mm;
         }     
         if (data.hasOwnProperty('game_12_gauge')) {
-          user.game_12_gauge = data.game_12_gauge;
+          user.game_12_gauge = data.game_12_gauge; userBalanceSum += data.game_12_gauge;
         } 
-      }         
-    }        
 
-    setUserLogin(true);
+        if (userBalanceSum > 0) { setHasUserBalance(true); }
+      } 
+      setOnProfEntry(false);
+      ProfileMenuEntryPanels("None");
+    }     
+    RenderNow(true);             
   } 
 
   // Logout
   function Logout(){
     signOut(auth).then(() => {
-      console.log("Logged out!")
+      console.log("Logged out!");
+      setUserLogin(false);
+      ProfileMenuEntryPanels("Login");
     }).catch((error) => {
       console.log("ERROR: " + error.message);
     });
@@ -561,25 +662,36 @@ const Home = (props) => {
     MenuButton("Main");
   } 
 
-  function SendEmailVerification(){
+  function SendEmailVerification(){    
     sendEmailVerification(auth.currentUser)
     .then(() => {
       console.log("Email verification sent!");
-      setVerifyWarning("Email verification sent!");
+      setVerifyWarning("Verification email sent! Reload the page after you verify your email address!");
     });
   }
 
-  function SendPasswordReset(){
+  function SendPasswordReset(email){
+    // Check input
+    if (email === "") {
+      setResetWarning("Missing email!");
+      return;
+    }
+
     sendPasswordResetEmail(auth, email)
     .then(() => {
       console.log("Password Reset email sent!");
       setResetWarning("Password Reset email sent!");
     })
     .catch((error) => {
-      const errorCode = error.code;
-      console.log("Login ERROR code: " + errorCode);
-      const errorMessage = error.message;
-      console.log("Login ERROR message: " + errorMessage);
+      console.log("Login ERROR code: " + error.code);
+      console.log("Login ERROR message: " + error.message);
+
+      if (error.code == AuthErrorCodes.INVALID_EMAIL) {
+        setResetWarning("Invalid email!");
+      }
+      else {
+        setResetWarning("Something unexpected occourred! Error Code: " + error.code);
+      }
     });
   }
 
@@ -600,11 +712,25 @@ const Home = (props) => {
     MenuButton("Profile");
   }
 
+  async function SetInitialNickname(nickname) {
+    // Writes new username to the DB
+    const authUser = auth.currentUser;
+    console.log("User ID: " + authUser.uid);
+    console.log("Initial Username: " + nickname);
+
+    await setDoc(doc(db, "users/", authUser.uid), {
+      nickname: nickname
+    }, {mergeFields: ["nickname"] });
+
+    user.nickname = nickname;
+    setUser(user);
+    ProfileMenuEntryPanels("Wallet");
+  }
+
   async function LinkWallet() {
     // Writes wallet address to the DB
     const authUser = auth.currentUser;
     console.log("Linking the wallet address");
-    console.log("Display name: " + authUser.displayName);
     console.log("User ID: " + authUser.uid);
     console.log("Wallet Address to Link: " + connectedWallet);
 
@@ -749,13 +875,14 @@ const Home = (props) => {
       handleWalletAddressChange(); // initial check
       window.ethereum.on('accountsChanged', handleWalletAddressChange);
       return () => {
-        window.ethereum.off('accountsChanged', handleWalletAddressChange);
+        window.ethereum.removeListener('accountsChanged', handleWalletAddressChange);
       };
     }
   }, []);
 
   // Get item and token balances
   async function GetBalances() {
+    console.log("Getting balances from wallet");
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     
     // Get token balance
@@ -774,6 +901,10 @@ const Home = (props) => {
     const addresses =[a, a, a, a, a, a, a, a, a];    
     const batchBalances = await itemContract.balanceOfBatch(addresses, tokenIds);
 
+    var userBalanceSum = 0;
+    batchBalances.forEach(balance => userBalanceSum += Number(balance));
+    if (userBalanceSum > 0) { setHasUserBalance(true); }
+
     user.knifeAmount = batchBalances[0];
     user.glockAmount = batchBalances[1];
     user.shotgunAmount = batchBalances[2];
@@ -781,7 +912,7 @@ const Home = (props) => {
     user.awpAmount = batchBalances[4];
     user.wallet_12_gauge = batchBalances[5];
     user.wallet_9mm = batchBalances[6];
-    user.wallet_5_65mm = batchBalances[7];
+    user.wallet_5_56mm = batchBalances[7];
     user.wallet_7_62mm = batchBalances[8];
     setUser(user);
     RenderNow(true);
@@ -929,7 +1060,7 @@ const Home = (props) => {
         user.wallet_9mm = Number(user.wallet_9mm) + Number(amount);
         break;
       case 7:
-        user.wallet_5_65mm = Number(user.wallet_5_65mm) + Number(amount);
+        user.wallet_5_56mm = Number(user.wallet_5_56mm) + Number(amount);
         break;
       case 8:
         user.wallet_7_62mm = Number(user.wallet_7_62mm) + Number(amount);
@@ -1022,17 +1153,17 @@ const Home = (props) => {
           user.game_9mm = amount;
           break;
         case 7:
-          user.wallet_5_65mm -= amount;
+          user.wallet_5_56mm -= amount;
     
-          if (data.hasOwnProperty('game_5_65mm')) {
-            const existingAmmo = data.game_5_65mm;
+          if (data.hasOwnProperty('game_5_56mm')) {
+            const existingAmmo = data.game_5_56mm;
             amount = Number(amount) + Number(existingAmmo);
           }
           await setDoc(doc(db, "users/", authUser.uid), {
-            game_5_65mm: amount
-          }, {mergeFields: ["game_5_65mm"] });
+            game_5_56mm: amount
+          }, {mergeFields: ["game_5_56mm"] });
 
-          user.game_5_65mm = amount;
+          user.game_5_56mm = amount;
           break;
         case 8:
           user.wallet_7_62mm -= amount;
@@ -1113,8 +1244,8 @@ const Home = (props) => {
 
     - Add menu.Main .... stuff to display pages
     - Add onClick={() => MenuButton("Main")} to nav buttons
-    - Replace login text: {userlogin ? (user.nickname) : ("Login")}
-    - Add onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }}  to login button props.
+    - Replace login text: {userlogin ? (user.nickname == "" ? ("Profile") : (user.nickname)) : ("Login")}
+    - Add onClick = {() => MenuButton("Profile")}  to login button props.
     - Do the same for burger menu login as well
     - onClick={() => Logout()} to logout button
     - {userlogin && ( --> to Profile button in nav bar (for burger as well), display if logged in.
@@ -1136,8 +1267,17 @@ const Home = (props) => {
     - onClick={() => SetUsername(document.getElementById("newUsernameInput").value)} --> to set username button
     - Add delete user button as well
 
+    ### onClick={() => SendEmailVerification(true)}
+
     // Profile
     - {user.tokenBalance.toString()} to token balance
+
+    // Profile - Entry
+    - add warning texts to entry panels: {verifyWarning}
+    - add view conditions {profileEntry.WalletPanel && connectedWallet === "" (
+    - Verification button: SendEmailVerification(true)
+    - Add button functions
+    - Add nickname and wallet panel inputs
 
     // Mint Page
     - {connectedWallet === "" && <div> } to connect wallet IMAGE, shortWallet to text
@@ -1154,7 +1294,8 @@ const Home = (props) => {
     - {!consumeApproved && connectedWallet != "" && to info container
     - {consumeApproved && to item containers' consume buttons
     - onClick={()=> approveForConsume()} to approve button
-    - onClick={()=> ConsumeItem(1, document.getElementById("lotteryWeekInput").value))} to consume button (id, amount)
+    - onClick={()=> ConsumeItem(1, document.getElementById("lotteryWeekInput").value))} to consume button (id, amount)  
+    - {!hasUserBalance && to no balance warning text
   */
 
   
@@ -1247,9 +1388,9 @@ const Home = (props) => {
               </a>
             </div>
             <button
-              onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }}  
+              onClick = {() => MenuButton("Profile")}   
               id="loginButton" className="home-view button">
-              <span>{userlogin ? (user.nickname) : ("Login")}</span>
+              <span>{userlogin ? (user.nickname == "" ? ("Profile") : (user.nickname)) : ("Login")}</span>
             </button>
           </div>
           <div data-thq="thq-burger-menu" className="home-burger-menu">
@@ -1316,7 +1457,7 @@ const Home = (props) => {
               </nav>
               <div className="home-container02">
                 <button 
-                  onClick = {() => {userlogin ? (MenuButton("Profile")) : (GoogleLogin()) }} 
+                  onClick = {() => MenuButton("Profile")} 
                   id="burgerLoginButton" className="home-login button">
                   <span>
                     <span>{userlogin ? (user.nickname) : ("Login")}</span>
@@ -1328,7 +1469,7 @@ const Home = (props) => {
           </div>
         </header>
       </div>
-      {menu.Profile && (
+      {menu.Main && (
         <div className="home-home-page">
           <img
             alt="image"
@@ -1665,284 +1806,408 @@ const Home = (props) => {
       {cccBool && (
         <div onClick={uselessCode()}><p>Count: {cccount}</p></div>
       )}
-      {menu.Main && (        
+      {menu.Profile && (        
         <div className="home-profile-page">
-          <div className="home-login-container">
-          <span className="home-login-text profile-basic-text">
-            <span>Login</span>
-            <br></br>
-          </span>
-          <input
-            type="email"
-            id="loginEmailInput"
-            placeholder="Enter email address..."
-            autoComplete="email"
-            className="home-login-email-input input"
-          />
-          <input
-            type="password"
-            id="loginPasswordInput"
-            placeholder="Enter password..."
-            autoComplete="current-password"
-            className="home-login-password-input input"
-          />
-          <div className="home-login-button-container">
-            <button className="home-login-button button">Login</button>
-            <button className="button home-register-ui-button">Register</button>
-          </div>
-          <button className="home-reset-ui-button button">
-            Reset Password
-          </button>
-          </div>
-          <div className="home-register-container">
-            <span className="home-register-text profile-basic-text">
-              <span>Register</span>
-              <br></br>
-            </span>
-            <input
-              type="email"
-              id="registerEmailInput"
-              placeholder="Enter email address..."
-              autoComplete="email"
-              className="home-register-email-input input"
-            />
-            <input
-              type="password"
-              id="registerPasswordInput"
-              placeholder="Enter password..."
-              className="home-register-password-input input"
-            />
-            <input
-              type="password"
-              id="registerPasswordRepeatInput"
-              placeholder="Re-enter password..."
-              className="home-register-password-input1 input"
-            />
-            <div className="home-register-button-container">
-              <button className="button home-register-back-button">
-                Back to Login
-              </button>
-              <button className="home-register-button button">Register</button>
-            </div>
-          </div>
-          <div className="home-reset-container">
-            <span className="home-reset-text profile-basic-text">
-              <span>Reset Password</span>
-              <br></br>
-            </span>
-            <input
-              type="email"
-              id="resetEmailInput"
-              placeholder="Enter email address..."
-              autoComplete="email"
-              className="home-register-email-input1 input"
-            />
-            <span className="home-reset-message-text profile-basic-text">
-              <span>
-                An email has been sent to the email address to reset password!
+          {profileEntry.Login && (
+            <div className="home-login-container">
+              <span className="home-login-text profile-basic-text">
+                <span>Login</span>
+                <br></br>
               </span>
+              <input
+                type="email"
+                id="loginEmailInput"
+                placeholder="Enter email address..."
+                autoComplete="email"
+                className="home-login-email-input input"
+              />
+              <input
+                type="password"
+                id="loginPasswordInput"
+                placeholder="Enter password..."
+                autoComplete="current-password"
+                className="home-login-password-input input"
+              />
+              <div className="home-login-button-container">
+                <button 
+                  onClick={() => Login(
+                    document.getElementById("loginEmailInput").value,
+                    document.getElementById("loginPasswordInput").value
+                  )}  
+                  className="home-login-button button"
+                >Login</button>
+                <button
+                  onClick={() => ProfileMenuEntryPanels("Register")}  
+                  className="button home-register-ui-button"
+                > Register</button>
+              </div>
+              <button
+                onClick={() => ProfileMenuEntryPanels("Reset")} 
+                className="home-reset-ui-button button"
+              > Reset Password
+              </button>
+              <span className="home-reset-message-text profile-basic-text">
+                <span>
+                  {loginWarning}
+                </span>
+                <br></br>
+              </span>
+            </div>
+          )}
+          {profileEntry.Register && (
+            <div className="home-register-container">
+              <span className="home-register-text profile-basic-text">
+                <span>Register</span>
+                <br></br>
+              </span>
+              <input
+                type="email"
+                id="registerEmailInput"
+                placeholder="Enter email address..."
+                autoComplete="email"
+                className="home-register-email-input input"
+              />
+              <input
+                type="password"
+                id="registerPasswordInput"
+                placeholder="Enter password..."
+                className="home-register-password-input input"
+              />
+              <input
+                type="password"
+                id="registerPasswordRepeatInput"
+                placeholder="Re-enter password..."
+                className="home-register-password-input1 input"
+              />
+              <div className="home-register-button-container">
+                <button
+                  onClick={() => ProfileMenuEntryPanels("Login")}  
+                  className="button home-register-back-button"
+                > Back to Login
+                </button>
+                <button 
+                  onClick={() => Register(
+                    document.getElementById("registerEmailInput").value,
+                    document.getElementById("registerPasswordInput").value,
+                    document.getElementById("registerPasswordRepeatInput").value
+                  )}  
+                  className="home-register-button button"
+                >Register</button>
+              </div>
+              <span className="home-reset-message-text profile-basic-text">
+                <span>
+                  {registerWarning}
+                </span>
+                <br></br>
+              </span>
+            </div>
+          )}
+          {profileEntry.Reset && (
+            <div className="home-reset-container">
+              <span className="home-reset-text profile-basic-text">
+                <span>Reset Password</span>
+                <br></br>
+              </span>
+              <input
+                type="email"
+                id="resetEmailInput"
+                placeholder="Enter email address..."
+                autoComplete="email"
+                className="home-register-email-input1 input"
+              />
+              <div className="home-reset-button-container">
+                <button 
+                  onClick={() => ProfileMenuEntryPanels("Login")}  
+                  className="button home-reset-back-button"
+                > Back to Login
+                </button>
+                <button 
+                  onClick={() => SendPasswordReset(
+                    document.getElementById("resetEmailInput").value
+                  )}  
+                  className="home-reset-password-button button"
+                >Reset Password
+                </button>
+              </div>
+              <span className="home-reset-message-text profile-basic-text">
+                <span>
+                  {resetWarning}
+                </span>
+                <br></br>
+              </span>
+            </div>
+          )}
+          {profileEntry.VerificationPanel && (
+            <div className="home-verify-container">
+              <span className="home-verify-text profile-basic-text">
+                <span>Verify your email address!</span>
+                <br></br>
+              </span>
+              <span className="home-verify-message-text profile-basic-text">
+                <span> {verifyWarning} </span>
+                <br></br>
+              </span>
+              <button 
+                onClick={() => SendEmailVerification(true)} 
+                className="home-verify-button button"
+              >
+                Send Verification Email
+              </button>
+            </div>
+          )}
+          {profileEntry.NicknamePanel && (
+            <div className="home-username-container">
+              <span className="home-username-text profile-basic-text">
+                <span>Set Your Nickname</span>
+                <br></br>
+              </span>
+              <input
+                type="text"
+                id="nicknameInput"
+                placeholder="Enter your nickname..."
+                autoComplete="off"
+                className="home-login-email-input1 input"
+              />
+              <button
+                onClick={() => SetInitialNickname(
+                  document.getElementById("nicknameInput").value
+                )} 
+                className="home-reset-ui-button1 button"
+                >Set Nickname</button>
+            </div>
+          )}
+          {profileEntry.WalletPanel && connectedWallet === "" && (
+          <div className="home-wallet-connect-container">
+            <span className="home-wallet-text profile-basic-text">
+              <span>Connect your wallet and link with your account</span>
               <br></br>
             </span>
-            <div className="home-reset-button-container">
-              <button className="button home-reset-back-button">
-                Back to Login
-              </button>
-              <button className="home-reset-password-button button">
-                Reset Password
-              </button>
-            </div>
+            <button 
+              onClick={() => ConnectWallet()}
+              className="home-main-connect-button button"
+            >Connect</button>
           </div>
-          <div className="home-profile-info-container">            
-            <div className="home-info-container">
-              {profileInfo.DeleteUser &&
-                <div className="home-delete-account-container">
-                  <span className="home-text084 profile-basic-text">
-                    <span>WARNING!</span>
-                    <br></br>
-                  </span>
-                  <span className="home-text087 profile-basic-text">
-                    <span>
-                      By deleting you account, all your account information will be
-                      deleted! All your in-game assets will be deleted! This CANNOT
-                      be undone! Are you sure you want to delete your account?
+          )}
+          {profileEntry.WalletPanel && connectedWallet !== "" && (
+            <div className="home-wallet-link-container">
+              <span className="home-wallet-link-text profile-basic-text">
+                <span>Connect your wallet and link with your account</span>
+                <br></br>
+              </span>
+              <span className="home-link-message-text profile-basic-text">
+                <span>Connected: {shortWallet}</span>
+                <br></br>
+              </span>
+              <button 
+                onClick={() => LinkWallet()}
+                className="home-main-link-button button"
+              >Link to Account</button>
+            </div>
+          )}
+          {profileEntry.Deleted && (
+            <div className="home-deleted-container">
+              <span className="home-delete-message-text profile-basic-text">
+                <span>Your account has been deleted now!</span>
+                <br></br>
+              </span>
+              <button className="home-delete-menu-button button">Ok (-_-)</button>
+            </div>
+          )}
+          {!onProfEntry && userlogin && (
+            <div className="home-profile-info-container">            
+              <div className="home-info-container">
+                {profileInfo.DeleteUser &&
+                  <div className="home-delete-account-container">
+                    <span className="home-text084 profile-basic-text">
+                      <span>WARNING!</span>
+                      <br></br>
                     </span>
-                    <br></br>
-                  </span>
-                  <div className="home-container17">
-                    <button className="button home-button09" onClick={() => ProfileMenuInfoButton("NormalProfile")}>
+                    <span className="home-text087 profile-basic-text">
                       <span>
-                        <span>Nope, go back!</span>
-                        <br></br>
+                        By deleting you account, all your account information will be
+                        deleted! All your in-game assets will be deleted! This CANNOT
+                        be undone! Are you sure you want to delete your account?
                       </span>
-                    </button>
-                    <button className="home-button10 button" onClick={()=> DeleteUser()}>
-                      Yes, DELETE my account!
-                    </button>
+                      <br></br>
+                    </span>
+                    <div className="home-container17">
+                      <button className="button home-button09" onClick={() => ProfileMenuInfoButton("NormalProfile")}>
+                        <span>
+                          <span>Nope, go back!</span>
+                          <br></br>
+                        </span>
+                      </button>
+                      <button className="home-button10 button" onClick={()=> DeleteUser()}>
+                        Yes, DELETE my account!
+                      </button>
+                    </div>
                   </div>
-                </div>
-              }
-              {profileInfo.SetUsername &&
-                <div className="home-new-username-container">
-                  <span className="home-text093 profile-basic-text">
-                    <span>Set a new username</span>
+                }
+                {profileInfo.SetUsername &&
+                  <div className="home-new-username-container">
+                    <span className="home-text093 profile-basic-text">
+                      <span>Set a new username</span>
+                      <br></br>
+                    </span>
+                    <input
+                      type="text"
+                      id="newUsernameInput"
+                      placeholder="Enter username..."
+                      className="home-new-username-input input"
+                    />
+                    <div className="home-container18">
+                      <button className="button home-button11" onClick={() => ProfileMenuInfoButton("NormalProfile")}>
+                        Go back to profile
+                      </button>
+                      <button className="home-button12 button"
+                        onClick={() => SetUsername(document.getElementById("newUsernameInput").value)}>
+                        Update username
+                      </button>
+                    </div>
+                  </div>
+                }
+                {profileInfo.NormalProfile &&
+                  <div className="home-info-space-1">
+                    <div className="home-text-space">
+                      <span className="profile-basic-text home-text096">
+                        Nickname:
+                      </span>
+                      <span
+                        id="profileUsernameText"
+                        className="home-text097 profile-basic-text"
+                      >
+                        {user.nickname}
+                      </span>
+                    </div>
+                    <div className="home-text-space1">
+                      <span className="home-text098 profile-basic-text">
+                        Wallet Address:
+                      </span>
+                      <span
+                        id="profileAddressText"
+                        className="home-text099 profile-basic-text"
+                      >
+                        {shortWallet}
+                      </span>
+                    </div>
+                    <div className="home-text-space2">
+                      <span className="home-text100 profile-basic-text">
+                        Token Balance:
+                      </span>
+                      <span
+                        id="profileTokenBalanceText"
+                        className="home-text101 profile-basic-text"
+                      >
+                        {user.tokenBalance.toString()}
+                      </span>
+                    </div>
+                  </div>
+                }
+                {profileInfo.NormalProfile &&
+                  <div className="home-info-space-2">
+                    <div className="home-text-space3">
+                      <span className="home-text102 profile-basic-text">
+                        Current Week:
+                      </span>
+                      <span
+                        id="profileCurrentWeekText"
+                        className="home-text103 profile-basic-text"
+                      >
+                        0
+                      </span>
+                    </div>
+                    <div className="home-text-space4">
+                      <span className="home-text104 profile-basic-text">
+                        My Eggs:
+                      </span>
+                      <span
+                        id="profileMyEggsText"
+                        className="home-text105 profile-basic-text"
+                      >
+                        0
+                      </span>
+                    </div>
+                    <div className="home-text-space5">
+                      <span className="home-text106 profile-basic-text">
+                        Total Eggs:
+                      </span>
+                      <span
+                        id="profileTotalEggsText"
+                        className="home-text107 profile-basic-text"
+                      >
+                        0
+                      </span>
+                    </div>
+                  </div>
+                }
+                {profileInfo.NormalProfile &&
+                  <div className="home-button-container">
+                    <img
+                      onClick={() => ProfileMenuInfoButton("SetUsername")}  
+                      id="setUsernameButton"
+                      alt="image"
+                      src="/playground_assets/set%20username%20button.png"
+                      className="home-set-username--utton"
+                    />
+                    {connectedWallet === "" && 
+                    <img
+                      onClick={() => ConnectWallet()}                  
+                      id="profileConnectButton"
+                      alt="image"
+                      src="/playground_assets/connect%20button.png"
+                      className="home-connect-button"
+                    />             
+                    }
+                    {user.walletAddress != connectedWallet &&
+                    <img
+                      onClick={() => LinkWallet()} 
+                      id="linkButton"
+                      alt="image"
+                      src="/playground_assets/linkbutton.png"
+                      className="home-link-button"
+                    />
+                    }
+                    <img
+                      onClick={() => Logout()} 
+                      id="logoutButton"
+                      alt="image"
+                      src="/playground_assets/logoutbutton.png"
+                      className="home-logout-button"
+                    />
+                    <img
+                      onClick={() => ProfileMenuInfoButton("DeleteUser")} 
+                      id="deleteAccountButton"
+                      alt="image"
+                      src="/playground_assets/delete%20account%20button.png"
+                      className="home-delete-button"
+                    />
+                  </div>
+                }
+              </div>
+            </div>
+          )}
+          {!onProfEntry && userlogin &&  (
+            <div className="home-profile-button-container">
+              <div 
+                className= {profilePanel.Inventory ? ("home-active-profile-button") : ("home-passive-profile-button")}
+                onClick={() => ProfileMenuPanelButton("Inventory")}>
+                  <span id="inventoryButton" 
+                  className= {profilePanel.Inventory ? ("home-active-profile-text") : ("home-passive-profile-text")}>
+                    Inventory
+                  </span>
+              </div>
+              <div 
+                className= {profilePanel.Lottery ? ("home-active-profile-button") : ("home-passive-profile-button")}
+                onClick={() => ProfileMenuPanelButton("Lottery")}>
+                  <span id="lotteryButton" 
+                  className= {profilePanel.Lottery ? ("home-active-profile-text") : ("home-passive-profile-text")}>
+                    <span>Lottery</span>
                     <br></br>
                   </span>
-                  <input
-                    type="text"
-                    id="newUsernameInput"
-                    placeholder="Enter username..."
-                    className="home-new-username-input input"
-                  />
-                  <div className="home-container18">
-                    <button className="button home-button11" onClick={() => ProfileMenuInfoButton("NormalProfile")}>
-                      Go back to profile
-                    </button>
-                    <button className="home-button12 button"
-                      onClick={() => SetUsername(document.getElementById("newUsernameInput").value)}>
-                      Update username
-                    </button>
-                  </div>
-                </div>
-              }
-              {profileInfo.NormalProfile &&
-                <div className="home-info-space-1">
-                  <div className="home-text-space">
-                    <span className="profile-basic-text home-text096">
-                      Nickname:
-                    </span>
-                    <span
-                      id="profileUsernameText"
-                      className="home-text097 profile-basic-text"
-                    >
-                      {user.nickname}
-                    </span>
-                  </div>
-                  <div className="home-text-space1">
-                    <span className="home-text098 profile-basic-text">
-                      Wallet Address:
-                    </span>
-                    <span
-                      id="profileAddressText"
-                      className="home-text099 profile-basic-text"
-                    >
-                      {shortWallet}
-                    </span>
-                  </div>
-                  <div className="home-text-space2">
-                    <span className="home-text100 profile-basic-text">
-                      Token Balance:
-                    </span>
-                    <span
-                      id="profileTokenBalanceText"
-                      className="home-text101 profile-basic-text"
-                    >
-                      {user.tokenBalance.toString()}
-                    </span>
-                  </div>
-                </div>
-              }
-              {profileInfo.NormalProfile &&
-                <div className="home-info-space-2">
-                  <div className="home-text-space3">
-                    <span className="home-text102 profile-basic-text">
-                      Current Week:
-                    </span>
-                    <span
-                      id="profileCurrentWeekText"
-                      className="home-text103 profile-basic-text"
-                    >
-                      0
-                    </span>
-                  </div>
-                  <div className="home-text-space4">
-                    <span className="home-text104 profile-basic-text">
-                      My Eggs:
-                    </span>
-                    <span
-                      id="profileMyEggsText"
-                      className="home-text105 profile-basic-text"
-                    >
-                      0
-                    </span>
-                  </div>
-                  <div className="home-text-space5">
-                    <span className="home-text106 profile-basic-text">
-                      Total Eggs:
-                    </span>
-                    <span
-                      id="profileTotalEggsText"
-                      className="home-text107 profile-basic-text"
-                    >
-                      0
-                    </span>
-                  </div>
-                </div>
-              }
-              {profileInfo.NormalProfile &&
-                <div className="home-button-container">
-                  <img
-                    onClick={() => ProfileMenuInfoButton("SetUsername")}  
-                    id="setUsernameButton"
-                    alt="image"
-                    src="/playground_assets/set%20username%20button.png"
-                    className="home-set-username--utton"
-                  />
-                  {connectedWallet === "" && 
-                  <img
-                    onClick={() => ConnectWallet()}                  
-                    id="profileConnectButton"
-                    alt="image"
-                    src="/playground_assets/connect%20button.png"
-                    className="home-connect-button"
-                  />             
-                  }
-                  {user.walletAddress != connectedWallet &&
-                  <img
-                    onClick={() => LinkWallet()} 
-                    id="linkButton"
-                    alt="image"
-                    src="/playground_assets/linkbutton.png"
-                    className="home-link-button"
-                  />
-                  }
-                  <img
-                    onClick={() => Logout()} 
-                    id="logoutButton"
-                    alt="image"
-                    src="/playground_assets/logoutbutton.png"
-                    className="home-logout-button"
-                  />
-                  <img
-                    onClick={() => ProfileMenuInfoButton("DeleteUser")} 
-                    id="deleteAccountButton"
-                    alt="image"
-                    src="/playground_assets/delete%20account%20button.png"
-                    className="home-delete-button"
-                  />
-                </div>
-              }
+              </div>
             </div>
-          </div>
-          <div className="home-profile-button-container">
-            <div 
-              className= {profilePanel.Inventory ? ("home-active-profile-button") : ("home-passive-profile-button")}
-              onClick={() => ProfileMenuPanelButton("Inventory")}>
-                <span id="inventoryButton" 
-                className= {profilePanel.Inventory ? ("home-active-profile-text") : ("home-passive-profile-text")}>
-                  Inventory
-                </span>
-            </div>
-            <div 
-              className= {profilePanel.Lottery ? ("home-active-profile-button") : ("home-passive-profile-button")}
-              onClick={() => ProfileMenuPanelButton("Lottery")}>
-                <span id="lotteryButton" 
-                className= {profilePanel.Lottery ? ("home-active-profile-text") : ("home-passive-profile-text")}>
-                  <span>Lottery</span>
-                  <br></br>
-                </span>
-            </div>
-          </div>
-          {profilePanel.Lottery && (
+          )}
+          {profilePanel.Lottery && !onProfEntry && userlogin &&  (
             <div className="home-lottery-panel">
               <div className="home-week-counter">
                 <span className="home-text098">
@@ -2113,8 +2378,22 @@ const Home = (props) => {
               </div>
             </div>
           )}
-          {profilePanel.Inventory && (
+          {profilePanel.Inventory && !onProfEntry && userlogin &&  (
             <div className="home-inventory-panel">
+              {!hasUserBalance && 
+                <div className="home-mint-info-container">
+                  <div className="home-text168">
+                    <img
+                      src="/playground_assets/info_64x64-200h.png"
+                      alt="image"
+                      className="home-image18"
+                    />
+                    <span className="home-price-text top10-text">
+                      You don't have any items to show. Mint new items from item mint menu above.
+                    </span>
+                  </div>
+                </div>
+              }
               {!consumeApproved && connectedWallet != "" && 
                 <div className="home-mint-info-container">
                   <div className="home-text168">
@@ -2340,7 +2619,7 @@ const Home = (props) => {
                   }
                 </div>
               }
-              {((user.wallet_5_65mm > 0) || (user.game_5_65mm > 0)) &&
+              {((user.wallet_5_56mm > 0) || (user.game_5_56mm > 0)) &&
                 <div className="home-ammo-556-mm item-container-big">
                   <h1 className="home-item-name07 top10-text">5.56 mm</h1>
                   <img
@@ -2354,7 +2633,7 @@ const Home = (props) => {
                       <br></br>
                     </span>
                     <span id="invWallet556mmText" className="home-text215 top10-text">
-                      <span>{user.wallet_5_65mm.toString()}</span>
+                      <span>{user.wallet_5_56mm.toString()}</span>
                       <br></br>
                     </span>
                   </div>
@@ -2364,7 +2643,7 @@ const Home = (props) => {
                       <br></br>
                     </span>
                     <span id="invGame556mmText" className="home-text221 top10-text">
-                      <span>{user.game_5_65mm.toString()}</span>
+                      <span>{user.game_5_56mm.toString()}</span>
                       <br></br>
                     </span>
                   </div>

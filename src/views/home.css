@@ -899,7 +899,7 @@
 .home-reset-message-text {
   color: #f34d06;
   font-size: 22px;
-  margin-top: var(--dl-space-space-halfunit);  
+  margin-top: var(--dl-space-space-unit);  
   text-align: center;
   margin-right: 0px;
 }
@@ -916,6 +916,122 @@
   font-style: normal;
   font-weight: 700;
   background-color: var(--dl-color-danger-300);
+}
+.home-verify-container {
+  flex: 0 0 auto;
+  width: 100%;
+  height: auto;
+  display: flex;
+  max-width: var(--dl-size-size-maxwidth);
+  align-items: center;
+  padding-top: var(--dl-space-space-unit);
+  flex-direction: column;
+  padding-bottom: var(--dl-space-space-unit);
+}
+.home-verify-text {
+  color: rgb(241, 241, 241);
+  font-size: 22px;
+  margin-right: 0px;
+}
+.home-verify-message-text {
+  color: var(--dl-color-danger-700);
+  font-size: 22px;
+  margin-top: var(--dl-space-space-halfunit);
+  text-align: center;
+  margin-right: 0px;
+}
+.home-verify-button {
+  margin-top: var(--dl-space-space-unit);
+}
+.home-username-container {
+  flex: 0 0 auto;
+  width: 100%;
+  height: auto;
+  display: flex;
+  max-width: var(--dl-size-size-maxwidth);
+  align-items: center;
+  padding-top: var(--dl-space-space-unit);
+  flex-direction: column;
+  padding-bottom: var(--dl-space-space-unit);
+}
+.home-username-text {
+  color: rgb(241, 241, 241);
+  font-size: 22px;
+  margin-right: 0px;
+}
+.home-login-email-input1 {
+  margin-top: var(--dl-space-space-unit);
+}
+.home-reset-ui-button1 {
+  margin-top: var(--dl-space-space-unit);
+}
+.home-wallet-connect-container {
+  flex: 0 0 auto;
+  width: 100%;
+  height: auto;
+  display: flex;
+  max-width: var(--dl-size-size-maxwidth);
+  align-items: center;
+  padding-top: var(--dl-space-space-unit);
+  flex-direction: column;
+  padding-bottom: var(--dl-space-space-unit);
+}
+.home-wallet-text {
+  color: rgb(241, 241, 241);
+  font-size: 22px;
+  margin-right: 0px;
+  text-align: center;
+}
+.home-main-connect-button {
+  margin-top: var(--dl-space-space-unit);
+}
+.home-wallet-link-container {
+  flex: 0 0 auto;
+  width: 100%;
+  height: auto;
+  display: flex;
+  max-width: var(--dl-size-size-maxwidth);
+  align-items: center;
+  padding-top: var(--dl-space-space-unit);
+  flex-direction: column;
+  padding-bottom: var(--dl-space-space-unit);
+}
+.home-wallet-link-text {
+  color: rgb(241, 241, 241);
+  font-size: 22px;
+  margin-right: 0px;
+  text-align: center;
+}
+.home-link-message-text {
+  color: var(--dl-color-gray-900);
+  font-size: 22px;
+  margin-top: var(--dl-space-space-halfunit);
+  text-align: center;
+  margin-right: 0px;
+}
+.home-main-link-button {
+  margin-top: var(--dl-space-space-unit);
+}
+.home-deleted-container {
+  flex: 0 0 auto;
+  width: 100%;
+  height: auto;
+  display: flex;
+  max-width: var(--dl-size-size-maxwidth);
+  align-items: center;
+  padding-top: var(--dl-space-space-unit);
+  flex-direction: column;
+  padding-bottom: var(--dl-space-space-unit);
+}
+.home-delete-message-text {
+  color: var(--dl-color-danger-700);
+  font-size: 22px;
+  margin-top: var(--dl-space-space-halfunit);
+  text-align: center;
+  margin-right: 0px;
+}
+.home-delete-menu-button {
+  margin-top: var(--dl-space-space-unit);
 }
 .home-info-container {
   flex: 0 0 auto;
@@ -3377,6 +3493,65 @@
     padding-right: var(--dl-space-space-unit);
     padding-bottom: var(--dl-space-space-halfunit);
   }
+  .home-verify-text {
+    font-size: 16px;
+  }
+  .home-verify-message-text {
+    font-size: 16px;
+  }
+  .home-verify-button {
+    font-size: 16px;
+    padding-top: var(--dl-space-space-halfunit);
+    padding-left: var(--dl-space-space-unit);
+    padding-right: var(--dl-space-space-unit);
+    padding-bottom: var(--dl-space-space-halfunit);
+  }
+  .home-username-text {
+    font-size: 16px;
+  }
+  .home-login-email-input1 {
+    font-size: 14px;
+  }
+  .home-reset-ui-button1 {
+    font-size: 16px;
+    padding-top: var(--dl-space-space-halfunit);
+    padding-left: var(--dl-space-space-unit);
+    padding-right: var(--dl-space-space-unit);
+    padding-bottom: var(--dl-space-space-halfunit);
+  }
+  .home-wallet-text {
+    font-size: 16px;
+  }
+  .home-main-connect-button {
+    font-size: 16px;
+    padding-top: var(--dl-space-space-halfunit);
+    padding-left: var(--dl-space-space-unit);
+    padding-right: var(--dl-space-space-unit);
+    padding-bottom: var(--dl-space-space-halfunit);
+  }
+  .home-wallet-link-text {
+    font-size: 16px;
+  }
+  .home-link-message-text {
+    font-size: 16px;
+  }
+  .home-main-link-button {
+    font-size: 16px;
+    padding-top: var(--dl-space-space-halfunit);
+    padding-left: var(--dl-space-space-unit);
+    padding-right: var(--dl-space-space-unit);
+    padding-bottom: var(--dl-space-space-halfunit);
+  }
+  .home-delete-message-text {
+    font-size: 16px;
+  }
+  .home-delete-menu-button {
+    font-size: 16px;
+    padding-top: var(--dl-space-space-halfunit);
+    padding-left: var(--dl-space-space-unit);
+    padding-right: var(--dl-space-space-unit);
+    padding-bottom: var(--dl-space-space-halfunit);
+  }
   .home-profile-info-container {
     flex-direction: row;
   }
@@ -3929,6 +4104,27 @@
     font-size: 12px;
   }
   .home-reset-password-button {
+    font-size: 12px;
+  }
+  .home-verify-button {
+    font-size: 12px;
+  }
+  .home-login-email-input1 {
+    font-size: 12px;
+    margin-top: var(--dl-space-space-halfunit);
+    padding-left: var(--dl-space-space-halfunit);
+    padding-right: var(--dl-space-space-halfunit);
+  }
+  .home-reset-ui-button1 {
+    font-size: 12px;
+  }
+  .home-main-connect-button {
+    font-size: 12px;
+  }
+  .home-main-link-button {
+    font-size: 12px;
+  }
+  .home-delete-menu-button {
     font-size: 12px;
   }
   .home-info-container {
@@ -4517,6 +4713,62 @@
     padding-right: var(--dl-space-space-halfunit);
   }
   .home-reset-password-button {
+    font-size: 10px;
+    padding-left: var(--dl-space-space-halfunit);
+    padding-right: var(--dl-space-space-halfunit);
+  }
+  .home-verify-text {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+  .home-verify-message-text {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+  .home-verify-button {
+    font-size: 10px;
+    padding-left: var(--dl-space-space-halfunit);
+    padding-right: var(--dl-space-space-halfunit);
+  }
+  .home-username-text {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+  .home-login-email-input1 {
+    font-size: 10px;
+  }
+  .home-reset-ui-button1 {
+    font-size: 10px;
+    padding-left: var(--dl-space-space-halfunit);
+    padding-right: var(--dl-space-space-halfunit);
+  }
+  .home-wallet-text {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+  .home-main-connect-button {
+    font-size: 10px;
+    padding-left: var(--dl-space-space-halfunit);
+    padding-right: var(--dl-space-space-halfunit);
+  }
+  .home-wallet-link-text {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+  .home-link-message-text {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+  .home-main-link-button {
+    font-size: 10px;
+    padding-left: var(--dl-space-space-halfunit);
+    padding-right: var(--dl-space-space-halfunit);
+  }
+  .home-delete-message-text {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+  .home-delete-menu-button {
     font-size: 10px;
     padding-left: var(--dl-space-space-halfunit);
     padding-right: var(--dl-space-space-halfunit);
