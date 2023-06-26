@@ -1237,6 +1237,8 @@ const Home = (props) => {
     TO-DO:
     - Add favicon to public folder
 
+    - Delete burger and mobile menu divs
+
     - Add this line of code somewhere below between Main and Proife divs, on the main stage! This forces to re-render to update values on the screen. Use it: RenderNow(true);
     {cccBool && (
       <div onClick={uselessCode()}><p>Count: {cccount}</p></div>
@@ -1313,7 +1315,7 @@ const Home = (props) => {
             <div className="home-logo-image-container">
               <img
                 alt="image"
-                src="/playground_assets/logo-200w.png"
+                src="/playground_assets/logo.png"
                 className="home-logo-image"
               />
             </div>
@@ -1493,20 +1495,15 @@ const Home = (props) => {
                   </span>
                   <br></br>
                 </span>
-                <a href="https://www.bitcoin.com">
+                <a href="https://play.google.com/store/apps/details?id=com.casualzkgame.zkchickens">
                   <img
                     id="downloadButton"
                     alt="image"
-                    src="/playground_assets/download%20button-300h.png"
+                    src="/playground_assets/PlayStore%20Logo.png"
                     className="home-download-button"
                   />
                 </a>
               </div>
-              <img
-                alt="image"
-                src="/playground_assets/in-game-image-sample-300h.png"
-                className="home-image03"
-              />
             </div>
             <div className="home-egg">
               <img
@@ -1566,37 +1563,6 @@ const Home = (props) => {
                 className="home-image05"
               />
             </div>
-            <div className="home-minter-cards">
-              <img
-                alt="image"
-                src="/playground_assets/minter%20cards-500w.png"
-                className="home-image06"
-              />
-              <div className="home-container06">
-                <h1 className="home-text029">
-                  <span className="home-text030">No One Left Behind!</span>
-                  <br></br>
-                </h1>
-                <span className="home-text032">
-                  <span>
-                    90% of token are allocated for our testnet player the tokens
-                    actually linked with Minter Cards that allow you to mint
-                    tokens over time!
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: ' ',
-                      }}
-                    />
-                  </span>
-                  <br></br>
-                  <br></br>
-                  <span>
-                    So, even though you missed the testnet to participate, you
-                    don&apos;t miss the oppourtunity to get allocation!
-                  </span>
-                </span>
-              </div>
-            </div>
             <div className="home-lp-heroes">
               <div className="home-container07">
                 <h1 className="home-text037">
@@ -1622,7 +1588,7 @@ const Home = (props) => {
               </div>
               <img
                 alt="image"
-                src="/playground_assets/lp%20hero-400h.png"
+                src="/playground_assets/Mascot_noBG_Flipped.png"
                 className="home-image07"
               />
             </div>
@@ -1652,20 +1618,15 @@ const Home = (props) => {
                   </span>
                   <br></br>
                 </span>                
-                <a href="https://www.bitcoin.com">
+                <a href="https://play.google.com/store/apps/details?id=com.casualzkgame.zkchickens">
                   <img
                     id="downloadButton"
                     alt="image"
-                    src="/playground_assets/download%20button-300h.png"
+                    src="/playground_assets/PlayStore%20Logo.png"
                     className="home-download-button1"
                   />
                 </a>
               </div>
-              <img
-                alt="image"
-                src="/playground_assets/in-game-image-sample-300h.png"
-                className="home-image09"
-              />
             </div>
             <div className="home-egg1">
               <img
@@ -1731,35 +1692,6 @@ const Home = (props) => {
                 </span>
               </div>
             </div>
-            <div className="home-minter-cards1">
-              <img
-                alt="image"
-                src="/playground_assets/minter%20cards-500w.png"
-                className="home-image12"
-              />
-              <div className="home-container13">
-                <h1 className="home-text069">
-                  <span className="home-text070">No One Left Behind!</span>
-                  <br></br>
-                </h1>
-                <span className="home-text072">
-                  90% of token are allocated for our testnet player the tokens
-                  actually linked with Minter Cards that allow you to mint tokens
-                  over time!
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: ' ',
-                    }}
-                  />
-                </span>
-              </div>
-              <div className="home-container14">
-                <span className="home-text073">
-                  So, even though you missed the testnet to participate, you
-                  don&apos;t miss the oppourtunity to get allocation!
-                </span>
-              </div>
-            </div>
             <div className="home-lp-heroes1">
               <div className="home-container15">
                 <h1 className="home-text074">
@@ -1778,7 +1710,7 @@ const Home = (props) => {
               </div>
               <img
                 alt="image"
-                src="/playground_assets/lp%20hero-400h.png"
+                src="/playground_assets/Mascot_noBG_Flipped.png"
                 className="home-image13"
               />
               <div className="home-container16">
