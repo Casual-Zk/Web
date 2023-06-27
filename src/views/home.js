@@ -1508,7 +1508,7 @@ const Home = (props) => {
             <div className="home-egg">
               <img
                 alt="image"
-                src="/playground_assets/egg-600w.png"
+                src="/playground_assets/Egg_Ribbon.png"
                 className="home-image04"
               />
               <div className="home-container04">
@@ -1631,7 +1631,7 @@ const Home = (props) => {
             <div className="home-egg1">
               <img
                 alt="image"
-                src="/playground_assets/egg-600w.png"
+                src="/playground_assets/Egg_Ribbon.png"
                 className="home-image10"
               />
               <div className="home-container09">
@@ -2354,7 +2354,7 @@ const Home = (props) => {
                   <h1 className="home-item-name top10-text">Knife</h1>
                   <img
                     alt="image"
-                    src="/playground_assets/knife_inv-200h.png"
+                    src="/playground_assets/Web_Knife.png"
                     className="item-image"
                   />
                   <div className="home-container18">
@@ -2377,7 +2377,7 @@ const Home = (props) => {
                 </h1>
                 <img
                   alt="image"
-                  src="/playground_assets/glock_inv-200h.png"
+                  src="/playground_assets/Web_Glock.png"
                   className="home-item-image01 item-image"
                 />
                 <div className="home-container19">
@@ -2397,7 +2397,7 @@ const Home = (props) => {
                   <h1 className="home-item-name02 top10-text">Shotgun</h1>
                   <img
                     alt="image"
-                    src="/playground_assets/shoutgun_inv-200h.png"
+                    src="/playground_assets/Web_Shotgun.png"
                     className="home-item-image02 item-image"
                   />
                   <div className="home-container20">
@@ -2420,7 +2420,7 @@ const Home = (props) => {
                   <h1 className="home-item-name03 top10-text">M4</h1>
                   <img
                     alt="image"
-                    src="/playground_assets/m4_inv-200h.png"
+                    src="/playground_assets/Web_M4.png"
                     className="home-item-image03 item-image"
                   />
                   <div className="home-container21">
@@ -2440,7 +2440,7 @@ const Home = (props) => {
                   <h1 className="home-item-name04 top10-text">AWP</h1>
                   <img
                     alt="image"
-                    src="/playground_assets/awp_inv-200h.png"
+                    src="/playground_assets/Web_AWP.png"
                     className="home-item-image04 item-image"
                   />
                   <div className="home-container22">
@@ -2460,7 +2460,7 @@ const Home = (props) => {
                   <h1 className="home-item-name05 top10-text">12-Gauge</h1>
                   <img
                     alt="image"
-                    src="/playground_assets/12gauge_inv-200h.png"
+                    src="/playground_assets/Web_12Gauge.png"
                     className="home-item-image05 item-image"
                   />
                   <div className="home-container23">
@@ -2508,7 +2508,7 @@ const Home = (props) => {
                   <h1 className="home-item-name06 top10-text">9 mm</h1>
                   <img
                     alt="image"
-                    src="/playground_assets/9mm_inv-200h.png"
+                    src="/playground_assets/Web_9mm.png"
                     className="home-item-image06 item-image"
                   />
                   <div className="home-container25">
@@ -2556,7 +2556,7 @@ const Home = (props) => {
                   <h1 className="home-item-name07 top10-text">5.56 mm</h1>
                   <img
                     alt="image"
-                    src="/playground_assets/5_56_inv-200h.png"
+                    src="/playground_assets/Web_556mm.png"
                     className="home-item-image07 item-image"
                   />
                   <div className="home-container27">
@@ -2604,7 +2604,7 @@ const Home = (props) => {
                   <h1 className="home-item-name08 top10-text">7.62 mm</h1>
                   <img
                     alt="image"
-                    src="/playground_assets/7_62_inv-200h.png"
+                    src="/playground_assets/Web_762mm.png"
                     className="home-item-image08 item-image"
                   />
                   <div className="home-container29">
@@ -2695,7 +2695,7 @@ const Home = (props) => {
               <h1 className="home-item-name09 top10-text">Knife</h1>
               <img
                 alt="image"
-                src="/playground_assets/knife_inv-200h.png"
+                src="/playground_assets/Web_Knife.png"
                 className="home-item-image09 item-image"
               />
               <span className="home-price-text top10-text">Price: 1 ZCH</span>
@@ -2725,7 +2725,7 @@ const Home = (props) => {
               <h1 className="home-item-name10 top10-text">Glock</h1>
               <img
                 alt="image"
-                src="/playground_assets/glock_inv-200h.png"
+                src="/playground_assets/Web_Glock.png"
                 className="home-item-image10 item-image"
               />
               <span className="home-price-text1 top10-text">Price: 10 ZCH</span>
@@ -2755,7 +2755,7 @@ const Home = (props) => {
               <h1 className="home-item-name11 top10-text">Shotgun</h1>
               <img
                 alt="image"
-                src="/playground_assets/shoutgun_inv-200h.png"
+                src="/playground_assets/Web_Shotgun.png"
                 className="home-item-image11 item-image"
               />
               <span className="home-price-text2 top10-text">Price: 30 ZCH</span>
@@ -2785,7 +2785,7 @@ const Home = (props) => {
               <h1 className="home-item-name12 top10-text">M4</h1>
               <img
                 alt="image"
-                src="/playground_assets/m4_inv-200h.png"
+                src="/playground_assets/Web_M4.png"
                 className="home-item-image12 item-image"
               />
               <span className="home-price-text3 top10-text">Price: 100 ZCH</span>
@@ -2818,7 +2818,7 @@ const Home = (props) => {
               </h1>
               <img
                 alt="image"
-                src="/playground_assets/awp_inv-200h.png"
+                src="/playground_assets/Web_AWP.png"
                 className="home-item-image13 item-image"
               />
               <span className="home-price-text4 top10-text">Price: 200 ZCH</span>
@@ -2851,7 +2851,7 @@ const Home = (props) => {
               </h1>
               <img
                 alt="image"
-                src="/playground_assets/12gauge_inv-200h.png"
+                src="/playground_assets/Web_12Gauge.png"
                 className="home-item-image14 item-image"
               />
               <span className="home-price-text5 top10-text">
@@ -2886,7 +2886,7 @@ const Home = (props) => {
               </h1>
               <img
                 alt="image"
-                src="/playground_assets/9mm_inv-200h.png"
+                src="/playground_assets/Web_9mm.png"
                 className="home-item-image15 item-image"
               />
               <span className="home-price-text6 top10-text">
@@ -2921,7 +2921,7 @@ const Home = (props) => {
               </h1>
               <img
                 alt="image"
-                src="/playground_assets/5_56_inv-200h.png"
+                src="/playground_assets/Web_556mm.png"
                 className="home-item-image16 item-image"
               />
               <span className="home-price-text7 top10-text">
@@ -2956,7 +2956,7 @@ const Home = (props) => {
               </h1>
               <img
                 alt="image"
-                src="/playground_assets/7_62_inv-200h.png"
+                src="/playground_assets/Web_762mm.png"
                 className="home-item-image17 item-image"
               />
               <span className="home-price-text8 top10-text">

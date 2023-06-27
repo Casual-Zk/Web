@@ -20,7 +20,7 @@ const Mint = (props) => {
           <h1 className="mint-item-name">Knife</h1>
           <img
             alt="image"
-            src="/playground_assets/knife_inv-200h.png"
+            src="/playground_assets/Web_Knife.png"
             className="mint-item-image"
           />
           <span className="mint-price-text">Price: 1 ZCH</span>
@@ -44,7 +44,7 @@ const Mint = (props) => {
           <h1 className="mint-item-name1">Glock</h1>
           <img
             alt="image"
-            src="/playground_assets/glock_inv-200h.png"
+            src="/playground_assets/Web_Glock.png"
             className="mint-item-image1"
           />
           <span className="mint-price-text1">Price: 10 ZCH</span>
@@ -68,7 +68,7 @@ const Mint = (props) => {
           <h1 className="mint-item-name2">Shotgun</h1>
           <img
             alt="image"
-            src="/playground_assets/shoutgun_inv-200h.png"
+            src="/playground_assets/Web_Shotgun.png"
             className="mint-item-image2"
           />
           <span className="mint-price-text2">Price: 30 ZCH</span>
@@ -92,7 +92,7 @@ const Mint = (props) => {
           <h1 className="mint-item-name3">M4</h1>
           <img
             alt="image"
-            src="/playground_assets/m4_inv-200h.png"
+            src="/playground_assets/Web_M4.png"
             className="mint-item-image3"
           />
           <span className="mint-price-text3">Price: 100 ZCH</span>
@@ -119,7 +119,7 @@ const Mint = (props) => {
           </h1>
           <img
             alt="image"
-            src="/playground_assets/awp_inv-200h.png"
+            src="/playground_assets/Web_AWP.png"
             className="mint-item-image4"
           />
           <span className="mint-price-text4">Price: 200 ZCH</span>
@@ -146,7 +146,7 @@ const Mint = (props) => {
           </h1>
           <img
             alt="image"
-            src="/playground_assets/12gauge_inv-200h.png"
+            src="/playground_assets/Web_12Gauge.png"
             className="mint-item-image5"
           />
           <span className="mint-price-text5">Price: 0.0001 ZCH</span>
@@ -173,7 +173,7 @@ const Mint = (props) => {
           </h1>
           <img
             alt="image"
-            src="/playground_assets/9mm_inv-200h.png"
+            src="/playground_assets/Web_9mm.png"
             className="mint-item-image6"
           />
           <span className="mint-price-text6">Price: 0.0002 ZCH</span>
@@ -200,7 +200,7 @@ const Mint = (props) => {
           </h1>
           <img
             alt="image"
-            src="/playground_assets/5_56_inv-200h.png"
+            src="/playground_assets/Web_556mm.png"
             className="mint-item-image7"
           />
           <span className="mint-price-text7">Price: 0.0003 ZCH</span>
@@ -227,7 +227,7 @@ const Mint = (props) => {
           </h1>
           <img
             alt="image"
-            src="/playground_assets/7_62_inv-200h.png"
+            src="/playground_assets/Web_762mm.png"
             className="mint-item-image8"
           />
           <span className="mint-price-text8">Price: 0.0005 ZCH</span>

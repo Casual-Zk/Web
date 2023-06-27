@@ -248,7 +248,7 @@ const Profile = (props) => {
             <h1 className="profile-item-name">Knife</h1>
             <img
               alt="image"
-              src="/playground_assets/knife_inv-200h.png"
+              src="/playground_assets/Web_Knife.png"
               className="profile-item-image"
             />
             <div className="profile-container05">
@@ -269,7 +269,7 @@ const Profile = (props) => {
             </h1>
             <img
               alt="image"
-              src="/playground_assets/glock_inv-200h.png"
+              src="/playground_assets/Web_Glock.png"
               className="profile-item-image1"
             />
             <div className="profile-container06">
@@ -287,7 +287,7 @@ const Profile = (props) => {
             <h1 className="profile-item-name2">Shotgun</h1>
             <img
               alt="image"
-              src="/playground_assets/shoutgun_inv-200h.png"
+              src="/playground_assets/Web_Shotgun.png"
               className="profile-item-image2"
             />
             <div className="profile-container07">
@@ -305,7 +305,7 @@ const Profile = (props) => {
             <h1 className="profile-item-name3">M4</h1>
             <img
               alt="image"
-              src="/playground_assets/m4_inv-200h.png"
+              src="/playground_assets/Web_M4.png"
               className="profile-item-image3"
             />
             <div className="profile-container08">
@@ -323,7 +323,7 @@ const Profile = (props) => {
             <h1 className="profile-item-name4">AWP</h1>
             <img
               alt="image"
-              src="/playground_assets/awp_inv-200h.png"
+              src="/playground_assets/Web_AWP.png"
               className="profile-item-image4"
             />
             <div className="profile-container09">
@@ -341,7 +341,7 @@ const Profile = (props) => {
             <h1 className="profile-item-name5">12-Gauge</h1>
             <img
               alt="image"
-              src="/playground_assets/12gauge_inv-200h.png"
+              src="/playground_assets/Web_12Gauge.png"
               className="profile-item-image5"
             />
             <div className="profile-container10">
@@ -381,7 +381,7 @@ const Profile = (props) => {
             <h1 className="profile-item-name6">9 mm</h1>
             <img
               alt="image"
-              src="/playground_assets/9mm_inv-200h.png"
+              src="/playground_assets/Web_9mm.png"
               className="profile-item-image6"
             />
             <div className="profile-container12">
@@ -421,7 +421,7 @@ const Profile = (props) => {
             <h1 className="profile-item-name7">5.56 mm</h1>
             <img
               alt="image"
-              src="/playground_assets/5_56_inv-200h.png"
+              src="/playground_assets/Web_556mm.png"
               className="profile-item-image7"
             />
             <div className="profile-container14">
@@ -461,7 +461,7 @@ const Profile = (props) => {
             <h1 className="profile-item-name8">7.62 mm</h1>
             <img
               alt="image"
-              src="/playground_assets/7_62_inv-200h.png"
+              src="/playground_assets/Web_762mm.png"
               className="profile-item-image8"
             />
             <div className="profile-container16">

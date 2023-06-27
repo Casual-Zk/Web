@@ -54,7 +54,7 @@ const Archive = (props) => {
         <div className="archive-egg">
           <img
             alt="image"
-            src="/playground_assets/egg-300h.png"
+            src="/playground_assets/Egg_Ribbon.png"
             className="archive-image03"
           />
           <div className="archive-container3">
