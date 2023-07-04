@@ -1367,8 +1367,8 @@ const Home = (props) => {
                     Home
                 </button>
               </li>
-              <li className='nav-item'>
-                    {userlogin && (
+              {userlogin && (
+                <li className='nav-item'>                      
                   <button
                     onClick={() => MenuButton("Profile")}
                     id="profilePageButton"
@@ -1376,8 +1376,8 @@ const Home = (props) => {
                   >
                     Profile
                   </button>
-                )}
-              </li>
+                </li>
+              )}
               <li className='nav-item'>
                 <button
                   onClick={() => MenuButton("Mint")}
