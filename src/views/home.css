@@ -108,6 +108,7 @@
 .home-view {
   display: flex;
   flex-direction: row;
+  margin-left: 200px;
 }
 .home-image02 {
   width: 24px;
@@ -2715,6 +2716,9 @@
   font-size: 12px;
   align-self: center;
 }
+.navbar-nav.flex-column{
+  flex-direction: row !important;
+}
 @media(max-width: 1600px) {
   .home-container {
     background-color: #28282d;
@@ -3044,6 +3048,9 @@
   }
 }
 @media(max-width: 1200px) {
+  .home-view {
+    margin-left: 50px;
+  }
   .home-mobile-menu {
     height: auto;
   }
@@ -3769,6 +3776,12 @@
   }
 }
 @media(max-width: 767px) {
+  .navbar-nav.flex-column{
+    flex-direction: column !important;
+  }
+  .home-view {
+    margin-left: 0px;
+  }
   .home-navbar {
     gap: 200px;
     padding-left: var(--dl-space-space-twounits);
@@ -4276,6 +4289,9 @@
   }
 }
 @media(max-width: 479px) {
+  .home-button2 {
+    font-size: 20px;
+  }
   .home-navbar {
     gap: 100px;
     padding: var(--dl-space-space-unit);

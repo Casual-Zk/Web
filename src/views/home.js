@@ -1271,6 +1271,36 @@ const Home = (props) => {
 
     ### onClick={() => SendEmailVerification(true)}
 
+    // Nav Bar
+    CSS
+    .home-view'e 
+      - ana yerde margin-left: 200px; ekle
+      - 1200px media'da 50px yap
+      - 767px media'da 0px yap
+    .
+    Butonlar
+      - Ana mediada:
+      navbar-nav.flex-column{
+        flex-direction: row !important;
+      }
+      - 767px mediada: column !important;
+      - Yine 767'de buton boyutunu değiştir:
+      .home-button2 {
+        font-size: 20px;
+      }
+    .
+
+    --> Tuğberk'in yeni nav bar'ı ekle, eskisini sil.
+
+    index.HTML
+    Tepeye link yerine:
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous"></link>
+    
+    body bitimine :
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+    
+
     // Profile
     - {user.tokenBalance.toString()} to token balance
 
@@ -1309,168 +1339,75 @@ const Home = (props) => {
         <title>Zk Chickens</title>
         <meta property="og:title" content="Zk Chickens" />
       </Helmet>
-      <div className="home-nav-container">
-        <header data-thq="thq-navbar" className="home-navbar">
-          <div className="home-logo-container">
-            <div className="home-logo-image-container">
-              <img
-                alt="image"
-                src="/playground_assets/logo.png"
-                className="home-logo-image"
-              />
-            </div>
-            <span className="home-logo-text">Zk Chickens</span>
-          </div>
-          <div
-            data-thq="thq-navbar-nav"
-            data-role="Nav"
-            className="home-desktop-menu"
-          >
-            <nav
-              data-thq="thq-navbar-nav-links"
-              data-role="Nav"
-              className="home-nav"
-            >
-              <button
-                onClick={() => MenuButton("Main")}
-                id="homePageButton"
-                className="home-button button-clean button"
-              >
-                Home
-              </button>
-              {userlogin && (
-                <button
-                  onClick={() => MenuButton("Profile")}
-                  id="profilePageButton"
-                  className="home-button1 button-clean button"
-                >
-                  Profile
-                </button>
-              )}
-              <button
-                onClick={() => MenuButton("Mint")}
-                id="mintPageButton"
-                className="home-button2 button-clean button"
-              >
-                Item Mint
-              </button>
-              <button
-                id="whitepaperButton"
-                className="home-button3 button-clean button"
-              >
-                Whitepaper
-              </button>
-            </nav>
-          </div>
-          <div data-thq="thq-navbar-btn-group" className="home-btn-group">
-            <div className="home-socials">
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="home-twitter1 social button"
-              >
+      <nav className="navbar navbar-expand-md navbar-dark w-100" style={{backgroundColor: '#27272d'}}>
+        <div className="container">
+          <a className="navbar-brand" href="#">
+            <div className="home-logo-container">
+              <div className="home-logo-image-container">
                 <img
                   alt="image"
-                  src="/playground_assets/twitter.svg"
-                  className="home-image31"
+                  src="/playground_assets/logo.png"
+                  className="home-logo-image"
                 />
-              </a>
-              <a
-                href="https://discord.com"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="home-discord1 social button"
-              >
-                <img
-                  alt="image"
-                  src="/playground_assets/discord.svg"
-                  className="home-image32"
-                />
-              </a>
-            </div>
-            <button
-              onClick = {() => MenuButton("Profile")}   
-              id="loginButton" className="home-view button">
-              <span>{userlogin ? (user.nickname == "" ? ("Profile") : (user.nickname)) : ("Login")}</span>
-            </button>
-          </div>
-          <div data-thq="thq-burger-menu" className="home-burger-menu">
-            <button className="button home-button4">
-              <svg viewBox="0 0 1024 1024" className="home-icon">
-                <path d="M128 554.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667zM128 298.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667zM128 810.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
-              </svg>
-            </button>
-          </div>
-          <div data-thq="thq-mobile-menu" className="home-mobile-menu">
-            <div
-              data-thq="thq-mobile-menu-nav"
-              data-role="Nav"
-              className="home-nav1"
-            >
-              <div className="home-container01">
-                <div data-thq="thq-close-menu" className="home-menu-close">
-                  <svg
-                    id="closeBurgerMenu"
-                    viewBox="0 0 1024 1024"
-                    className="home-icon2"
-                  >
-                    <path d="M810 274l-238 238 238 238-60 60-238-238-238 238-60-60 238-238-238-238 60-60 238 238 238-238z"></path>
-                  </svg>
-                </div>
               </div>
-              <nav
-                data-thq="thq-mobile-menu-nav-links"
-                data-role="Nav"
-                className="home-nav2"
-              >
+              <span className="home-logo-text">Zk Chickens</span>
+            </div>
+          </a>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+            <ul className="navbar-nav flex-column">
+              <li className='nav-item'>
                 <button
-                  onClick={() => MenuButton("Main")}
-                  id="burgerHomePageButton"
-                  className="home-button5 button-clean button"
-                >
-                  Home
+                    onClick={() => MenuButton("Main")}
+                    id="homePageButton"
+                    className="home-button2 button-clean button"
+                  >
+                    Home
                 </button>
-                {userlogin && (
+              </li>
+              <li className='nav-item'>
+                    {userlogin && (
                   <button
                     onClick={() => MenuButton("Profile")}
-                    id="burgerProfileButton"
-                    className="home-button6 button-clean button"
+                    id="profilePageButton"
+                    className="home-button2 button-clean button"
                   >
-                    <span className="home-text001">
-                      <span>Profile</span>
-                      <br></br>
-                    </span>
+                    Profile
                   </button>
                 )}
+              </li>
+              <li className='nav-item'>
                 <button
                   onClick={() => MenuButton("Mint")}
-                  id="burgerMintPageButton"
-                  className="home-button7 button-clean button"
+                  id="mintPageButton"
+                  className="home-button2 button-clean button"
                 >
                   Item Mint
                 </button>
+              </li>
+              <li className='nav-item'>
                 <button
-                  id="burgerWhitepaperButton"
-                  className="home-button8 button-clean button"
+                  id="whitepaperButton"
+                  className="home-button2 button-clean button"
                 >
                   Whitepaper
                 </button>
-              </nav>
-              <div className="home-container02">
-                <button 
-                  onClick = {() => MenuButton("Profile")} 
-                  id="burgerLoginButton" className="home-login button">
-                  <span>
-                    <span>{userlogin ? (user.nickname) : ("Login")}</span>
-                    <br></br>
-                  </span>
-                </button>
-              </div>
-            </div>
+              </li>
+              <li className='nav-item'>
+                <span className='navbar-text ms-auto'>
+                  <button 
+                    onClick = {() => MenuButton("Profile")}   
+                    id="loginButton" className="home-view button">
+                    <span>{userlogin ? (user.nickname == "" ? ("Profile") : (user.nickname)) : ("Login")}</span>
+                  </button>
+                </span>
+              </li>
+            </ul>     
           </div>
-        </header>
-      </div>
+        </div>
+      </nav>
       {menu.Main && (
         <div className="home-home-page">
           <img
