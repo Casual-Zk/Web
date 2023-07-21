@@ -548,11 +548,8 @@ const Home = (props) => {
       else if (password === "") {
         setLoginWarning("Missing password!");
       }
-      else if (error.code == AuthErrorCodes.INVALID_PASSWORD) {
-        setLoginWarning("Wrong password!");
-      }
-      else if (error.code == AuthErrorCodes.USER_DELETED) {
-        setLoginWarning("User not found! Check your email address!");
+      else if (error.code == AuthErrorCodes.INVALID_PASSWORD || error.code == AuthErrorCodes.USER_DELETED) {
+        setLoginWarning("Wrong email or password!");
       }
       else {
         setLoginWarning("Something unexpected occourred! Error Code: " + error.code);
@@ -666,7 +663,8 @@ const Home = (props) => {
     sendEmailVerification(auth.currentUser)
     .then(() => {
       console.log("Email verification sent!");
-      setVerifyWarning("Verification email sent! Reload the page after you verify your email address!");
+      console.log(auth.currentUser.email);
+      setVerifyWarning("Verification email sent to " + auth.currentUser.email + ". Reload the page after you verify your email address!");
     });
   }
 
@@ -830,6 +828,10 @@ const Home = (props) => {
       await RequestAccount();
 
       const mmProvider = new ethers.providers.Web3Provider(window.ethereum);
+    }
+    else {
+      // Redirect the user to the MetaMask website to download
+      window.open('https://metamask.io/download.html', '_blank');
     }
   }
 
@@ -1421,15 +1423,9 @@ const Home = (props) => {
                 <h1 className="home-text007">Zk Chickens</h1>
                 <span className="home-text008">
                   <span>
-                    Zk Chickens is a casual game on ZkSync Era. You can play while
-                    you sit on toilet or commuting! In this game everyone has a
-                    chance to win big, for just the top players!
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: ' ',
-                      }}
-                    />
+                    Welcome to Zk Chickens, the casual shooter game in the ZkSync Era! Experience thrilling shooting action while on the go. Our deflationary system ensures price appreciation, and our lottery gives everyone a fair chance to win, regardless of skill level. Join now for exciting rewards and endless fun!
                   </span>
+                  <br></br>
                   <br></br>
                 </span>
                 <a href="https://play.google.com/store/apps/details?id=com.casualzkgame.zkchickens">
@@ -1450,24 +1446,17 @@ const Home = (props) => {
               />
               <div className="home-container04">
                 <h1 className="home-text011">
-                  <span className="home-text012">Everyone Can Win BIG!</span>
+                  <span className="home-text012">Fair Chance, Weekly Excitement!</span>
                   <br></br>
                 </h1>
                 <span className="home-text014">
                   <span>
-                    Current Play-To-Earn systems are not sustainable. If everyone
-                    can earn, that means people will lose big in the end. If the
-                    only top players earns, that would kill the excitement of the
-                    game for the most players.
+                    In our unique system, we avoid the pitfalls of unsustainable Play-To-Earn setups. Instead, we introduce a lottery system to distribute rewards more fairly. After each victorious match, players earn an "egg." These eggs serve as entries into the weekly lottery, where players have the opportunity to win from various prize pools. The more skilled players accumulate more eggs, increasing their chances of landing significant rewards.
                   </span>
                   <br></br>
                   <br></br>
                   <span>
-                    Here we have a lottery system to distribute rewards! After
-                    every win in a match, players earn an egg. With that egg
-                    players join the weekly lottery and have chance to win one of
-                    the prize pools! Better skills, more egg, higher chance to win
-                    big!
+                    By adopting this system, we strike a balance between player engagement and rewarding skills. It ensures that players of all levels have a chance to win exciting prizes, promoting a lively and enjoyable gaming experience for everyone involved. Say goodbye to unsustainable models and hello to an inclusive and thrilling gaming environment!
                   </span>
                   <br></br>
                 </span>
@@ -1476,20 +1465,17 @@ const Home = (props) => {
             <div className="home-token-distribution">
               <div className="home-container05">
                 <h1 className="home-text020">
-                  <span className="home-text021">Token For Gamers!</span>
+                  <span className="home-text021">Deflation Ahead!</span>
                   <br></br>
                 </h1>
                 <span className="home-text023">
                   <span>
-                    90% of tokens are testers who participate our testnet! 5% for
-                    liquidity pool for gamers to trade on DEX, 5% for the team who
-                    built Zk Chickens.
+                    In our tokenomics strategy, 95% of the tokens will be available right from the start. This approach is chosen to prevent excessive inflation that has negatively affected other gaming projects in the past. Additionally, we plan to airdrop 90% of the tokens to our testers who actively participate in our testnet, rewarding them for their valuable feedback and contributions.
                   </span>
                   <br></br>
                   <br></br>
                   <span>
-                    No Play-To-Earn allocation! Distribution of the game rewards
-                    are not on our hands! WILL EXPLAIN IT LATER...
+                    To prevent hyperinflation, we won't directly allocate tokens as game rewards. Instead, we'll utilize a carefully managed 'Chicken Treasury' for sustainable and exciting player rewards. Through the treasury, token burns will reduce the existing token supply and create a deflationary environment!
                   </span>
                   <br></br>
                 </span>
@@ -1500,40 +1486,33 @@ const Home = (props) => {
                 className="home-image05"
               />
             </div>
-            <div className="home-lp-heroes">
-              <div className="home-container07">
-                <h1 className="home-text037">
-                  <span className="home-text038">
-                    Become a LP Hero, Earn 10%!
-                  </span>
-                  <br></br>
-                </h1>
-                <span className="home-text040">
-                  <span>
-                    Our LP Heroes who provided liquidity for gamers on DEX will
-                    get the 10% of the treasury!
-                  </span>
-                  <br></br>
-                  <br></br>
-                  <span>
-                    If you missed the oppourtunity to provide liquidity on
-                    Genesis, don&apos;t worry! You can buy a LP Hero from the
-                    market and start to earn 10% now!
-                  </span>
-                  <br></br>
-                </span>
-              </div>
-              <img
-                alt="image"
-                src="/playground_assets/Mascot_noBG_Flipped.png"
-                className="home-image07"
-              />
-            </div>
             <div className="home-treasury">
-              <h1 className="home-text046">Treasury</h1>
+              <h1 className="home-text046">Chicken Treasury</h1>
+              <span className="home-text063">
+                <span>
+                  The treasury is designed to create a sustainable and engaging gaming ecosystem. It incentivizes various stakeholders, ensures continuous development, and drives player interaction, contributing to the game's long-term success and the potential growth in token value.
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  Every week, the treasury contract will distribute the tokens income that comes from item sales to 4 parties shown below. The main objective of the treasury is to avoid extreme inflation like other game projects suffering. Instead of printing loads of tokens to provide game rewards to players, we provide the game reward through the treasury!
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  While 30% token burn effectively reducing the token supply and creating deflation, potentially driving up token prices, the community rewards will incentivize the communities to challange each other and make the playground more fun! This also will help to shape our clan system which we will develop and implement to the game after the launch.
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  In case the 10% allocation for development is insufficient, holders have the power to vote for an increase, ensuring a democratic approach to resource allocation and sustaining the game's growth and success.
+                </span>
+                <br></br>
+                <br></br>
+              </span>
               <img
                 alt="image"
-                src="/playground_assets/treasury_map-1400w.png"
+                src="/playground_assets/Treasury-New_WHITE.png"
                 className="home-image08"
               />
             </div>
@@ -1544,14 +1523,7 @@ const Home = (props) => {
                 <h1 className="home-text047">Zk Chickens</h1>
                 <span className="home-text048">
                   <span>
-                    Zk Chickens is a casual game on ZkSync Era. You can play while
-                    you sit on toilet or commuting! In this game everyone has a
-                    chance to win big, for just the top players!
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: ' ',
-                      }}
-                    />
+                    Welcome to Zk Chickens, the casual shooter game in the ZkSync Era! Experience thrilling shooting action while on the go. Our deflationary system ensures price appreciation, and our lottery gives everyone a fair chance to win, regardless of skill level. Join now for exciting rewards and endless fun!
                   </span>
                   <br></br>
                 </span>                
@@ -1573,15 +1545,12 @@ const Home = (props) => {
               />
               <div className="home-container09">
                 <h1 className="home-text051">
-                  <span className="home-text052">Everyone Can Win BIG!</span>
+                  <span className="home-text052">Fair Chance, Weekly Excitement!</span>
                   <br></br>
                 </h1>
                 <span className="home-text054">
                   <span>
-                    Current Play-To-Earn systems are not sustainable. If everyone
-                    can earn, that means people will lose big in the end. If the
-                    only top players earns, that would kill the excitement of the
-                    game for the most players.
+                    In our unique system, we avoid the pitfalls of unsustainable Play-To-Earn setups. Instead, we introduce a lottery system to distribute rewards more fairly. After each victorious match, players earn an "egg." These eggs serve as entries into the weekly lottery, where players have the opportunity to win from various prize pools. The more skilled players accumulate more eggs, increasing their chances of landing significant rewards.
                   </span>
                   <br></br>
                 </span>
@@ -1589,11 +1558,7 @@ const Home = (props) => {
               <div className="home-container10">
                 <span className="home-text057">
                   <span>
-                    Here we have a lottery system to distribute rewards! After
-                    every win in a match, players earn an egg. With that egg
-                    players join the weekly lottery and have chance to win one of
-                    the prize pools! Better skills, more egg, higher chance to win
-                    big!
+                    By adopting this system, we strike a balance between player engagement and rewarding skills. It ensures that players of all levels have a chance to win exciting prizes, promoting a lively and enjoyable gaming experience for everyone involved. Say goodbye to unsustainable models and hello to an inclusive and thrilling gaming environment!
                   </span>
                   <br></br>
                 </span>
@@ -1607,11 +1572,8 @@ const Home = (props) => {
                 </h1>
                 <span className="home-text063">
                   <span>
-                    90% of tokens are testers who participate our testnet! 5% for
-                    liquidity pool for gamers to trade on DEX, 5% for the team who
-                    built Zk Chickens.
+                    In our tokenomics strategy, 95% of the tokens will be available right from the start. This approach is chosen to prevent excessive inflation that has negatively affected other gaming projects in the past. Additionally, we plan to airdrop 90% of the tokens to our testers who actively participate in our testnet, rewarding them for their valuable feedback and contributions.
                   </span>
-                  <br></br>
                 </span>
               </div>
               <img
@@ -1622,50 +1584,39 @@ const Home = (props) => {
               <div className="home-container12">
                 <span className="home-text066">
                   <span>
-                    No Play-To-Earn allocation! Distribution of the game rewards
-                    are not on our hands! WILL EXPLAIN IT LATER...
-                  </span>
-                  <br></br>
-                </span>
-              </div>
-            </div>
-            <div className="home-lp-heroes1">
-              <div className="home-container15">
-                <h1 className="home-text074">
-                  <span className="home-text075">
-                    Become a LP Hero, Earn 10%!
-                  </span>
-                  <br></br>
-                </h1>
-                <span className="home-text077">
-                  <span>
-                    Our LP Heroes who provided liquidity for gamers on DEX will
-                    get the 10% of the treasury!
-                  </span>
-                  <br></br>
-                </span>
-              </div>
-              <img
-                alt="image"
-                src="/playground_assets/Mascot_noBG_Flipped.png"
-                className="home-image13"
-              />
-              <div className="home-container16">
-                <span className="home-text080">
-                  <span>
-                    If you missed the oppourtunity to provide liquidity on
-                    Genesis, don&apos;t worry! You can buy a LP Hero from the
-                    market and start to earn 10% now!
+                  To prevent hyperinflation, we won't directly allocate tokens as game rewards. Instead, we'll utilize a carefully managed 'Chicken Treasury' for sustainable and exciting player rewards. Through the treasury, token burns will reduce the existing token supply and create a deflationary environment!
                   </span>
                   <br></br>
                 </span>
               </div>
             </div>
             <div className="home-treasury1">
-              <h1 className="home-text083">Treasury</h1>
+              <h1 className="home-text083">Chicken Treasury</h1>
+              <span className="home-text063">
+                <span>
+                  The treasury is designed to create a sustainable and engaging gaming ecosystem. It incentivizes various stakeholders, ensures continuous development, and drives player interaction, contributing to the game's long-term success and the potential growth in token value.
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  Every week, the treasury contract will distribute the tokens income that comes from item sales to 4 parties shown below. The main objective of the treasury is to avoid extreme inflation like other game projects suffering. Instead of printing loads of tokens to provide game rewards to players, we provide the game reward through the treasury!
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  While 30% token burn effectively reducing the token supply and creating deflation, potentially driving up token prices, the community rewards will incentivize the communities to challange each other and make the playground more fun! This also will help to shape our clan system which we will develop and implement to the game after the launch.
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  In case the 10% allocation for development is insufficient, holders have the power to vote for an increase, ensuring a democratic approach to resource allocation and sustaining the game's growth and success.
+                </span>
+                <br></br>
+                <br></br>
+              </span>
               <img
                 alt="image"
-                src="/playground_assets/treasury_map-1400w.png"
+                src="/playground_assets/Treasury-New_WHITE.png"
                 className="home-image14"
               />
             </div>
@@ -1822,6 +1773,13 @@ const Home = (props) => {
               >
                 Send Verification Email
               </button>
+              <img
+                onClick={() => Logout()} 
+                id="logoutButton"
+                alt="image"
+                src="/playground_assets/logoutbutton.png"
+                className="home-logout-button-Verification"
+              />
             </div>
           )}
           {profileEntry.NicknamePanel && (
@@ -2965,46 +2923,37 @@ const Home = (props) => {
             <div className="home-list">
               <h3 className="home-heading1">Site</h3>
               <div className="home-items1">
-                <Link to="/" className="home-link2 button-clean button">
+                <button
+                  onClick={() => MenuButton("Main")}
+                  id="homePageButton"
+                  className="home-link5 button-clean button"
+                >
                   Home
-                </Link>
-                <Link to="/profile" className="home-link3 button-clean button">
-                  Profile
-                </Link>
-                <Link to="/mint" className="home-link4 button-clean button">
+                </button>
+                {userlogin && (                     
+                  <button
+                    onClick={() => MenuButton("Profile")}
+                    id="profilePageButton"
+                    className="home-link5 button-clean button"
+                  >
+                    Profile
+                  </button>
+                )}
+                <button
+                  onClick={() => MenuButton("Mint")}
+                  id="mintPageButton"
+                  className="home-link5 button-clean button"
+                >
                   Item Mint
-                </Link>
-                <button className="home-link5 button-clean button">
+                </button>
+                <button
+                  id="whitepaperButton"
+                  className="home-link5 button-clean button"
+                >
                   Whitepaper
                 </button>
               </div>
             </div>
-          </div>
-          <div className="home-socials2">
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="home-twitter2 social button"
-            >
-              <img
-                alt="image"
-                src="/playground_assets/twitter.svg"
-                className="home-image33"
-              />
-            </a>
-            <a
-              href="https://discord.com"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="home-discord2 social button"
-            >
-              <img
-                alt="image"
-                src="/playground_assets/discord.svg"
-                className="home-image34"
-              />
-            </a>
           </div>
         </div>
         <span className="home-copyright">
