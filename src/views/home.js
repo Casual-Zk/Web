@@ -1540,6 +1540,36 @@ const Home = (props) => {
                 className="home-image-Com"
               />
             </div>
+            <div className="home-treasury">
+              <h1 className="home-text046">Next Level Adventures Await!</h1>
+              <span className="home-text063">
+                <span>
+                  Get ready for an exhilarating wave of new features in our upcoming update! The Clan Update will empower players to form their own clans, engaging in thrilling battles against rival clans. Unlike the current Community system, clans require no permission to create, and team battles bring a whole new level of excitement to the game.
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  With our Microtransactions update, players will be able to purchase game items(NFTs), effortlessly via Google Play Store. No more navigating complex web3 processes; they can instantly stock up on ammo and fill their inventory within seconds. And new players who don't know anything about blockchain and don't own a wallet will be able to play the game!
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  But that's not all! Our Armor and Kit update lets players purchase protective gear and first aid kits to fortify their characters in the game. Additionally, the Customization update introduces a range of skins, accessories, and specialized bullets for weapons, elevating the gaming experience to new heights.
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  As we continue developing these incredible updates, we'll also focus on enhancing performance, improving UI/UX, and optimizing networking. Exciting times are ahead, and we're thrilled to announce that our game will soon be available on the App Store for IOS devices! Get ready for an immersive and action-packed journey like never before.
+                </span>
+                <br></br>
+                <br></br>
+              </span>
+              <img
+                alt="image"
+                src="/playground_assets/FutureDevs_White.png"
+                className="home-image08"
+              />
+            </div>
           </div>
           <div className="home-narrow-home-page">
             <div className="home-entry1">
@@ -1669,6 +1699,36 @@ const Home = (props) => {
                   <br></br>
                 </span>
               </div>
+            </div>
+            <div className="home-treasury1">
+              <h1 className="home-text083">Next Level Adventures Await!</h1>
+              <span className="home-text063">
+                <span>
+                  Get ready for an exhilarating wave of new features in our upcoming update! The Clan Update will empower players to form their own clans, engaging in thrilling battles against rival clans. Unlike the current Community system, clans require no permission to create, and team battles bring a whole new level of excitement to the game.
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  With our Microtransactions update, players will be able to purchase game items(NFTs), effortlessly via Google Play Store. No more navigating complex web3 processes; they can instantly stock up on ammo and fill their inventory within seconds. And new players who don't know anything about blockchain and don't own a wallet will be able to play the game!
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  But that's not all! Our Armor and Kit update lets players purchase protective gear and first aid kits to fortify their characters in the game. Additionally, the Customization update introduces a range of skins, accessories, and specialized bullets for weapons, elevating the gaming experience to new heights.
+                </span>
+                <br></br>
+                <br></br>
+                <span>
+                  As we continue developing these incredible updates, we'll also focus on enhancing performance, improving UI/UX, and optimizing networking. Exciting times are ahead, and we're thrilled to announce that our game will soon be available on the App Store for IOS devices! Get ready for an immersive and action-packed journey like never before.
+                </span>
+                <br></br>
+                <br></br>
+              </span>
+              <img
+                alt="image"
+                src="/playground_assets/FutureDevs_WHITE.png"
+                className="home-image14"
+              />
             </div>
           </div>
         </div>
