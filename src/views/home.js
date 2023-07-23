@@ -1516,6 +1516,30 @@ const Home = (props) => {
                 className="home-image08"
               />
             </div>
+            <div className="home-token-distribution">
+              <div className="home-container05">
+                <h1 className="home-text020">
+                  <span className="home-text021">Together We Rise, Together We Win!</span>
+                  <br></br>
+                </h1>
+                <span className="home-text023">
+                  <span>
+                    At Zk Chickens, we cherish the significance of gaming communities. No matter the size, they infuse our game with excitement and challenges. That's why we've devoted 30% of our treasury to support these communities.
+                  </span>
+                  <br></br>
+                  <br></br>
+                  <span>
+                    These communities engage in friendly competition, earning a share of the rewards. With their earnings, they can organize thrilling events, host giveaways, and expand their community. These initiatives benefit both the community as a whole and individual members who actively participate, fostering an inclusive and rewarding gaming experience for everyone.
+                  </span>
+                  <br></br>
+                </span>
+              </div>
+              <img
+                alt="image"
+                src="/playground_assets/Com_2.png"
+                className="home-image-Com"
+              />
+            </div>
           </div>
           <div className="home-narrow-home-page">
             <div className="home-entry1">
@@ -1619,6 +1643,32 @@ const Home = (props) => {
                 src="/playground_assets/Treasury-New_WHITE.png"
                 className="home-image14"
               />
+            </div>
+            <div className="home-token-distribution1">
+                <h1 className="home-text060">
+                  <span className="home-text061">Together We Rise, Together We Win!</span>
+                  <br></br>
+                </h1>
+              <div className="home-container11">
+                <span className="home-text063">
+                  <span>
+                  At Zk Chickens, we cherish the significance of gaming communities. No matter the size, they infuse our game with excitement and challenges. That's why we've devoted 30% of our treasury to support these communities.
+                  </span>
+                </span>
+              </div>
+              <img
+                alt="image"
+                src="/playground_assets/Com_2.png"
+                className="home-image11"
+              />
+              <div className="home-container12">
+                <span className="home-text066">
+                  <span>
+                  These communities engage in friendly competition, earning a share of the rewards. With their earnings, they can organize thrilling events, host giveaways, and expand their community. These initiatives benefit both the community as a whole and individual members who actively participate, fostering an inclusive and rewarding gaming experience for everyone.
+                  </span>
+                  <br></br>
+                </span>
+              </div>
             </div>
           </div>
         </div>

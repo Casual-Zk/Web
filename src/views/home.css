@@ -346,6 +346,12 @@
   object-fit: cover;
   flex-shrink: 0;
 }
+.home-image-Com {
+  width: auto;
+  height: 300px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
 .home-minter-cards {
   width: 100%;
   display: flex;
@@ -3175,6 +3181,9 @@
     width: 250px;
     height: 200px;
   }
+  .home-image-Com {
+    height: 200px;
+  }
   .home-minter-cards {
     flex-direction: row;
   }
@@ -3867,6 +3876,9 @@
     height: 200px;
     margin-bottom: 0px;
   }
+  .home-image-Com {
+    height: 200px;
+  }
   .home-minter-cards {
     padding-top: var(--dl-space-space-twounits);
     padding-left: var(--dl-space-space-twounits);
@@ -4428,6 +4440,9 @@
   .home-image05 {
     width: var(--dl-size-size-xlarge);
     height: var(--dl-size-size-xlarge);
+  }
+  .home-image-Com {
+    height: 100px;
   }
   .home-minter-cards {
     padding-top: var(--dl-space-space-twounits);
