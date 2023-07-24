@@ -1451,7 +1451,7 @@ const Home = (props) => {
                 </h1>
                 <span className="home-text014">
                   <span>
-                    In our unique system, we avoid the pitfalls of unsustainable Play-To-Earn setups. Instead, we introduce a lottery system to distribute rewards more fairly. After each victorious match, players earn an "egg." These eggs serve as entries into the weekly lottery, where players have the opportunity to win from various prize pools. The more skilled players accumulate more eggs, increasing their chances of landing significant rewards.
+                    In our unique system, we avoid the pitfalls of unsustainable Play-To-Earn setups. Instead, we introduce a lottery system to distribute rewards more fairly. After each victorious match, players earn an "egg" These eggs serve as entries into the weekly lottery, where players have the opportunity to win from various prize pools. The more skilled players accumulate more eggs, increasing their chances of landing significant rewards.
                   </span>
                   <br></br>
                   <br></br>
@@ -1604,7 +1604,7 @@ const Home = (props) => {
                 </h1>
                 <span className="home-text054">
                   <span>
-                    In our unique system, we avoid the pitfalls of unsustainable Play-To-Earn setups. Instead, we introduce a lottery system to distribute rewards more fairly. After each victorious match, players earn an "egg." These eggs serve as entries into the weekly lottery, where players have the opportunity to win from various prize pools. The more skilled players accumulate more eggs, increasing their chances of landing significant rewards.
+                    In our unique system, we avoid the pitfalls of unsustainable Play-To-Earn setups. Instead, we introduce a lottery system to distribute rewards more fairly. After each victorious match, players earn an "egg" These eggs serve as entries into the weekly lottery, where players have the opportunity to win from various prize pools. The more skilled players accumulate more eggs, increasing their chances of landing significant rewards.
                   </span>
                   <br></br>
                 </span>
@@ -1621,7 +1621,7 @@ const Home = (props) => {
             <div className="home-token-distribution1">
               <div className="home-container11">
                 <h1 className="home-text060">
-                  <span className="home-text061">Token For Gamers!</span>
+                  <span className="home-text061">Deflation Ahead!</span>
                   <br></br>
                 </h1>
                 <span className="home-text063">
@@ -2017,7 +2017,7 @@ const Home = (props) => {
                       </span>
                     </div>
                     <div className="home-text-space1">
-                      <span className="home-text098 profile-basic-text">
+                      <span className="home-text096 profile-basic-text">
                         Wallet Address:
                       </span>
                       <span
@@ -2362,7 +2362,7 @@ const Home = (props) => {
                     src="/playground_assets/Web_Knife.png"
                     className="item-image"
                   />
-                  <div className="home-container18">
+                  <div className="home-container19">
                     <span className="home-text156 top10-text">
                       <span>In Wallet:</span>
                       <br></br>
