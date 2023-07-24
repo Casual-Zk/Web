@@ -2782,7 +2782,7 @@ const Home = (props) => {
                   id="mintShotgunButton"
                   alt="image"
                   src="/playground_assets/mint_button-500h.png"
-                  className="home-image24 mint-button"
+                  className="home-image23 mint-button"
                 />
               }
             </div>
