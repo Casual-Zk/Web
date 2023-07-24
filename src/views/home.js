@@ -1391,6 +1391,7 @@ const Home = (props) => {
               </li>
               <li className='nav-item'>
                 <button
+                  onClick={() => window.open('https://bora-oezenbirkan.gitbook.io/zk-chickens/', '_blank')}
                   id="whitepaperButton"
                   className="home-button2 button-clean button"
                 >
@@ -3057,6 +3058,7 @@ const Home = (props) => {
                   Item Mint
                 </button>
                 <button
+                  onClick={() => window.open('https://bora-oezenbirkan.gitbook.io/zk-chickens/', '_blank')}
                   id="whitepaperButton"
                   className="home-link5 button-clean button"
                 >
