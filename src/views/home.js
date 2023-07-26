@@ -1415,7 +1415,7 @@ const Home = (props) => {
         <div className="home-home-page">
           <img
             alt="image"
-            src="/playground_assets/cover_0_1.png"
+            src="/playground_assets/Web-Cover.png"
             className="home-cover-image"
           />
           <div className="home-wide-home-page">
