@@ -1113,6 +1113,8 @@ const Home = (props) => {
     const authUser = auth.currentUser;
     const docSnap = await getDoc(doc(db, "users/", authUser.uid));
 
+    amount = Number(amount); // force to convert to number
+
     // Check if user data exist in the first place
     if (docSnap.exists()) {
       const data = docSnap.data();
