@@ -36,301 +36,88 @@ const Home = (props) => {
 
   const tokenAddress = '0xA90fD9116d12fe6AfeD99b2Ff73023F424f486c5';
   const itemAddress = '0xe0C930E65852014c2230a152d1e099Fa41879081';
-  const treasuryAddress = '0xA10c223751b208BF18dc0CA9e087B0577fE5b6A8';
 
   const tokenAbi = [
-    [
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "spender",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "value",
-            "type": "uint256"
-          }
-        ],
-        "name": "Approval",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "from",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "value",
-            "type": "uint256"
-          }
-        ],
-        "name": "Transfer",
-        "type": "event"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "spender",
-            "type": "address"
-          }
-        ],
-        "name": "allowance",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "spender",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "approve",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "account",
-            "type": "address"
-          }
-        ],
-        "name": "balanceOf",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      }
-    ]
-  ];
-  const itemAbi = [
-    [
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "account",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "operator",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "bool",
-            "name": "approved",
-            "type": "bool"
-          }
-        ],
-        "name": "ApprovalForAll",
-        "type": "event"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "account",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          }
-        ],
-        "name": "balanceOf",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address[]",
-            "name": "accounts",
-            "type": "address[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "ids",
-            "type": "uint256[]"
-          }
-        ],
-        "name": "balanceOfBatch",
-        "outputs": [
-          {
-            "internalType": "uint256[]",
-            "name": "",
-            "type": "uint256[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "account",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "value",
-            "type": "uint256"
-          }
-        ],
-        "name": "burn",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "account",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "ids",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          }
-        ],
-        "name": "burnBatch",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "account",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "operator",
-            "type": "address"
-          }
-        ],
-        "name": "isApprovedForAll",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "operator",
-            "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "approved",
-            "type": "bool"
-          }
-        ],
-        "name": "setApprovalForAll",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ]
-  ];
-  const treasuryAbi = [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Approval",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    },
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        }
+      ],
+      "name": "allowance",
+      "outputs": [
+        {
           "internalType": "uint256",
-          "name": "id",
+          "name": "",
           "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
         },
         {
           "internalType": "uint256",
@@ -338,7 +125,7 @@ const Home = (props) => {
           "type": "uint256"
         }
       ],
-      "name": "consume",
+      "name": "approve",
       "outputs": [
         {
           "internalType": "bool",
@@ -352,6 +139,203 @@ const Home = (props) => {
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ];
+  const itemAbi = [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "approved",
+          "type": "bool"
+        }
+      ],
+      "name": "ApprovalForAll",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "accounts",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "ids",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "balanceOfBatch",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "burn",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "ids",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "values",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "burnBatch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "isApprovedForAll",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "mint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
           "internalType": "uint256[]",
           "name": "ids",
           "type": "uint256[]"
@@ -360,16 +344,33 @@ const Home = (props) => {
           "internalType": "uint256[]",
           "name": "amounts",
           "type": "uint256[]"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
         }
       ],
-      "name": "consumeBatch",
-      "outputs": [
+      "name": "mintBatch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
         {
           "internalType": "bool",
-          "name": "",
+          "name": "approved",
           "type": "bool"
         }
       ],
+      "name": "setApprovalForAll",
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     }
@@ -455,7 +456,6 @@ const Home = (props) => {
   const [connectedWallet, setConnectedWallet] = useState("");
   const [shortWallet, setShortWallet] = useState("");
   const [mintApproved, setMintApprove] = useState(Boolean);
-  const [mintResult, setMintResult] = useState("");
   
   const [userlogin, setUserLogin] = useState(Boolean);
   const [hasUserBalance, setHasUserBalance] = useState(Boolean);
@@ -1119,20 +1119,20 @@ const Home = (props) => {
   
     // Get the signer
     const signer = provider.getSigner();
+    const account = window.ethereum.selectedAddress;
   
     // Create the contract instance
-    const treasuryContract = new ethers.Contract(treasuryAddress, treasuryAbi, signer);
+    const itemContract = new ethers.Contract(itemAddress, itemAbi, signer);
   
     // Send the transaction
-    const transaction = await treasuryContract.consume(itemID, amount);
+    const transaction = await itemContract.burn(account, itemID, amount);
 
     // Wait for the transaction to be mined
     const receipt = await transaction.wait();
 
     // Check the status of the transaction
     if (receipt.status === 1) {
-      console.log("Transaction successful!");
-      setMintResult("Consumed! ID: " + itemID + " - Amount: " + amount);
+      console.log("Burn/Consume Transaction successful!");
       ItemConsumed(itemID, amount);
     } else {
       console.log("Transaction failed!");
@@ -1234,10 +1234,6 @@ const Home = (props) => {
     RenderNow(true);     
   }
 
-  async function ClaimRewardButton() {
-    console.log("Claiming Reward");
-  }
-
   ////////////////////////////////////////////////////
   /////////             Other               //////////
   ////////////////////////////////////////////////////
@@ -1295,7 +1291,6 @@ const Home = (props) => {
     - Add onClick={() => ProfileMenuPanelButton("Inventory")} to profile menu button divs
     - Change prof menu btn div class name: className= {profilePanel.Inventory ? ("home-active-profile-button") : ("home-passive-profile-button")}
     - Change it's text's class name: className= {profilePanel.Inventory ? ("home-active-profile-text") : ("home-passive-profile-text")}
-    - onClick={() => ClaimRewardButton()} to claim rew btn
     - onClick={() => weekCounterChange(false)} to week count btn
     - value = {weekNum} to lottery week input
     - Add mint & consume button functions like above
@@ -2232,13 +2227,6 @@ const Home = (props) => {
                     No luck for this week...
                   </span>
                 </div>
-                <img
-                  onClick={() => ClaimRewardButton()} 
-                  id="claimRewardButton"
-                  alt="image"
-                  src="/playground_assets/claimrewardbutton-200h.png"
-                  className="home-image17"
-                />
               </div>
               <div className="home-top10">
                 <span className="home-text107 top10-text">
@@ -2686,10 +2674,7 @@ const Home = (props) => {
                     className="home-image18"
                   />
                   <span className="home-price-text top10-text">
-                    You need to give allowance to Trasury contract in order to
-                    consume items and use in the game. By consuming the items, items
-                    will be sent to the Treasury contract and you will obtain the
-                    same item in the game. Please approve allowance to proceed.
+                    Approve token spending for item contract to mint items with tokens!
                   </span>
                 </div>
                 <img
@@ -2707,7 +2692,7 @@ const Home = (props) => {
                 src="/playground_assets/Web_Knife.png"
                 className="home-item-image09 item-image"
               />
-              <span className="home-price-text top10-text">Price: 1 ZCH</span>
+              <span className="home-price-text top10-text">Price: 5 CoC</span>
               <div className="home-price-input-container">
                 <span className="home-text236 top10-text">Amount:</span>
                 <input
@@ -2737,7 +2722,7 @@ const Home = (props) => {
                 src="/playground_assets/Web_Glock.png"
                 className="home-item-image10 item-image"
               />
-              <span className="home-price-text1 top10-text">Price: 10 ZCH</span>
+              <span className="home-price-text1 top10-text">Price: 50 CoC</span>
               <div className="home-price-input-container1">
                 <span className="home-text237 top10-text">Amount:</span>
                 <input
@@ -2767,7 +2752,7 @@ const Home = (props) => {
                 src="/playground_assets/Web_Shotgun.png"
                 className="home-item-image11 item-image"
               />
-              <span className="home-price-text2 top10-text">Price: 30 ZCH</span>
+              <span className="home-price-text2 top10-text">Price: 250 CoC</span>
               <div className="home-price-input-container2">
                 <span className="home-text238 top10-text">Amount:</span>
                 <input
@@ -2797,7 +2782,7 @@ const Home = (props) => {
                 src="/playground_assets/Web_M4.png"
                 className="home-item-image12 item-image"
               />
-              <span className="home-price-text3 top10-text">Price: 100 ZCH</span>
+              <span className="home-price-text3 top10-text">Price: 250 CoC</span>
               <div className="home-price-input-container3">
                 <span className="home-text239 top10-text">Amount:</span>
                 <input
@@ -2830,7 +2815,7 @@ const Home = (props) => {
                 src="/playground_assets/Web_AWP.png"
                 className="home-item-image13 item-image"
               />
-              <span className="home-price-text4 top10-text">Price: 200 ZCH</span>
+              <span className="home-price-text4 top10-text">Price: 500 CoC</span>
               <div className="home-price-input-container4">
                 <span className="home-text242 top10-text">Amount:</span>
                 <input
@@ -2864,7 +2849,7 @@ const Home = (props) => {
                 className="home-item-image14 item-image"
               />
               <span className="home-price-text5 top10-text">
-                Price: 0.0001 ZCH
+                Price: 0.15 CoC
               </span>
               <div className="home-price-input-container5">
                 <span className="home-text245 top10-text">Amount:</span>
@@ -2899,7 +2884,7 @@ const Home = (props) => {
                 className="home-item-image15 item-image"
               />
               <span className="home-price-text6 top10-text">
-                Price: 0.0002 ZCH
+                Price: 0.01 CoC
               </span>
               <div className="home-price-input-container6">
                 <span className="home-text248 top10-text">Amount:</span>
@@ -2934,7 +2919,7 @@ const Home = (props) => {
                 className="home-item-image16 item-image"
               />
               <span className="home-price-text7 top10-text">
-                Price: 0.0003 ZCH
+                Price: 0.015 CoC
               </span>
               <div className="home-price-input-container7">
                 <span className="home-text251 top10-text">Amount:</span>
@@ -2969,7 +2954,7 @@ const Home = (props) => {
                 className="home-item-image17 item-image"
               />
               <span className="home-price-text8 top10-text">
-                Price: 0.0005 ZCH
+                Price: 0.25 CoC
               </span>
               <div className="home-price-input-container8">
                 <span className="home-text254 top10-text">Amount:</span>
