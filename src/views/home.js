@@ -34,226 +34,295 @@ const Home = (props) => {
   /////////           Variables             //////////
   ////////////////////////////////////////////////////
 
-  const tokenAddress = '0x2B0758ee301AF7AA2C5fA9B7060648fbB2D0dDBD';
-  const itemAddress = '0xa2B1aD5a0c739A4AbDd9943cF2cA0AE3ad90E67A';
+  const tokenAddress = '0xA90fD9116d12fe6AfeD99b2Ff73023F424f486c5';
+  const itemAddress = '0xe0C930E65852014c2230a152d1e099Fa41879081';
   const treasuryAddress = '0xA10c223751b208BF18dc0CA9e087B0577fE5b6A8';
 
   const tokenAbi = [
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
-        }
-      ],
-      "name": "allowance",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "approve",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "balanceOf",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    [
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          }
+        ],
+        "name": "Approval",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          }
+        ],
+        "name": "Transfer",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
+          }
+        ],
+        "name": "allowance",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "approve",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ]
   ];
   const itemAbi = [
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        }
-      ],
-      "name": "balanceOf",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address[]",
-          "name": "accounts",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "ids",
-          "type": "uint256[]"
-        }
-      ],
-      "name": "balanceOfBatch",
-      "outputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        }
-      ],
-      "name": "isApprovedForAll",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        }
-      ],
-      "name": "mint",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "ids",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "amounts",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        }
-      ],
-      "name": "mintBatch",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "internalType": "bool",
-          "name": "approved",
-          "type": "bool"
-        }
-      ],
-      "name": "setApprovalForAll",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    }
+    [
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "approved",
+            "type": "bool"
+          }
+        ],
+        "name": "ApprovalForAll",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address[]",
+            "name": "accounts",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "ids",
+            "type": "uint256[]"
+          }
+        ],
+        "name": "balanceOfBatch",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          }
+        ],
+        "name": "burn",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "ids",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "values",
+            "type": "uint256[]"
+          }
+        ],
+        "name": "burnBatch",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          }
+        ],
+        "name": "isApprovedForAll",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "approved",
+            "type": "bool"
+          }
+        ],
+        "name": "setApprovalForAll",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ]
   ];
   const treasuryAbi = [
     {
@@ -306,21 +375,21 @@ const Home = (props) => {
     }
   ];
 
-  const desiredChainId = '0x118'; // Era Test: 118, Era Main: 144
+  const desiredChainId = '0xa869';
   /*
     *  TESTNET
-    *  Name: zkSync Era Testnet
-    *  RPC: https://testnet.era.zksync.dev
-    *  ID: 280
-    *  Currency ETH
-    *  Explorer: https://goerli.explorer.zksync.io/
+    *  Name: Avalanche Testnet
+    *  RPC: https://api.avax-test.network/ext/bc/C/rpc
+    *  ID: 43113  // 0xa869
+    *  Currency AVAX
+    *  Explorer: https://testnet.snowtrace.io
     *  
     *  MAINNET
-    *  Name: zkSync Era Mainnet
-    *  RPC: https://mainnet.era.zksync.io
-    *  ID: 324
-    *  Currency ETH
-    *  Explorer: https://explorer.zksync.io/  
+    *  Name: Avalanche Mainnet
+    *  RPC: https://api.avax.network/ext/bc/C/rpc
+    *  ID: 43114  // 0xa86a
+    *  Currency AVAX
+    *  Explorer: https://snowtrace.io
     *  
   */
 
@@ -789,14 +858,14 @@ const Home = (props) => {
               method: 'wallet_addEthereumChain',
               params: [{
                 chainId: desiredChainId,
-                chainName: "zkSync Era Testnet",
+                chainName: "Avalanche Testnet",
                 nativeCurrency: {
-                  name: "Ether",
-                  symbol: "ETH",
+                  name: "AVAX",
+                  symbol: "AVAX",
                   decimals: 18
                 },
-                rpcUrls: ["https://testnet.era.zksync.dev"],
-                blockExplorerUrls: ['https://goerli.explorer.zksync.io/']
+                rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
+                blockExplorerUrls: ['https://testnet.snowtrace.io']
               }],
             });
           } catch (error) {
@@ -851,14 +920,14 @@ const Home = (props) => {
                 method: 'wallet_addEthereumChain',
                 params: [{
                   chainId: desiredChainId,
-                  chainName: "zkSync Era Testnet",
+                  chainName: "Avalanche Testnet",
                   nativeCurrency: {
-                    name: "Ether",
-                    symbol: "ETH",
+                    name: "AVAX",
+                    symbol: "AVAX",
                     decimals: 18
                   },
-                  rpcUrls: ["https://testnet.era.zksync.dev"],
-                  blockExplorerUrls: ['https://goerli.explorer.zksync.io/']
+                  rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
+                  blockExplorerUrls: ['https://testnet.snowtrace.io']
                 }],
               });
             } catch (error) {
