@@ -455,7 +455,6 @@ const Home = (props) => {
   const [connectedWallet, setConnectedWallet] = useState("");
   const [shortWallet, setShortWallet] = useState("");
   const [mintApproved, setMintApprove] = useState(Boolean);
-  const [consumeApproved, setConsumeApprove] = useState(Boolean);
   const [mintResult, setMintResult] = useState("");
   
   const [userlogin, setUserLogin] = useState(Boolean);
@@ -996,14 +995,10 @@ const Home = (props) => {
     // Check mint approval
     const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, provider);
 
-    // Get token allowance for item Contract to transfer funds
+    // Get token allowance for item Contract to burn funds
     var tokenAllowance = await tokenContract.allowance(window.ethereum.selectedAddress, itemAddress);
     tokenAllowance = utils.formatUnits(tokenAllowance, 'ether');
     setMintApprove(tokenAllowance > 10000 ? true : false);
-
-    // Check item approval to consume
-    const itemContract = new ethers.Contract(itemAddress, itemAbi, provider);
-    setConsumeApprove(await itemContract.isApprovedForAll(window.ethereum.selectedAddress, treasuryAddress));
 
     RenderNow(true);
   }
@@ -1034,35 +1029,6 @@ const Home = (props) => {
     if (receipt.status === 1) {
       console.log("Transaction successful!");
       setMintApprove(true);
-      RenderNow(true);
-    } else {
-      console.log("Transaction failed!");
-    }
-  }  
-
-  async function approveForConsume() {
-    console.log("Givin approval of items to consume");
-
-    // Connect to the provider
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
-  
-    // Get the signer
-    const signer = provider.getSigner();
-  
-    // Create the contract instance
-    const itemContract = new ethers.Contract(itemAddress, itemAbi, signer);
-  
-    // Send the transaction
-    const transaction = await itemContract.setApprovalForAll(treasuryAddress, true);
-
-    // Wait for the transaction to be mined
-    const receipt = await transaction.wait();
-
-    // Check the status of the transaction
-    if (receipt.status === 1) {
-      console.log("Transaction successful!");
-      setConsumeApprove(true);
       RenderNow(true);
     } else {
       console.log("Transaction failed!");
@@ -1396,9 +1362,6 @@ const Home = (props) => {
     - Add {user.knifeAmount.toString()} and other inventor info to the places
     - Add {(user.awpAmount > 0) && <div>} to inventory containers
     - Add {((user.wallet_9mm > 0) || (user.game_9mm > 0)) && to the inventory ammo containers
-    - {!consumeApproved && connectedWallet != "" && to info container
-    - {consumeApproved && to item containers' consume buttons
-    - onClick={()=> approveForConsume()} to approve button
     - onClick={()=> ConsumeItem(1, document.getElementById("lotteryWeekInput").value))} to consume button (id, amount)  
     - {!hasUserBalance && to no balance warning text
   */
@@ -2403,29 +2366,6 @@ const Home = (props) => {
                   </div>
                 </div>
               }
-              {!consumeApproved && connectedWallet != "" && 
-                <div className="home-mint-info-container">
-                  <div className="home-text168">
-                    <img
-                      src="/playground_assets/info_64x64-200h.png"
-                      alt="image"
-                      className="home-image18"
-                    />
-                    <span className="home-price-text top10-text">
-                      You need to give allowance to Trasury contract in order to
-                      consume items and use in the game. By consuming the items, items
-                      will be sent to the Treasury contract and you will obtain the
-                      same item in the game. Please approve allowance to proceed.
-                    </span>
-                  </div>
-                  <img
-                    onClick={()=> approveForConsume()}
-                    src="/playground_assets/approve%20button-200h.png"
-                    alt="image"
-                    className="home-image19"
-                  />
-                </div>
-              }
               {(user.knifeAmount > 0) &&
                 <div className="item-container-small">
                   <h1 className="home-item-name top10-text">Knife</h1>
@@ -2569,15 +2509,13 @@ const Home = (props) => {
                     placeholder="Enter Amount"
                     className="input inv-consume-input"
                   />
-                  {consumeApproved &&
-                    <img
-                      onClick={()=> ConsumeItem(5, document.getElementById("invGaugeInput").value)}
-                      id="invGaugeConsumeButton"
-                      alt="image"
-                      src="/playground_assets/consume%20button-500h.png"
-                      className="inv-consume-button"
-                    />
-                  }
+                  <img
+                    onClick={()=> ConsumeItem(5, document.getElementById("invGaugeInput").value)}
+                    id="invGaugeConsumeButton"
+                    alt="image"
+                    src="/playground_assets/consume%20button-500h.png"
+                    className="inv-consume-button"
+                  />
                 </div>
               }
               {((user.wallet_9mm > 0) || (user.game_9mm > 0)) &&
@@ -2617,15 +2555,13 @@ const Home = (props) => {
                     placeholder="Enter Amount"
                     className="home-textinput02 input inv-consume-input"
                   />
-                  {consumeApproved &&
-                    <img
-                      onClick={()=> ConsumeItem(6, document.getElementById("inv9mmInput").value)}
-                      id="inv9mmConsumeButton"
-                      alt="image"
-                      src="/playground_assets/consume%20button-500h.png"
-                      className="home-image19 inv-consume-button"
-                    />
-                  }
+                  <img
+                    onClick={()=> ConsumeItem(6, document.getElementById("inv9mmInput").value)}
+                    id="inv9mmConsumeButton"
+                    alt="image"
+                    src="/playground_assets/consume%20button-500h.png"
+                    className="home-image19 inv-consume-button"
+                  />
                 </div>
               }
               {((user.wallet_5_56mm > 0) || (user.game_5_56mm > 0)) &&
@@ -2665,15 +2601,13 @@ const Home = (props) => {
                     placeholder="Enter Amount"
                     className="home-textinput03 input inv-consume-input"
                   />
-                  {consumeApproved &&
-                    <img
-                      onClick={()=> ConsumeItem(7, document.getElementById("inv556mmInput").value)}
-                      id="inv556mmConsumeButton"
-                      alt="image"
-                      src="/playground_assets/consume%20button-500h.png"
-                      className="home-image20 inv-consume-button"
-                    />
-                  }
+                  <img
+                    onClick={()=> ConsumeItem(7, document.getElementById("inv556mmInput").value)}
+                    id="inv556mmConsumeButton"
+                    alt="image"
+                    src="/playground_assets/consume%20button-500h.png"
+                    className="home-image20 inv-consume-button"
+                  />
                 </div>
               }
               {((user.wallet_7_62mm > 0) || (user.game_7_62mm > 0)) &&
@@ -2713,15 +2647,13 @@ const Home = (props) => {
                     placeholder="Enter Amount"
                     className="home-textinput04 input inv-consume-input"
                   />
-                  {consumeApproved &&
-                    <img
-                      onClick={()=> ConsumeItem(8, document.getElementById("inv762mmInput").value)}
-                      id="inv762mmConsumeButton"
-                      alt="image"
-                      src="/playground_assets/consume%20button-500h.png"
-                      className="home-image21 inv-consume-button"
-                    />
-                  }
+                  <img
+                    onClick={()=> ConsumeItem(8, document.getElementById("inv762mmInput").value)}
+                    id="inv762mmConsumeButton"
+                    alt="image"
+                    src="/playground_assets/consume%20button-500h.png"
+                    className="home-image21 inv-consume-button"
+                  />
                 </div>
               }
             </div>
