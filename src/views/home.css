@@ -341,8 +341,7 @@
   margin-right: 0px;
 }
 .home-image05 {
-  width: 500px;
-  height: 400px;
+  width: 30%;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -3177,10 +3176,6 @@
     text-align: left;
     margin-left: 0px;
   }
-  .home-image05 {
-    width: 250px;
-    height: 200px;
-  }
   .home-image-Com {
     height: 200px;
   }
@@ -3871,11 +3866,6 @@
   .home-text023 {
     font-size: 14px;
   }
-  .home-image05 {
-    width: 200px;
-    height: 200px;
-    margin-bottom: 0px;
-  }
   .home-image-Com {
     height: 200px;
   }
@@ -4436,10 +4426,6 @@
   }
   .home-text023 {
     font-size: 12px;
-  }
-  .home-image05 {
-    width: var(--dl-size-size-xlarge);
-    height: var(--dl-size-size-xlarge);
   }
   .home-image-Com {
     height: 100px;

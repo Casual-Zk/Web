@@ -1500,50 +1500,20 @@ const Home = (props) => {
                 </h1>
                 <span className="home-text023">
                   <span>
-                    In our tokenomics strategy, 95% of the tokens will be available right from the start. This approach is chosen to prevent excessive inflation that has negatively affected other gaming projects in the past. Additionally, we plan to airdrop 90% of the tokens to our testers who actively participate in our testnet, rewarding them for their valuable feedback and contributions.
+                    In our tokenomics, we have only 1.67% inflation! That's true! We only have 3 token allocation. First one, the test rewards which is allocated for the Alpha and Beta stage testers. The second allocation is the team allocation with 2 years vesting period and generates only 1.67% of inflation.
                   </span>
                   <br></br>
                   <br></br>
                   <span>
-                    To prevent hyperinflation, we won't directly allocate tokens as game rewards. Instead, we'll utilize a carefully managed 'Chicken Treasury' for sustainable and exciting player rewards. Through the treasury, token burns will reduce the existing token supply and create a deflationary environment!
+                    Our third allocation is the Game Rewards and this is where the magic happens! Even though we have 96% LOCKED tokens as Game Rewards, they do not generate ANY inflation! Because they don't have a fixed unlock schedule. Each week, Game Rewards contract unlocks as much as tokens that are burnt in that week. This means the circulation supply remains same while the total supply decreases! You know what that means: Deflation!
                   </span>
                   <br></br>
                 </span>
               </div>
               <img
                 alt="image"
-                src="/playground_assets/token%20allocation-600w.png"
+                src="/playground_assets/chart_Nobg_White.png"
                 className="home-image05"
-              />
-            </div>
-            <div className="home-treasury">
-              <h1 className="home-text046">Chicken Treasury</h1>
-              <span className="home-text063">
-                <span>
-                  The treasury is designed to create a sustainable and engaging gaming ecosystem. It incentivizes various stakeholders, ensures continuous development, and drives player interaction, contributing to the game's long-term success and the potential growth in token value.
-                </span>
-                <br></br>
-                <br></br>
-                <span>
-                  Every week, the treasury contract will distribute the tokens income that comes from item sales to 4 parties shown below. The main objective of the treasury is to avoid extreme inflation like other game projects suffering. Instead of printing loads of tokens to provide game rewards to players, we provide the game reward through the treasury!
-                </span>
-                <br></br>
-                <br></br>
-                <span>
-                  While 30% token burn effectively reducing the token supply and creating deflation, potentially driving up token prices, the community rewards will incentivize the communities to challange each other and make the playground more fun! This also will help to shape our clan system which we will develop and implement to the game after the launch.
-                </span>
-                <br></br>
-                <br></br>
-                <span>
-                  In case the 10% allocation for development is insufficient, holders have the power to vote for an increase, ensuring a democratic approach to resource allocation and sustaining the game's growth and success.
-                </span>
-                <br></br>
-                <br></br>
-              </span>
-              <img
-                alt="image"
-                src="/playground_assets/Treasury-New_WHITE.png"
-                className="home-image08"
               />
             </div>
             <div className="home-token-distribution">
@@ -1656,53 +1626,23 @@ const Home = (props) => {
                 </h1>
                 <span className="home-text063">
                   <span>
-                    In our tokenomics strategy, 95% of the tokens will be available right from the start. This approach is chosen to prevent excessive inflation that has negatively affected other gaming projects in the past. Additionally, we plan to airdrop 90% of the tokens to our testers who actively participate in our testnet, rewarding them for their valuable feedback and contributions.
+                    In our tokenomics, we have only 1.67% inflation! That's true! We only have 3 token allocation. First one, the test rewards which is allocated for the Alpha and Beta stage testers. The second allocation is the team allocation with 2 years vesting period and generates only 1.67% of inflation.
                   </span>
                 </span>
               </div>
               <img
                 alt="image"
-                src="/playground_assets/token%20allocation-600w.png"
+                src="/playground_assets/chart_Nobg_White.png"
                 className="home-image11"
               />
               <div className="home-container12">
                 <span className="home-text066">
                   <span>
-                  To prevent hyperinflation, we won't directly allocate tokens as game rewards. Instead, we'll utilize a carefully managed 'Chicken Treasury' for sustainable and exciting player rewards. Through the treasury, token burns will reduce the existing token supply and create a deflationary environment!
+                    Our third allocation is the Game Rewards and this is where the magic happens! Even though we have 96% LOCKED tokens as Game Rewards, they do not generate ANY inflation! Because they don't have a fixed unlock schedule. Each week, Game Rewards contract unlocks as much as tokens that are burnt in that week. This means the circulation supply remains same while the total supply decreases! You know what that means: Deflation!
                   </span>
                   <br></br>
                 </span>
               </div>
-            </div>
-            <div className="home-treasury1">
-              <h1 className="home-text083">Chicken Treasury</h1>
-              <span className="home-text063">
-                <span>
-                  The treasury is designed to create a sustainable and engaging gaming ecosystem. It incentivizes various stakeholders, ensures continuous development, and drives player interaction, contributing to the game's long-term success and the potential growth in token value.
-                </span>
-                <br></br>
-                <br></br>
-                <span>
-                  Every week, the treasury contract will distribute the tokens income that comes from item sales to 4 parties shown below. The main objective of the treasury is to avoid extreme inflation like other game projects suffering. Instead of printing loads of tokens to provide game rewards to players, we provide the game reward through the treasury!
-                </span>
-                <br></br>
-                <br></br>
-                <span>
-                  While 30% token burn effectively reducing the token supply and creating deflation, potentially driving up token prices, the community rewards will incentivize the communities to challange each other and make the playground more fun! This also will help to shape our clan system which we will develop and implement to the game after the launch.
-                </span>
-                <br></br>
-                <br></br>
-                <span>
-                  In case the 10% allocation for development is insufficient, holders have the power to vote for an increase, ensuring a democratic approach to resource allocation and sustaining the game's growth and success.
-                </span>
-                <br></br>
-                <br></br>
-              </span>
-              <img
-                alt="image"
-                src="/playground_assets/Treasury-New_WHITE.png"
-                className="home-image14"
-              />
             </div>
             <div className="home-token-distribution1">
                 <h1 className="home-text060">
